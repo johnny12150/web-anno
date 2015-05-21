@@ -4,6 +4,7 @@
 var x =  0;
 Annotator.Plugin.ViewPanel = function (element, settings) {
 
+    this.users = [];
 
     this.insertPanelUI = function() {
         $('body').append('<div id="anno_panel">'
@@ -12,9 +13,9 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
     this.addReference = function(annotation) {
 
+        console.log(annotation);
 
         for( var i = 0 ; i < annotation.highlights.length ;i++) {
-
             if(annotation.id == null)
                 annotation.id = Math.floor(Math.random()*100000).toString() + "_t";
             var id = annotation.id + "_" + i.toString();
@@ -67,6 +68,11 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         }
     };
 
+    this.updateViewer = function(field, annotation) {
+        $(field).addClass('annotator-user').html('<strong>Creator: </strong><span>user_' + annotation.user.id.toString() + '</span>');
+        return field;
+    };
+
     var _this = this;
 
     return {
@@ -89,6 +95,13 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 .subscribe("annotationDeleted", function (annotation) {
                     _this.addReference(annotation);
                 });
+
+            this.annotator.viewer.addField({
+                load: _this.updateViewer
+            });
+
+
+
         }
     }
 };
