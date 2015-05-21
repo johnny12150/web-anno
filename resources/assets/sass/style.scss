@@ -1,0 +1,28 @@
+
+@import 'bootstrap';
+
+@media screen and (min-width: 768px) {
+
+  nav.navbar.navbar-custom {
+    min-height: 100px;
+
+    .container-fluid {
+      margin-top: 50px;
+    }
+
+
+    .navbar-nav > li {
+      border-bottom: solid 5px rgba(0, 204, 255, 0);
+      &:hover {
+        border-color: rgb(0, 204, 255);
+      }
+    }
+
+    .navbar-nav > li.active {
+      border-color: rgb(0, 204, 255);
+    }
+  }
+
+}
+
+
