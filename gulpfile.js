@@ -17,11 +17,12 @@ var paths = {
 }
 
 elixir(function(mix) {
-    mix.sass("style.scss", 'public/css/', {includePaths: [paths.bootstrap + 'stylesheets/']})
-        .sass("anno.scss", 'public/css/')
+    mix.sass(["style.scss","anno.scss"], 'public/css', {includePaths: [paths.bootstrap + 'stylesheets/']})
         .copy(paths.bootstrap + 'fonts/bootstrap/**', 'public/fonts')
         .scripts([
             paths.jquery + 'dist/jquery.min.js',
             paths.bootstrap + 'javascripts/bootstrap.min.js'
         ],'./public/js/all.js', './');
 });
+
+

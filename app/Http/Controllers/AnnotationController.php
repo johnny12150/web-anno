@@ -7,36 +7,39 @@ use App\Tag;
 
 use App\User;
 use Illuminate\Support\Facades\Request;
+use OAuth\Common\Exception\Exception;
 
 
-class AnnotationController extends Controller {
+class AnnotationController extends Controller
+{
 
-    function __construct() {
+    function __construct()
+    {
         header('Access-Control-Allow-Origin', '*');
         header('Allow', 'GET, POST, OPTIONS');
         header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization, X-Request-With');
         header('Access-Control-Allow-Credentials', 'true');
     }
 
-	/**
-	 * Get Annotation JS version.
-	 *
-	 * @return Object Json format of api version
-	 */
-	public function index()
-	{
-		return [
-            "name"=> "Annotator Store API",
-            "version"=> "2.0.0"
+    /**
+     * Get Annotation JS version.
+     *
+     * @return Object Json format of api version
+     */
+    public function index()
+    {
+        return [
+            "name" => "Annotator Store API",
+            "version" => "2.0.0"
         ];
-	}
+    }
 
     /**
      * Get all annotaions of specific article.
      * @param none
      * @return Object json format of annotations data.
      */
-	public function all()
+    public function all()
     {
         /*$objs = Annotation::getAllAnnotations(User::user()->id, $uri);
         $annos = [];
@@ -65,6 +68,7 @@ class AnnotationController extends Controller {
     {
         $permissions = Request::input('permissions');
         $is_public = count($permissions['read']) == 0;
+        $tags = Request::input('tags');
         /* Create New Annotation */
         $new_anno = Annotation::add(User::user()->id, [
             'creator_id' => User::user()->id,
@@ -76,30 +80,13 @@ class AnnotationController extends Controller {
             'ranges_startOffset' => Request::input('ranges')[0]['startOffset'],
             'ranges_endOffset' => Request::input('ranges')[0]['endOffset'],
             'is_public' => $is_public,
+            'tags' => $tags
         ]);
 
 
-        // Find tags
-        $anno_id = $new_anno->id;
-        $tags = Request::input('tags');
-        if( $tags == null )
-            $tags = [];
-        $tags = array_unique($tags);
-
-        foreach( $tags as $tagName) {
-            $tag = Tag::findByName($tagName);
-            if ($tag == null)
-                $tag = Tag::add($tagName);
-            TagUse::add($tag->id, $anno_id);
-        }
-
-        if(is_object($new_anno))
-        {
-            // Refact object
-            return Annotation::format($new_anno, $tags);
-        }
-        else
-        {
+        if (is_object($new_anno)) {
+            return $new_anno;
+        } else {
             // return error meesage
             return $new_anno;
         }
@@ -108,6 +95,8 @@ class AnnotationController extends Controller {
     public static function update($id)
     {
         $permissions = Request::input('permissions');
+        $tags = Request::input('tags');
+
         $is_public = count($permissions['read']) == 0;
         /* Edit Annotation */
         $result = Annotation::edit(User::user()->id, $id, [
@@ -121,32 +110,14 @@ class AnnotationController extends Controller {
             'ranges_endOffset' => Request::input('ranges')[0]['endOffset'],
             'permissions' => Request::input('permission')[0]['read'],
             'is_public' => $is_public,
+            'tags' => $tags
         ]);
 
-        if(!$result)
+        if (!$result)
             abort(500);
 
         /* Process Tags and Relations */
 
-        $tags = Request::input('tags');
-        if( $tags == null)
-            $tags = [];
-        $tags = array_unique($tags);
-
-        //clear origin relation and readd relation
-        $result = TagUse::delByAnnoId($id);
-
-        if(!$result)
-            abort(500);
-
-        foreach( $tags as $tagName) {
-            //find this tag
-            $tag = Tag::findByName($tagName);
-
-            if ($tag == null)
-                $tag = Tag::add($tagName);
-            TagUse::add($tag->id,$id);
-        }
 
         return self::get($id);
 
@@ -156,16 +127,8 @@ class AnnotationController extends Controller {
     {
         // Find tags
         $anno = Annotation::getById($id);
-        $tag_list = TagUse::findTagIds($anno->id);
-        $tags = [];
-        foreach($tag_list as $tag_id) {
-            $tagName = Tag::getNameById($tag_id);
-            if($tagName != null)
-                $tags[] = $tagName;
-        }
 
-        // Refact result object
-        return Annotation::format($anno, $tags);
+        return $anno;
     }
 
     public static function delete($id)
@@ -176,41 +139,59 @@ class AnnotationController extends Controller {
     }
 
 
-    public static function search() {
+    public static function search()
+    {
 
-        $limit = Request::input('limit') != '' ? Request::input('limit') : 0;
+        $limit = Request::input('limit') == '' ? 0 : Request::input('limit');
         $uri = Request::input('uri');
+        $user_id = Request::input('user');
+        $searchTag = Request::input('tag');
+        $searchText = Request::input('search');
 
-        $objs = Annotation::getByUri(User::user()->id, $uri, $limit);
-        $annos = [];
+        $annos_result = [];
 
-        foreach( $objs as $obj )
-        {
-            // Find tags
-            $tag_list = TagUse::findTagIds($obj->id);
-            $tags = [];
-            foreach($tag_list as $tag_id) {
-                $tagName = Tag::getNameById($tag_id);
-                if($tagName!=null)
-                    $tags[] = $tagName;
+
+        if ($searchText == '') {
+            if ($user_id == '')
+                $annos = Annotation::getPublicByUri($uri, $limit);
+            else
+                $annos = Annotation::getByUserUri($user_id, $uri, $limit);
+
+            if ($searchTag != '') {
+                foreach ($annos as $key => $anno) {
+                    $checkTag = false;
+                    foreach ($anno['tags'] as $key => $tag) {
+                        if (strtolower($tag) == strtolower($searchTag)) {
+                            $checkTag = true;
+                            break;
+                        }
+                    }
+                    if ($checkTag) {
+                        $annos_result[] = $anno;
+
+                    }
+                }
+            } else {
+                $annos_result = $annos;
             }
 
-            // Refact object
-            $annos[] = Annotation::format($obj, $tags);
+        } else {
+            $annos_result = Annotation::search($uri, $searchText);
         }
+
 
         // Ser result
         $result = [
-            'total' => count($annos),
-            'rows' => $annos
+            'total' => count($annos_result),
+            'rows' => $annos_result
         ];
 
         return $result;
     }
 
-    public static function check() {
+    public static function check()
+    {
         return '';
     }
-
 
 }

@@ -3,6 +3,10 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Session;
 
+/**
+ * Class User
+ * @package App
+ */
 class User extends Model {
 
 	/**
@@ -20,28 +24,54 @@ class User extends Model {
 	protected $fillable = ['name', 'email', 'lastlogin', 'facebook_id', 'facebook_token', 'auth_token', 'auth_expire'];
 
 
+    protected $hidden = ['facebook_token', 'lastlogin'];
+
+    /**
+     * Get user by facebook id
+     *
+     * @param $fbid - facebook id
+     * @return User|null
+     */
     public static function getByFacebook($fbid)
     {
         return self::where('facebook_id',$fbid)->first();
     }
 
+    /**
+     * Get user by id
+     *
+     * @param $uid - User id
+     * @return User|null
+     */
     public static function get($uid)
     {
         return self::where('id', $uid)->first();
     }
 
-    public static function addByFacebook($user, $token)
+    /**
+     * Add user by facebook user obj
+     *
+     * @param $fbuser
+     * @param $token
+     * @return User
+     */
+    public static function addByFacebook($fbuser, $token)
     {
-        $_user = new self();
-        $_user->facebook_id = $user->id;
-        $_user->name = $user->name;
-        $_user->email = $user->email;
-        $_user->facebook_token = $token;
-        $_user->save();
+        $user = new self();
+        $user->facebook_id = $fbuser->id;
+        $user->name = $fbuser->name;
+        $user->email = $fbuser->email;
+        $user->facebook_token = $token;
+        $user->save();
 
-        return $_user;
+        return $user;
     }
 
+    /**
+     * update lastlogin timestamp of user
+     *
+     * @param $uid - user id
+     */
     private static function update_lastlogin($uid)
     {
         self::where('id', $uid)->update([
@@ -51,12 +81,22 @@ class User extends Model {
 
     //----------------------------------------------------------
 
+    /**
+     * Get user from seesion
+     *
+     * @return mixed
+     */
     public static function user()
     {
         return Session::get('user');
     }
 
 
+    /**
+     * Check logined or not
+     *
+     * @return bool
+     */
     public static function check()
     {
         $_user = self::user();
@@ -83,30 +123,54 @@ class User extends Model {
     }
 
 
+    /**
+     *
+     *
+     * @return bool
+     */
     public static function guest()
     {
         return !self::check();
     }
 
+    /**
+     * Logout from system
+     */
     public static function logout()
     {
         Session::flush();
     }
 
-    public static function login($user, $token)
+    /**
+     * Login to system
+     *
+     * @param $fbuser - Facebook user obj
+     * @param $token - Facebook token
+     * @return User|mixed
+     */
+    public static function login($fbuser, $token)
     {
 
-        $_user = self::getByFacebook($user->id);
+        $user = self::getByFacebook($fbuser->id);
 
-        if($_user == null)
-            $_user = self::addByFacebook($user, $token);
+        if($user == null)
+            $user = self::addByFacebook($fbuser, $token);
 
-        self::update_lastlogin($_user->id);
+        self::update_lastlogin($user->id);
 
-        Session::put('expire', time());
-        Session::put('user', $_user);
+        self::storeToSession($user);
 
-        return $_user;
+        return $user;
     }
 
+
+    public static function storeToSession($user, $isflash = false)
+    {
+        if(!$isflash) {
+            Session::put('expire', time());
+            Session::put('user', $user);
+        } else {
+            Session::flash('user', $user);
+        }
+    }
 }

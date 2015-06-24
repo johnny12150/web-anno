@@ -23,29 +23,29 @@ Route::post('article/edit', 'ArticleController@edit');
 Route::delete('article/del', 'ArticleController@delete');
 
 /* Annotation API routing */
-Route::group(['prefix' => '/api', 'middleware' => 'api_auth'], function()
+Route::group(['prefix' => '/api'], function()
 {
     Route::get('/', 'AnnotationController@index');
     Route::get('user', function() {});
     Route::get('annotations', 'AnnotationController@all');
-    Route::post('annotations', 'AnnotationController@add');
-    Route::put('annotations/{id}', 'AnnotationController@update');
-    Route::get('annotations/{id}', 'AnnotationController@add');
-    Route::delete('annotations/{id}', 'AnnotationController@delete');
     Route::get('search', 'AnnotationController@search');
-    Route::get('check', 'AnnotationController@check');
+
+    Route::group(['middleware' => 'api_auth'] , function() {
+        Route::post('annotations', 'AnnotationController@add');
+        Route::put('annotations/{id}', 'AnnotationController@update');
+        Route::get('annotations/{id}', 'AnnotationController@add');
+        Route::delete('annotations/{id}', 'AnnotationController@delete');
+
+        Route::get('check', 'AnnotationController@check');
+    });
 });
 
-
-Route::group([], function()
-{
-    Route::get('dashboard', 'DashboardController@index');
-});
-
+Route::get('manage', 'ManageController@index');
+Route::get('manage/{page}', 'ManageController@index');
+Route::get('gravatar/{email}', 'GravatarController@get');
 /* Test Article routing */
 Route::get('articles', 'ArticleController@index');
 Route::get('articles/{page}', 'ArticleController@index')->where('id', '[0-9]+');
 
 /* Auth login routing */
 Route::controller('auth', 'AuthController');
-

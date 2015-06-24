@@ -145,6 +145,8 @@ return [
 		'App\Providers\EventServiceProvider',
 		'App\Providers\RouteServiceProvider',
         'Artdarek\OAuth\OAuthServiceProvider',
+
+        'Thomaswelton\LaravelGravatar\LaravelGravatarServiceProvider',
 	],
 
 	/*
@@ -192,7 +194,7 @@ return [
 		'Validator' => 'Illuminate\Support\Facades\Validator',
 		'View'      => 'Illuminate\Support\Facades\View',
         'OAuth' => 'Artdarek\OAuth\Facade\OAuth',
-
+        'Gravatar' => 'Thomaswelton\LaravelGravatar\Facades\Gravatar',
 	],
 
 ];

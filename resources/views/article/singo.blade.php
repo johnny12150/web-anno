@@ -4,7 +4,10 @@
     <link rel="stylesheet" href="{{ asset('css/anno.css') }}"/>
     <link rel="stylesheet" href="{{ asset('css/annotator.min.css') }}"/>
     <link rel="stylesheet" href="{{ asset('css/richText-annotator.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('css/annotorious.css')}}" />
+
     <link rel="gettext" type="application/x-po" href="{{ asset('locale/annotator.po') }}">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 @endsection
 
 @section('content')
@@ -32,7 +35,38 @@
         </div>
     </div>
 
+    <div class="anno-panel">
+        <div class="anno-search">
+            <form action="#" id="form-search">
+                <button id="anno-search-submit" type="submit"><i class="fa fa-search fa-2x"></i></button>
+                <input id="anno-search-input" type="text" />
+            </form>
+        </div>
+        <div class="anno-users">
+            <p><strong>在此網頁標記的人</strong></p>
+            <ul>
+            </ul>
+        </div>
+        <div class="anno-tags">
+            <p><strong>標籤</strong></p>
+            <ul></ul>
+        </div>
+        <hr/>
+        <div class="anno-search-list">
 
+            <ul>
+                <!-- <li >
+                    <img src="gravatar.jpg" class="gravatar" />
+                    <div class="anno-quote">
+                        Annotation
+                    </div>
+                </li> -->
+
+            </ul>
+        </div>
+        <div class="btn-appear">
+        </div>
+    </div>
 
 @endsection
 
@@ -42,6 +76,7 @@
     <script src="{{ asset('js/annotator-full.js') }}"></script>
     <script src="{{ asset('js/tinymce/tinymce.min.js')}}"></script><!--tinymce for richText-->
     <script src="{{ asset('js/richText-annotator.min.js')}}"></script>
+    <script src="{{ asset('js/annotorious.okfn.0.3.js')}}"></script>
     <script src="{{ asset('js/annotator.myauth.js')}}"></script>
     <script src="{{ asset('js/annotator.panel.js')}}"></script>
 
@@ -107,12 +142,13 @@
                 menubar: false,
                 toolbar_items_size: 'small',
                 extended_valid_elements : "iframe[src|frameborder|style|scrolling|class|width|height|name|align|id]",
-                toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media rubric | code ",
+                toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media rubric | code "
             }
         };
 
-        content.annotator('addPlugin', 'ViewPanel', {})
-                .annotator('addPlugin', 'Store', {
+        content.annotator('addPlugin', 'ViewPanel', {
+                     user_id: user_id
+                }).annotator('addPlugin', 'Store', {
                     prefix: '',
                     urls: {
                         create:  'http://annotator.local:8000/api/annotations/',
@@ -138,8 +174,8 @@
                     anno_token : anno_token,
                     'uri': uri
                 })
-                .annotator('addPlugin', 'Permissions', permissionsOptions);
-
+                .annotator('addPlugin', 'Permissions', permissionsOptions)
+                ;
 
     </script>
 @endsection

@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .authDialog {
   position: fixed;
   font-family: Arial, Helvetica, sans-serif;
@@ -49,51 +50,108 @@
     opacity: 1;
     pointer-events: auto; }
 
-#anno_panel {
+.anno-panel {
+  font-family: Arial, "Microsoft YaHei", "黑體", "文泉驛正黑", "WenQuanYi Zen Hei", "儷黑 Pro", "LiHei Pro", "微軟正黑體", "Microsoft JhengHei", "標楷體", DFKai-SB, sans-serif;
+  width: 260px;
+  padding: 25px;
+  background-color: #FFFFFF;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border: 1px solid #cccccc;
+  border-right: none;
   position: fixed;
-  right: 0;
-  top: 30px;
-  min-height: 50px;
-  width: 250px;
-  background-color: #FFFACD;
-  z-index: 200;
-  overflow: auto;
-  max-height: 800px; }
+  right: 0px;
+  top: 50px;
+  margin-right: 0px;
+  z-index: 50; }
+  .anno-panel .btn-appear {
+    width: 25px;
+    height: 50px;
+    border-left: 2px solid #cccccc;
+    border-radius: 100%;
+    position: absolute;
+    z-index: 100;
+    background-color: #FFFFFF;
+    left: -25px;
+    top: 130px; }
+  .anno-panel .anno-search {
+    margin-bottom: 8px; }
+  .anno-panel .anno-users {
+    color: #545454; }
+  .anno-panel .anno-tags {
+    margin-top: 10px; }
+  .anno-panel .btn-appear {
+    width: 25px;
+    height: 50px;
+    border-left: 2px solid #cccccc;
+    border-radius: 100%;
+    position: absolute;
+    z-index: 100;
+    background-color: #FFFFFF;
+    left: -25px;
+    top: 130px; }
+  .anno-panel hr {
+    margin-top: 25px;
+    border: none;
+    border-top: 1px solid #aaa; }
+  .anno-panel ul {
+    list-style-type: none;
+    padding-left: 0; }
+    .anno-panel ul li {
+      cursor: pointer;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      vertical-align: middle;
+      padding: 5px; }
+      .anno-panel ul li input[type=checkbox] {
+        vertical-align: middle;
+        margin-top: 0;
+        margin-right: 7px; }
+      .anno-panel ul li:hover {
+        background-color: #e0e0e0; }
+      .anno-panel ul li .gravatar {
+        border-radius: 50%;
+        height: 30px;
+        width: 30px;
+        display: inline-block; }
+      .anno-panel ul li span {
+        margin-left: 4px; }
 
-.anno_ref {
-  width: 220px;
-  min-height: 60px;
-  margin: 18px auto;
-  background-color: #FFFFE0;
-  border: 1px solid #aaaa91;
-  cursor: pointer; }
-  .anno_ref:hover {
-    border: 2px solid rgba(51, 153, 102, 0.7); }
-  .anno_ref .text {
-    height: 15px;
-    padding-left: 3px;
-    line-height: 18px;
-    margin-top: 0px; }
-  .anno_ref .quote {
-    padding: 3px 8px;
-    min-height: 40px;
-    background-color: #ffffff;
-    border-top: 2px solid #cccccc; }
-  .anno_ref .tags {
-    background-color: #ffffff;
-    border-top: 2px solid #cccccc;
-    padding: 3px 8px; }
-    .anno_ref .tags span {
-      marign: 2px 2px;
-      padding: 3px 5px;
-      background-color: #e6e6e6;
-      -o-border-radius: 8px;
-      border-radius: 8px;
-      color: #666666;
-      font-size: 1rem; }
+#form-search input {
+  height: 32px;
+  vertical-align: middle;
+  width: 160px;
+  font-size: 20px;
+  background-color: #e0e0e0;
+  margin-right: 2px;
+  border: none;
+  padding: 3px; }
+  #form-search input:hover {
+    outline: 1px solid #89a4f5; }
+#form-search #anno-search-submit {
+  border: none;
+  background-color: transparent;
+  margin-right: 0;
+  padding-bottom: 10px; }
+#form-search .fa-search {
+  vertical-align: middle;
+  line-height: 32px;
+  color: #929292; }
 
-.anno-hl {
-  border: 1px solid black; }
+.anno-search-list {
+  margin-top: 10px;
+  max-height: 250px;
+  overflow: auto; }
+  .anno-search-list .anno-quote {
+    display: inline-block;
+    vertical-align: top;
+    border-radius: 5px;
+    background-color: #dfdfdf;
+    padding: 3px 8px 3px 8px; }
 
 
 /*# sourceMappingURL=anno.css.map */

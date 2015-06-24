@@ -30,6 +30,11 @@ class AuthTable extends Model{
         return self::get($uid, $uri) != null;
     }
 
+    public static function getByUriToken($uri, $token)
+    {
+        return self::where('uri', $uri)->where('auth_token', $token)->first();
+    }
+
     public static function check($uri, $token)
     {
         return self::where('uri', $uri)->where('auth_token', $token)->first() != null;
@@ -58,7 +63,6 @@ class AuthTable extends Model{
 
     public static function updateExpire($auth)
     {
-
         $auth->auth_expire = Carbon::now()->addMonths(1);
         $auth->save();
         return $auth;

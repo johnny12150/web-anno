@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /*! normalize.css v3.0.2 | MIT License | git.io/normalize */
 html {
   font-family: sans-serif;
@@ -4846,65 +4847,56 @@ button.close {
     nav.navbar.navbar-custom .navbar-nav > li.active {
       border-color: #00ccff; } }
 
-.authDialog {
-  position: fixed;
-  font-family: Arial, Helvetica, sans-serif;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: rgba(0, 0, 0, 0.8);
-  z-index: 99999;
-  opacity: 0;
-  transition: opacity 400ms ease-in;
-  pointer-events: none; }
-  .authDialog div {
-    width: 800px;
-    position: relative;
-    margin: 10% auto;
-    padding: 5px 20px 13px 20px;
-    border-radius: 0px;
-    background: #fff; }
-  .authDialog .btn {
+.anno-list-item {
+  font-family: Arial, "Microsoft YaHei", "黑體", "文泉驛正黑", "WenQuanYi Zen Hei", "儷黑 Pro", "LiHei Pro", "微軟正黑體", "Microsoft JhengHei", "標楷體", DFKai-SB, sans-serif;
+  width: 900px;
+  padding: 20px;
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  border: 1px solid #cccccc;
+  margin-bottom: 15px; }
+  .anno-list-item .anno-item-left {
+    width: 100px;
     display: inline-block;
-    margin-bottom: 0;
-    font-weight: normal;
-    text-align: center;
-    vertical-align: middle;
-    -ms-touch-action: manipulation;
-    touch-action: manipulation;
-    cursor: pointer;
-    background-image: none;
-    border: 1px solid transparent;
-    white-space: nowrap;
-    padding: 6px 12px;
-    font-size: 14px;
-    line-height: 1.42857;
-    border-radius: 4px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none; }
-  .authDialog .anno-btn-login {
-    color: #fff;
-    background-color: #337ab7;
-    border-color: #2e6da4; }
-  .authDialog .anno-btn-close {
-    color: #fff;
-    background-color: #d9534f;
-    border-color: #d43f3a; }
-  .authDialog.show {
-    opacity: 1;
-    pointer-events: auto; }
+    height: 80px; }
+  .anno-list-item .anno-item-top {
+    width: 750px;
+    display: inline-block;
+    vertical-align: top; }
+    .anno-list-item .anno-item-top .anno-title {
+      font-weight: bolder;
+      font-size: 18px;
+      margin-top: 5px;
+      word-wrap: break-word; }
+  .anno-list-item .anno-item-bottom {
+    padding-top: 15px; }
+    .anno-list-item .anno-item-bottom .anno-text {
+      border-left: 4px solid yellow; }
+    .anno-list-item .anno-item-bottom .anno-quote {
+      border-left: 4px solid purple; }
+    .anno-list-item .anno-item-bottom > a {
+      text-decoration: none;
+      margin-right: 10px; }
+      .anno-list-item .anno-item-bottom > a > span {
+        padding-left: 5px;
+        font-size: 15px;
+        font-weight: bold;
+        color: dodgerblue; }
+    .anno-list-item .anno-item-bottom > a:hover > span {
+      color: darkcyan; }
+    .anno-list-item .anno-item-bottom .anno-text, .anno-list-item .anno-item-bottom .anno-quote {
+      font-family: Arial, "Microsoft YaHei", "微軟雅黑", "文泉驛正黑", "WenQuanYi Zen Hei", "儷黑 Pro", "LiHei Pro", "微軟正黑體", "Microsoft JhengHei", "標楷體", DFKai-SB, sans-serif;
+      font-size: 14px;
+      padding-top: 7px;
+      padding-left: 15px;
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+      word-wrap: break-word; }
 
-#anno_panel {
-  position: absolute;
-  right: 0;
-  top: 80px;
-  min-height: 50px;
-  width: 250px;
-  background-color: #FFFACD;
-  z-index: 200; }
+.anno-pages {
+  height: 120px;
+  text-align: center;
+  font-size: 18px; }
 
 
 /*# sourceMappingURL=style.css.map */
