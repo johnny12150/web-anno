@@ -9,26 +9,39 @@ class UrlInfo extends Model {
 
     protected $fillable = ['url', 'title'];
 
-    public static function getTitle($url)
+    public static function getByUrl($url)
     {
         return self::where('url', $url)->first();
     }
 
+
+    /**
+     * update title
+     * @param string $url
+     * @param string $title
+     */
     public static function updateTitle($url, $title)
     {
-        $url_info = self::getTitle($url);
+        $url_info = self::getByUrl($url);
         if( $url_info != null) {
             $url_info->title = $title;
             $url_info->save();
         } else {
-            self::create([
+            $url_info = self::create([
                 'url' => $url,
                 'title' => $title
             ]);
         }
+
+        return $url_info;
     }
 
 
+    /**
+     * Get html content from a web site
+     * @param $url
+     * @return string|false
+     */
     private static function file_get_contents_curl($url)
     {
         $ch = curl_init();
@@ -44,25 +57,23 @@ class UrlInfo extends Model {
         $data = curl_exec($ch);
         curl_close($ch);
 
-        return $data;
+        return $dccleata;
     }
 
+    /**
+     * Get title from a web site
+     * @param $url
+     * @return string|null
+     */
     public static function getTitleFromInternet($url)
     {
-        try
-        {
-
+        try {
             $url = str_replace('annotator.local:8000', 'annotator.local:5000', $url);
-
             $html = self::file_get_contents_curl($url);
-
             $title = preg_match('/<title[^>]*>(.*?)<\/title>/ims', $html, $matches) ? $matches[1] : null;
-
             return $title;
-        }
-        catch(Exception $e)
-        {
-            return false;
+        } catch(Exception $e) {
+            return null;
         }
 
     }

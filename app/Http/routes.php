@@ -16,7 +16,6 @@ Route::get('/', 'WelcomeController@index');
 Route::get('home', 'HomeController@index');
 
 
-
 Route::get('article/{aid}', 'ArticleController@show')->where('id', '[0-9]+');
 Route::post('article/add', 'ArticleController@add');
 Route::post('article/edit', 'ArticleController@edit');
@@ -40,8 +39,18 @@ Route::group(['prefix' => '/api'], function()
     });
 });
 
-Route::get('manage', 'ManageController@index');
-Route::get('manage/{page}', 'ManageController@index');
+Route::group(['prefix' => '/manage', 'middleware' => 'auth'], function() {
+    Route::get('/', 'ManageController@index');
+    Route::get('page/{page}', 'ManageController@index');
+    Route::get('search/{keyword}', 'ManageController@index');
+    Route::get('tag/{keyword}', 'ManageController@index');
+    Route::get('uri/{keyword}', 'ManageController@index');
+    Route::post('delete', 'ManageController@delete');
+    Route::post('edit', 'ManageController@edit');
+
+});
+
+
 Route::get('gravatar/{email}', 'GravatarController@get');
 /* Test Article routing */
 Route::get('articles', 'ArticleController@index');

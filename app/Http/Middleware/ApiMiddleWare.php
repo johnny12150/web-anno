@@ -24,7 +24,7 @@ class ApiMiddleWare {
 
         if(AuthTable::check($uri, $token)) {
             $user = User::get(AuthTable::getByUriToken($uri, $token)->uid);
-            User::storeToSession($user);
+            User::storeUserToSession($user);
 		    return $next($request);
         }
         App::abort(401, 'Not authenticated');

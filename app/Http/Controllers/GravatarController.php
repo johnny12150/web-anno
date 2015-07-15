@@ -11,7 +11,9 @@ class GravatarController extends  Controller {
 
     public static function get($email)
     {
+        //用email取得圖像的網址
         $url = Gravatar::src($email);
+        //轉址過去
         return redirect($url);
     }
 }

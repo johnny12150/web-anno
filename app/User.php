@@ -72,7 +72,7 @@ class User extends Model {
      *
      * @param $uid - user id
      */
-    private static function update_lastlogin($uid)
+    private static function updateLastlogin($uid)
     {
         self::where('id', $uid)->update([
             'lastlogin' => 'CURRENT_TIMESTAMP',
@@ -101,19 +101,15 @@ class User extends Model {
     {
         $_user = self::user();
 
-        if($_user != null)
-        {
+        if($_user != null) {
 
             $expire = Session::get('expire');
             $curtime = time();
 
-            if( $curtime - $expire > 5 * 60 * 60)
-            {
+            if( $curtime - $expire > 5 * 60 * 60) {
 
                 self::logout();
-            }
-            else
-            {
+            } else {
                 Session::put('expire', time());
                 return true;
             }
@@ -124,8 +120,7 @@ class User extends Model {
 
 
     /**
-     *
-     *
+     * Check user not logged
      * @return bool
      */
     public static function guest()
@@ -148,23 +143,28 @@ class User extends Model {
      * @param $token - Facebook token
      * @return User|mixed
      */
-    public static function login($fbuser, $token)
+    public static function login($fbuser, $fbtoken)
     {
 
         $user = self::getByFacebook($fbuser->id);
 
         if($user == null)
-            $user = self::addByFacebook($fbuser, $token);
+            $user = self::addByFacebook($fbuser, $fbtoken);
 
-        self::update_lastlogin($user->id);
+        self::updateLastlogin($user->id);
 
-        self::storeToSession($user);
+        self::storeUserToSession($user);
 
         return $user;
     }
 
 
-    public static function storeToSession($user, $isflash = false)
+    /**
+     * Store User data to session
+     * @param $user
+     * @param bool $isflash
+     */
+    public static function storeUserToSession($user, $isflash = false)
     {
         if(!$isflash) {
             Session::put('expire', time());

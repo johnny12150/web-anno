@@ -16,7 +16,6 @@ class AuthController extends Controller
 
     function getLogin()
     {
-
         return view('auth.login', [
             'callback_uri' => Request::input('callback_uri')
         ]);
@@ -44,45 +43,40 @@ class AuthController extends Controller
         $fb = \OAuth::consumer('Facebook', $redirect_url);
 
         // if code is provided get user data and sign in
-        if ( ! is_null($code) || User::check())
-        {
-            $_user = User::user();
+        if ( ! is_null($code) || User::check()) {
+            $user = User::user();
 
-            if($_user == null) {
+            if($user == null) {
                 // This was a callback request from facebook, get the token
                 $token = $fb->requestAccessToken($code);
 
                 // Send a request with it
-                $user = json_decode($fb->request('/me'), false);
+                $fbuser = json_decode($fb->request('/me'), false);
 
                 // user login
-                $_user = User::login($user, $token->getAccessToken());
+                $user = User::login($fbuser, $token->getAccessToken());
             }
 
             // check if it was external website called
-            if($callback_uri != null)
-            {
-                // generate a auth token for this extenal site
-                $auth = AuthTable::add($_user->id, $callback_uri);
+            if($callback_uri != null) {
+
+
+                // generate a auth token for this external site
+                $auth = AuthTable::add($callback_uri, $user->id);
 
                 //check callback query string exist
                 $hasQuery = strstr($callback_uri, '?');
 
                 //add token to query string
-                $callback_uri .= '#user_id='. $_user->id .'&anno_token='. $auth->auth_token;
+                $callback_uri .= '#user_id='. $user->id .'&anno_token='. $auth->auth_token;
 
                 //back to this external site
                 return redirect($callback_uri);
-            }
-            else
-            {
+            } else {
                 //back to home page
                 return redirect('/home');
             }
-        }
-        // if not ask for permission first
-        else
-        {
+        } else {
             // get fb authorization
             $url = $fb->getAuthorizationUri();
 

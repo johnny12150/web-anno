@@ -13,8 +13,10 @@ use OAuth\Common\Exception\Exception;
 class AnnotationController extends Controller
 {
 
+
     function __construct()
     {
+        //設定cross domain 的header
         header('Access-Control-Allow-Origin', '*');
         header('Allow', 'GET, POST, OPTIONS');
         header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization, X-Request-With');
@@ -34,43 +36,14 @@ class AnnotationController extends Controller
         ];
     }
 
-    /**
-     * Get all annotaions of specific article.
-     * @param none
-     * @return Object json format of annotations data.
-     */
-    public function all()
-    {
-        /*$objs = Annotation::getAllAnnotations(User::user()->id, $uri);
-        $annos = [];
-        foreach( $objs as $obj )
-        {
-            $annos[] = [
-                'id' => $obj->id,
-                'text' => $obj->text,
-                'quote' => $obj->text,
-                'uri' => $obj->text,
-                'ranges' => [
-                    [
-                        'start' => $obj->ranges_start,
-                        'end' => $obj->ranges_end,
-                        'startOffset' => $obj->ranges_startOffset,
-                        'endOffset' => $obj->ranges_endOffset
-                    ]
-                ],
-            ];
-        }
-
-        return $annos;*/
-    }
-
     public static function add()
     {
         $permissions = Request::input('permissions');
         $is_public = count($permissions['read']) == 0;
         $tags = Request::input('tags');
-        /* Create New Annotation */
-        $new_anno = Annotation::add(User::user()->id, [
+
+        /* 新增標記 */
+        $anno = Annotation::add([
             'creator_id' => User::user()->id,
             'text' => Request::input('text'),
             'quote' => Request::input('quote'),
@@ -83,22 +56,19 @@ class AnnotationController extends Controller
             'tags' => $tags
         ]);
 
-
-        if (is_object($new_anno)) {
-            return $new_anno;
-        } else {
-            // return error meesage
-            return $new_anno;
-        }
+        //回傳該標記
+        return $anno;
     }
 
     public static function update($id)
     {
+        //權限
         $permissions = Request::input('permissions');
+        //標籤
         $tags = Request::input('tags');
-
+        //是否公開
         $is_public = count($permissions['read']) == 0;
-        /* Edit Annotation */
+        /* 編輯標記 */
         $result = Annotation::edit(User::user()->id, $id, [
             'creator_id' => User::user()->id,
             'text' => Request::input('text'),
@@ -113,12 +83,11 @@ class AnnotationController extends Controller
             'tags' => $tags
         ]);
 
+        // 儲存失敗則回傳Http 500
         if (!$result)
             abort(500);
 
-        /* Process Tags and Relations */
-
-
+        //成功則返回該標記
         return self::get($id);
 
     }
@@ -133,54 +102,42 @@ class AnnotationController extends Controller
 
     public static function delete($id)
     {
-        // Delete annotation
+        //Delete Annotation
         Annotation::del(User::user()->id, $id);
+        //return 204 code
         abort(204);
     }
 
 
     public static function search()
     {
-
-        $limit = Request::input('limit') == '' ? 0 : Request::input('limit');
+        // limit 沒設定的話目前預設暫定 999 個標記
+        $limit = Request::input('limit') == '' ? 999 : intval(Request::input('limit')) == 0 ? 999 : intval(Request::input('limit'));
+        // 搜尋的 uri （必要）
         $uri = Request::input('uri');
+        // 搜尋的 user id
         $user_id = Request::input('user');
-        $searchTag = Request::input('tag');
+        // 搜尋的標記內容
         $searchText = Request::input('search');
 
         $annos_result = [];
 
-
         if ($searchText == '') {
+            // 如果沒有特定使用者，就直接抓公開的標記，反之，只抓特定使用者的標記
             if ($user_id == '')
-                $annos = Annotation::getPublicByUri($uri, $limit);
+                $annos_result = Annotation::getPublicByUri($uri, $limit);
             else
-                $annos = Annotation::getByUserUri($user_id, $uri, $limit);
-
-            if ($searchTag != '') {
-                foreach ($annos as $key => $anno) {
-                    $checkTag = false;
-                    foreach ($anno['tags'] as $key => $tag) {
-                        if (strtolower($tag) == strtolower($searchTag)) {
-                            $checkTag = true;
-                            break;
-                        }
-                    }
-                    if ($checkTag) {
-                        $annos_result[] = $anno;
-
-                    }
-                }
-            } else {
-                $annos_result = $annos;
-            }
-
+                $annos_result = Annotation::getByUserUri($user_id, $uri, $limit);
         } else {
-            $annos_result = Annotation::search($uri, $searchText);
+            //用標記內容、網址搜尋
+            $annos_result = Annotation::search([
+                'uri' => $uri,
+                'creator_id' => $user_id,
+                'text' => $searchText,
+                'quote' => $searchText
+            ], 999);
         }
 
-
-        // Ser result
         $result = [
             'total' => count($annos_result),
             'rows' => $annos_result

@@ -4892,11 +4892,48 @@ button.close {
       padding-bottom: 15px;
       margin-bottom: 15px;
       word-wrap: break-word; }
+    .anno-list-item .anno-item-bottom .anno-tags {
+      padding-top: 7px;
+      padding-bottom: 10px; }
 
 .anno-pages {
   height: 120px;
   text-align: center;
   font-size: 18px; }
+
+#editorDiv {
+  width: 400px;
+  position: absolute;
+  left: 50px;
+  top: 50px;
+  background-color: #fff;
+  border-radius: 2px; }
+  #editorDiv .buttons {
+    width: 400px;
+    height: 43px;
+    border: 1px solid #aaa;
+    border-top: none;
+    border-collapse: collapse;
+    padding: 5px; }
+
+#anno-filter {
+  width: 900px;
+  height: 150px;
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  border: 1px solid #cccccc;
+  margin-bottom: 10px; }
+
+#anno-alert {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  top: 50px;
+  z-index: 5000; }
+
+#anno-alert .alert {
+  margin: 0 auto;
+  width: 50%; }
 
 
 /*# sourceMappingURL=style.css.map */

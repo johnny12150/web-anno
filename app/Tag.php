@@ -9,27 +9,50 @@ class Tag extends Model {
     protected $fillable = ['name'];
     public $timestamps = false;
 
+    /**
+     * Check Tag id exists
+     * @param int $id
+     * @return bool
+     */
     public static function checkExists($id) {
         return self::where('id', '=', $id)->count() > 0;
     }
 
+    /**
+     * Get Tag name by id
+     * @param $id
+     * @return string|false
+     */
     public static function getNameById($id)
     {
         if(self::checkExists($id))
-            return self::select('name')->where('id', '=', $id)->first()['name'];
-        return false;
+            return self::select('name')->where('id', $id)->first()['name'];
+        return null;
     }
 
-    public static function findByName($name)
+    /**
+     * Get Tag by Name
+     * @param $name
+     * @return Tag|null
+     */
+    public static function getByName($name)
     {
-        return self::where('name', '=', $name)->first();
+        return self::where('name', $name)->first();
     }
 
 
+    /**
+     * Add Tag
+     * @param $name
+     * @return Tag
+     */
     public static function add($name)
     {
-        return self::create([
-           'name' => $name
-        ]);
+        if( $name != '') {
+            return self::create([
+                'name' => $name
+            ]);
+        }
+        return false;
     }
 }

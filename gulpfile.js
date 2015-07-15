@@ -19,10 +19,13 @@ var paths = {
 elixir(function(mix) {
     mix.sass(["style.scss","anno.scss"], 'public/css', {includePaths: [paths.bootstrap + 'stylesheets/']})
         .copy(paths.bootstrap + 'fonts/bootstrap/**', 'public/fonts')
-        .scripts([
-            paths.jquery + 'dist/jquery.min.js',
-            paths.bootstrap + 'javascripts/bootstrap.min.js'
-        ],'./public/js/all.js', './');
+        .scripts(['./public/js/gettext.js',
+            './public/js/annotator-full.js',
+            './public/js/richText-annotator.min.js',
+            './public/js/annotator.myauth.js',
+            './public/js/annotator.panel.js',
+            './public/js/annotation.js'],
+        'public/js/annotation.full.js', './');
 });
 
 

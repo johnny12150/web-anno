@@ -14,20 +14,19 @@ use Illuminate\Database\Eloquent\Model;
 class AuthTable extends Model{
 
     protected $table = 'auth_table';
-
-    protected $fillable = ['id', 'uri', 'auth_token', 'auth_expire'];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = ['uid', 'uri', 'auth_token', 'auth_expire'];
 
     public $timestamps = false;
 
 
-    public static function get($uid, $uri)
+    public static function getByUriUser($uri, $uid)
     {
         return self::where('uid', $uid)->where('uri', $uri)->first();
-    }
-
-    public static function exists($uid, $uri)
-    {
-        return self::get($uid, $uri) != null;
     }
 
     public static function getByUriToken($uri, $token)
@@ -40,16 +39,13 @@ class AuthTable extends Model{
         return self::where('uri', $uri)->where('auth_token', $token)->first() != null;
     }
 
-    public static function add($uid, $uri)
+    public static function add($uri, $uid)
     {
-        $auth = self::get($uid, $uri);
+        $auth = self::getByUriUser($uid, $uri);
 
-        if($auth != null)
-        {
+        if($auth != null) {
             $auth = self::updateExpire($auth);
-        }
-        else
-        {
+        } else {
             $auth = new self();
             $auth->uid = $uid;
             $auth->uri = $uri;
@@ -68,9 +64,12 @@ class AuthTable extends Model{
         return $auth;
     }
 
-    private static function generateToken($uid, $uri)
+    private static function generateToken($uri, $uid)
     {
-        return sha1($uid.$uri.time());
+        $token = sha1($uid.$uri.time());
+        while(self::check($uri, $token))
+            $token = sha1($uid.$uri.time());
+        return $token;
     }
 
 }

@@ -54,7 +54,7 @@ class Annotation extends Model {
      * @param $id  Annotation ID
      * @return bool
      */
-    public static function checkExist($uid, $id)
+    public static function checkOwner($uid, $id)
     {
         $count = self::whereRaw('id = ? and creator_id = ?',array($id, $uid))->count();
         if($count == 0)
@@ -65,19 +65,39 @@ class Annotation extends Model {
 
 
     /**
-     * Get anntations by Uri
-     * @param $uri - Uri of annotations
-     * @param int $limit - Limit of result
-     * @param int $offset - Skip records
-     * @return array - Array of annotation
+     * Get Annotations by Uri
+     * @param string $uri
+     * @param int $limit
+     * @param int $offset
+     * @param string $orderBy
+     * @param string $order
+     * @return array Array of formatted Annotations
      */
-    public static function getByUri($uri, $limit = -1, $offset = 0) {
+    public static function getByUri($uri, $limit = 1, $offset = 0, $orderBy = 'id', $order = 'asc') {
 
-        if($limit == -1)
-            $annos = self::where('uri', $uri)->take($limit)->skip(0)->get();
-        else
-            $annos = self::where('uri', $uri)->take($limit)->skip(0)->take($limit)->get();
+        $annos = self::where('uri', $uri)->take($limit)->skip($offset)->take($limit)->orderBy($orderBy, $order)->get();
 
+        $ret = [];
+        foreach($annos as $anno) {
+            $ret[] = self::format($anno);
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Get Annotations by user_id and uri
+     * @param int $uid
+     * @param int $uri
+     * @param int $limit
+     * @param int $offset
+     * @param string $orderBy
+     * @param string $order
+     * @return array Array of formatted Annotations
+     */
+    public static function getByUserUri($uid, $uri, $limit = 1, $offset = 0, $orderBy = 'id', $order = 'asc') {
+
+        $annos = self::where('creator_id', $uid)->where('uri', $uri)->skip($offset)->take($limit)->orderBy($orderBy, $order)->get();
         $ret = [];
         foreach($annos as $anno) {
             $ret[] = self::format($anno);
@@ -86,16 +106,16 @@ class Annotation extends Model {
     }
 
     /**
-     * Get Anntations by user id and uri
-     * @param $uid - User ID
-     * @param $uri - Uri of annotation
-     * @param int $limit - Limit of results
-     * @param int $offset - Skip records
-     * @return array - Array of annotation
+     * Get Public Annotations by uri
+     * @param $uri
+     * @param int $limit
+     * @param int $offset
+     * @param string $orderBy
+     * @param string $order
+     * @return array Array of formatted Annotations
      */
-    public static function getByUserUri($uid, $uri, $limit = 1, $offset = 1) {
-
-        $annos = self::where('creator_id', $uid)->where('uri', $uri)->take($limit)->get();
+    public static function getPublicByUri($uri, $limit = 1, $offset = 0, $orderBy = 'id', $order = 'asc') {
+        $annos = self::where('uri', $uri)->where('is_public', true)->skip($offset)->take($limit)->orderBy($orderBy, $order)->get();
         $ret = [];
         foreach($annos as $anno) {
             $ret[] = self::format($anno);
@@ -104,16 +124,16 @@ class Annotation extends Model {
     }
 
     /**
-     * Get only public Anntations by uri
-     *
-     * @param $uid - User ID
-     * @param $uri - Uri of annotation
-     * @param int $limit - Limit of result
-     * @param int $offset - Skip raws
-     * @return array - Array of annotation
+     * Get Annotations by user_id
+     * @param $uid
+     * @param int $limit
+     * @param int $offset
+     * @param string $orderBy
+     * @param string $order
+     * @return array Array of formatted Annotations
      */
-    public static function getPublicByUri($uri, $limit = 1, $offset = 1) {
-        $annos = self::whereRaw('uri = ? AND is_public = 1',array($uri))->take($limit)->get();
+    public static function getByUser($uid, $limit = 1, $offset = 0, $orderBy = 'id', $order = 'asc') {
+        $annos = self::where('creator_id', $uid)->take($limit)->skip($offset)->orderBy($orderBy, $order)->get();
         $ret = [];
         foreach($annos as $anno) {
             $ret[] = self::format($anno);
@@ -121,113 +141,72 @@ class Annotation extends Model {
         return $ret;
     }
 
-    /**
-     * Get annotations by user id
-     *
-     * @param $uid - User ID
-     * @param int - $limit Limit of result
-     * @param int $offset - Skip of raws
-     * @return array - Array of annotation
-     */
-    public static function getByUser($uid, $limit = 1, $offset = 0) {
-        $annos = self::where('creator_id', $uid)->take($limit)->skip($offset)->get();
-        $ret = [];
-        foreach($annos as $anno) {
-            $ret[] = self::format($anno);
-        }
-        return $ret;
-    }
 
     /**
-     * @param int $uid - User ID
-     * @return int - amount of annotations belongs to that user
-     */
-    public static function getCountByUser($uid)
-    {
-        return self::where('creator_id', $uid)->count();
-    }
-
-
-    /**
-     * Get annotation by ID
+     * Get Annotation by id
      * @param int $id
-     * @return Annotation
+     * @return array Formatted Annotaton
      */
     public static function getById($id) {
         $anno = self::where('id', '=', $id)->first();
         return self::format($anno);
     }
 
-
     /**
-     * Get all uri of annotations
-     * @param $uid - User ID
-     * @return array - Array of Uris
+     * Search Annotation by condition( uri , creator_id , text , quote )
+     * @param Array $cond
+     * @param int $limit
+     * @param int $offset
+     * @param string $orderBy
+     * @param string $order
+     * @return array Array of formatted Annotations
      */
-    public static function getAllUriArray($uid) {
-        $annos =  self::select(`uri`)->where('id', '=', $uid)->groupBy('uri')->lists('uri');
-        $ret = [];
-        foreach($annos as $anno) {
-            $ret[] = self::format($anno);
-        }
-        return $ret;
-    }
+    public static function search($cond, $limit = 1, $offset = 0, $orderBy = 'id', $order = 'asc')
+    {
+        $query = null;
 
-    /**
-     * Search annotations by uri or keyword
-     *
-     * @param $uri - Uri of searching
-     * @param $text - Keyword of searching
-     * @return array - Array of annotations
-     */
-    public static function search($uri, $text) {
-
-        $annos = self::getByUri($uri, 999);
-        $new_res = [];
-
-        foreach($annos as $anno) {
-
-            $check = false;
-
-            if( strpos($anno['text'], $text) !== false ) {
-                $new_res[] = $anno;
-                continue;
-            }
-            if( strpos($anno['quote'], $text) !== false ) {
-                $new_res[] = $anno;
-                continue;
-            }
-
-            $check = false;
-            foreach($anno['tags'] as $key => $tag )
-            {
-                if( strpos(strtolower($tag) , strtolower($text)) !== false )
-                {
-                    $check = true;
-                    break;
-                }
-            }
-
-            if( $check ) {
-                $new_res[] = $anno;
-                continue;
-            }
+        if(isset($cond['uri'])) {
+            $query = self::where('uri', $cond['uri']);
         }
 
+        if(isset($cond['creator_id'])) {
+            if($query == null)
+                $query = self::where('creator_id', $cond['creator_id']);
+            else
+                $query->where('creator_id', $cond['creator_id']);
+        }
 
-        return $new_res;
+        if(!isset($cond['text']))
+            $cond['text'] = '';
+        if(!isset($cond['quote']))
+            $cond['quote'] = '';
 
+        if( $query != null )
+        {
+            $query->whereRaw(' ( text LIKE ? OR quote LIKE ? ) ', array('%'.$cond['text'].'%','%'.$cond['quote'].'%'));
+            $query->orderBy($orderBy, $order);
+
+            $annos = $query->skip($offset)->take($limit)->get();
+            $ret = [];
+            foreach($annos as $anno) {
+                $ret[] = self::format($anno);
+            }
+            return $ret;
+        } else return [];
     }
 
+    public static function getCountByUser($uid)
+    {
+        return self::where('creator_id', $uid)->count();
+    }
 
     /**
      * Add Annotation
      *
-     * @param $uid
      * @param $data
      * @return array|bool
      */
-    public static function add($uid, $data)
+    public static function add($data)
     {
         $check = self::validator($data);
         if($check == true)
@@ -251,7 +230,7 @@ class Annotation extends Model {
             $tags = array_unique($tags);
 
             foreach( $tags as $tagName) {
-                $tag = Tag::findByName($tagName);
+                $tag = Tag::getByName($tagName);
                 if ($tag == null)
                     $tag = Tag::add($tagName);
                 TagUse::add($tag->id, $new_anno->id);
@@ -273,16 +252,28 @@ class Annotation extends Model {
      */
     public static function del($uid, $id)
     {
-        if(self::checkExist($uid, $id) )
+        if(self::checkOwner($uid, $id) )
         {
-            return self::whereRaw('id = ? and creator_id = ?',array($id, $uid))->delete();
+            return self::where('id', $id)->where('creator_id', $uid)->delete();
         }
         else
         {
             return false;
         }
     }
+    public static function editText($uid, $id, $text)
+    {
+        if(self::checkOwner($uid, $id))
+        {
 
+            $res =  self::whereRaw('id = ? and creator_id = ?',array($id, $uid))->update(array(
+                'text' => $text ));
+
+            return $res;
+        } else {
+            return false;
+        }
+    }
 
     /**
      * @param $uid
@@ -292,11 +283,9 @@ class Annotation extends Model {
      */
     public static function edit($uid, $id, $data)
     {
-        if(self::checkExist($uid, $id))
-        {
+        if(self::checkOwner($uid, $id)) {
             $check = self::validator($data);
-            if( $check == true )
-            {
+            if( $check == true ) {
                 $anno =  self::whereRaw('id = ? and creator_id = ?',array($id, $uid))->update(array(
                     'text' => $data['text'],
                     'quote' => $data['quote'],
@@ -318,7 +307,7 @@ class Annotation extends Model {
 
                 foreach( $tags as $tagName) {
                     //find this tag
-                    $tag = Tag::findByName($tagName);
+                    $tag = Tag::getByName($tagName);
 
                     if ($tag == null)
                         $tag = Tag::add($tagName);
@@ -328,13 +317,10 @@ class Annotation extends Model {
                 return $data;
 
             }
-            else
-            {
+            else {
                 return $check;
             }
-        }
-        else
-        {
+        } else {
             return 'anootation does not exist';
         }
     }
@@ -383,7 +369,5 @@ class Annotation extends Model {
             ]
         ];
     }
-
-
 
 }

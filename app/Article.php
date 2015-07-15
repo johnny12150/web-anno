@@ -41,11 +41,13 @@ class Article extends Model {
     }
 
 
-    public static function getAll($page, $limit) {
+    public static function getAll($page, $limit)
+    {
         return self::skip($limit*($page-1))->take($limit)->get();
     }
 
-    public static function checkExist($aid) {
+    public static function checkExist($aid)
+    {
         $count = self::whereRaw('id = ?',array($aid))->count();
         if($count == 0) {
             return False;
@@ -55,7 +57,8 @@ class Article extends Model {
     }
 
 
-    public static function add($uid, $article) {
+    public static function add($uid, $article)
+    {
         $check = self::validator($article);
         if($check) {
 
@@ -72,7 +75,8 @@ class Article extends Model {
     }
 
 
-    public static function del($uid, $aid) {
+    public static function del($uid, $aid)
+    {
         if(self::checkExist($uid, $aid)) {
             return self::whereRaw('id = ? and author_id = ?',array($aid, $uid))->delete();
         } else {
