@@ -8,16 +8,32 @@
 
         </div>
         <div id="anno-filter">
-            <form action="" class="form-horizontal">
+            <form action="" class="form-horizontal" method="POST">
                 <div class="form-group">
-                    <label for="search" class="col-sm-2 control-label">標記內容</label>
+                    <label for="search_text" class="col-sm-2 control-label">標記內容</label>
                     <div class="col-sm-10">
-                        <input type="search" class="form-control" id="search" placeholder="標記內容">
+                        <input type="text" name="search_text" class="form-control" id="search_text" value="{{ $old['search_text'] }}" placeholder="標記內容">
                     </div>
                 </div>
-                <button class="btn btn-default" type="submit">搜尋</button>
+                <div class="form-group">
+                    <label for="search_tag" class="col-sm-2 control-label">標籤</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" name="search_tag" id="search_tag">
+                            <option value="">所有</option>
+                            @foreach($tags as $tag)
+                                <option value="{{ $tag }}" {{ $old['search_tag'] == $tag ? 'selected' :'' }}>{{$tag}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1 col-md-offset-5">
+                        <button class="btn btn-default" type="submit">搜尋</button>
+                    </div>
+                </div>
             </form>
         </div>
+        <hr/>
         <div class="anno-list">
             @foreach( $annos as $anno )
                 <div class="anno-list-item" id="anno-{{ $anno['id'] }}">
@@ -116,6 +132,9 @@
                         newAlert('danger', '編輯失敗');
                     }
                 },
+                error: function(data) {
+                    location.reload();
+                },
                 dataType: 'json'
             });
         }
@@ -161,13 +180,17 @@
                     url: '/manage/delete',
                     method: "POST",
                     data: {id: id},
-                    success: function (data) {
+                    success: function (data, textStatus) {
+
                         if (data.result) {
                             $('#anno-' + id).remove();
                             newAlert('success', '刪除成功');
                         } else {
                             newAlert('danger', '刪除失敗');
                         }
+                    },
+                    error: function(data) {
+                        location.reload();
                     },
                     dataType: 'json'
                 });

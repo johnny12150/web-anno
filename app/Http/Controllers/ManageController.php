@@ -1,13 +1,11 @@
 <?php namespace App\Http\Controllers;
 
 use App\Annotation;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
+use App\Tag;
 use App\User;
-use Illuminate\Http\Request;
 use App\UrlInfo;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Request;
 
 class ManageController extends Controller {
 
@@ -25,6 +23,7 @@ class ManageController extends Controller {
         $count = Annotation::getCountByUser($user->id);
         $pagesCount = $count / 10 + 1;
         $titles = [];
+        $tags = Tag::getAllTags();
 
         foreach($annos as $anno) {
             $urlinfo = UrlInfo::getByUrl($anno['uri']);
@@ -34,13 +33,22 @@ class ManageController extends Controller {
                 $urlinfo = UrlInfo::updateTitle($anno['uri'], $title);
             }
             $titles[$anno['uri']] = ( $urlinfo != null ? $urlinfo['title']  : '無標題');
+
         }
+
+        $tags = array_unique($tags);
+
 
         return view('manage.index', [
             'annos' => $annos,
             'titles' => $titles,
             'page' => $page,
-            'pagesCount' => $pagesCount
+            'pagesCount' => $pagesCount,
+            'tags' => $tags,
+            'old' => [
+                'search_text' => Input::get('search_text'),
+                'search_tag' => Input::get('search_tag'),
+            ]
         ]);
     }
 

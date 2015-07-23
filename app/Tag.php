@@ -40,6 +40,11 @@ class Tag extends Model {
         return self::where('name', $name)->first();
     }
 
+    public static function getAllTags()
+    {
+        return self::all()->lists('name');
+    }
+
 
     /**
      * Add Tag

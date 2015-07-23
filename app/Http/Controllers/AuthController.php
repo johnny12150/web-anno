@@ -3,7 +3,9 @@
 use App\AuthTable;
 use App\User;
 use Illuminate\Support\Facades\Request;
+use League\Flysystem\Exception;
 use OAuth;
+use OAuth\Common\Http\Exception\TokenResponseException;
 
 /**
  * Created by PhpStorm.
@@ -47,9 +49,12 @@ class AuthController extends Controller
             $user = User::user();
 
             if($user == null) {
-                // This was a callback request from facebook, get the token
-                $token = $fb->requestAccessToken($code);
-
+                try {
+                    // This was a callback request from facebook, get the token
+                    $token = $fb->requestAccessToken($code);
+                } catch(TokenResponseException $e) {
+                    return redirect('auth/login');
+                }
                 // Send a request with it
                 $fbuser = json_decode($fb->request('/me'), false);
 
@@ -74,7 +79,7 @@ class AuthController extends Controller
                 return redirect($callback_uri);
             } else {
                 //back to home page
-                return redirect('/home');
+                return redirect('/');
             }
         } else {
             // get fb authorization

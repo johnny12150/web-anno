@@ -37,11 +37,8 @@
 
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
-					<li class="active"><a href="{{ url('/') }}">Home</a></li>
+					<li class="active"><a href="{{ url('/manage') }}">編輯標記</a></li>
 				</ul>
-                <ul class="nav navbar-nav">
-                    <li><a href="{{ url('/articles') }}">Articles</a></li>
-                </ul>
 				<ul class="nav navbar-nav navbar-right">
 					@if (\App\User::guest())
 						<li><a href="{{ url('/auth/login') }}">Login</a></li>

@@ -4836,16 +4836,12 @@ button.close {
     display: none !important; } }
 
 @media screen and (min-width: 768px) {
-  nav.navbar.navbar-custom {
-    min-height: 100px; }
-    nav.navbar.navbar-custom .container-fluid {
-      margin-top: 50px; }
-    nav.navbar.navbar-custom .navbar-nav > li {
-      border-bottom: solid 5px rgba(0, 204, 255, 0); }
-      nav.navbar.navbar-custom .navbar-nav > li:hover {
-        border-color: #00ccff; }
-    nav.navbar.navbar-custom .navbar-nav > li.active {
-      border-color: #00ccff; } }
+  nav.navbar.navbar-custom .navbar-nav > li {
+    border-bottom: solid 5px rgba(0, 204, 255, 0); }
+    nav.navbar.navbar-custom .navbar-nav > li:hover {
+      border-color: #00ccff; }
+  nav.navbar.navbar-custom .navbar-nav > li.active {
+    border-color: #00ccff; } }
 
 .anno-list-item {
   font-family: Arial, "Microsoft YaHei", "黑體", "文泉驛正黑", "WenQuanYi Zen Hei", "儷黑 Pro", "LiHei Pro", "微軟正黑體", "Microsoft JhengHei", "標楷體", DFKai-SB, sans-serif;
@@ -4917,12 +4913,17 @@ button.close {
     padding: 5px; }
 
 #anno-filter {
+  position: relative;
   width: 900px;
-  height: 150px;
+  height: 180px;
   background-color: #FFFFFF;
   border-radius: 5px;
   border: 1px solid #cccccc;
-  margin-bottom: 10px; }
+  padding: 20px;
+  margin-bottom: 20px; }
+  #anno-filter form {
+    margin: 0 auto;
+    width: 100%; }
 
 #anno-alert {
   position: fixed;

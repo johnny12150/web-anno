@@ -11,7 +11,7 @@
 |
 */
 
-Route::get('/', 'WelcomeController@index');
+Route::get('/', function() { redirect('/manage');});
 
 Route::get('home', 'HomeController@index');
 
@@ -41,13 +41,9 @@ Route::group(['prefix' => '/api'], function()
 
 Route::group(['prefix' => '/manage', 'middleware' => 'auth'], function() {
     Route::get('/', 'ManageController@index');
-    Route::get('page/{page}', 'ManageController@index');
-    Route::get('search/{keyword}', 'ManageController@index');
-    Route::get('tag/{keyword}', 'ManageController@index');
-    Route::get('uri/{keyword}', 'ManageController@index');
+    Route::post('/', 'ManageController@index');
     Route::post('delete', 'ManageController@delete');
     Route::post('edit', 'ManageController@edit');
-
 });
 
 
