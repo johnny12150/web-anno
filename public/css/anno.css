@@ -156,5 +156,9 @@
 .annotator-hl.img-anno-item {
   background-color: transparent; }
 
+.anno-like, .anno-dislike {
+  margin-left: 2px;
+  margin-right: 5px; }
+
 
 /*# sourceMappingURL=anno.css.map */

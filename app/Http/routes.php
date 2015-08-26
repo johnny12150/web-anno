@@ -11,7 +11,7 @@
 |
 */
 
-Route::get('/', function() { redirect('/manage');});
+Route::get('/', function() { return redirect('/manage');});
 
 Route::get('home', 'HomeController@index');
 

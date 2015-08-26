@@ -4794,7 +4794,8 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
     this.search = [];
     this.ui = null;
-
+    //確認是否登入的網址
+    this.postlikeUrl = 'http://annotator.local:8000/api/likes';
 
     this.insertPanelUI = function() {
 
@@ -4855,8 +4856,24 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             });
         });
 
-        $(document).on( 'click', '.annotator-starts',function(e) {
-           alert('XD');
+        $(document).on( 'click', '.anno-like',function(e) {
+            $.post(postlikeUrl, {
+                'like' : '1'
+            }).success(function(data) {
+                alert(data);
+            }).error(function(e) {
+                alert('XD');
+            })
+            e.preventDefault();
+        }).on( 'click', '.anno-dislike',function(e) {
+            $.post(postlikeUrl, {
+                'like' : '-1'
+            }).success(function(data) {
+                alert(data);
+            }).error(function(e) {
+                alert('XD');
+            })
+            e.preventDefault();
         });
     };
 
@@ -4997,12 +5014,9 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             .addClass('annotator-mark')
             .html('<strong>評分: </strong>' +
                   '<span class="annotator-stars">' +
-                    '<a class="fa fa-star" href=""></a>' +
-                    '<a class="fa fa-star" href=""></a>' +
-                    '<a class="fa fa-star" href=""></a>' +
-                    '<a class="fa fa-star" href=""></a>' +
-                    '<a class="fa fa-star" href=""></a>' +
-                  '</span>');
+                    '<a href="#" class="anno-like fa fa-thumbs-up"><span>123</span></a>' +
+                    '<a href="#" class="anno-dislike fa fa-thumbs-down"><span>123</span></a>' +
+            '</span>');
         return field;
     };
 

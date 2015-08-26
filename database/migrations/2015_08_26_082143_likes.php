@@ -12,7 +12,17 @@ class Likes extends Migration {
 	 */
 	public function up()
 	{
-		//
+        Schema::create('likes', function(Blueprint $table)
+        {
+            $table->integer('uid')->unsigned();
+            $table->integer('aid')->unsigned();
+            $table->integer('like');
+        });
+        Schema::table('likes', function(Blueprint $table)
+        {
+            $table->foreign('uid')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('aid')->references('id')->on('annotations')->onDelete('cascade');
+        });
 	}
 
 	/**
@@ -22,7 +32,7 @@ class Likes extends Migration {
 	 */
 	public function down()
 	{
-		//
+        Schema::drop('likes');
 	}
 
 }
