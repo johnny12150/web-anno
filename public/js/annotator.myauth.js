@@ -4,9 +4,12 @@
 
 Annotator.Plugin.MyAuth = function (element, settings) {
 
+    //Annotation 物件
     this.annotator = $(element).annotator().data('annotator');
+    //確認是否登入的網址
     this.authCheckurl = 'http://annotator.local:8000/api/check';
 
+    //登入Anntation的 Madal UI
     this.insertAuthUI = function() {
         $('body').append('<div id="openAuthUI" class="authDialog">'
                         + '     <div>'
@@ -31,7 +34,7 @@ Annotator.Plugin.MyAuth = function (element, settings) {
     this.uri = settings.uri != null ? settings.uri : '';
     this.is_authed = false;
 
-    this.checkAuth = function(callback) {
+    this.checkAuth = function() {
 
         if(!this.is_authed) {
             $.ajax({
@@ -56,7 +59,7 @@ Annotator.Plugin.MyAuth = function (element, settings) {
         pluginInit: function () {
 
             _this.insertAuthUI();
-            this.annotator
+            _this.annotator
                 .subscribe("annotationCreated", function (annotation) {
                     _this.checkAuth();
                 })

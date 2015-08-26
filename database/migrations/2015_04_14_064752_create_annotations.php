@@ -19,6 +19,10 @@ class CreateAnnotations extends Migration {
             $table->text('text')->default('');
             $table->text('quote')->default('');
             $table->text('uri')->default('');
+            $table->string('type')->default('text');
+            $table->integer('x')->default(0);
+            $table->integer('y')->default(0);
+            $table->string('src')->default('');
             $table->text('ranges_start')->default('');
             $table->text('ranges_end')->default('');
             $table->integer('ranges_startOffset')->unsigned();

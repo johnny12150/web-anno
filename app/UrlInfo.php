@@ -57,7 +57,7 @@ class UrlInfo extends Model {
         $data = curl_exec($ch);
         curl_close($ch);
 
-        return $dccleata;
+        return $data;
     }
 
     /**

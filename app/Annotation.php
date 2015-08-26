@@ -208,6 +208,7 @@ class Annotation extends Model {
      */
     public static function add($data)
     {
+
         $check = self::validator($data);
         if($check == true)
         {
@@ -221,6 +222,12 @@ class Annotation extends Model {
             $new_anno->ranges_end = $data['ranges_end'];
             $new_anno->ranges_startOffset = $data['ranges_startOffset'];
             $new_anno->ranges_endOffset = $data['ranges_endOffset'];
+            $new_anno->type = $data['type'];
+            if($data['type'] == 'image') {
+                $new_anno->x = $data['position']['x'];
+                $new_anno->y = $data['position']['y'];
+                $new_anno->src = $data['src'];
+            }
             $new_anno->save();
 
             $tags = $data['tags'];
@@ -363,6 +370,12 @@ class Annotation extends Model {
                 "update" => [(int)$anno->creator_id],
                 "delete" => [(int)$anno->creator_id]
             ],
+            'type' => $anno->type,
+            'position' => [
+                'x' => $anno->x,
+                'y' => $anno->y
+            ],
+            'src' => $anno->src,
             'user' => [
                 'id' => $creator->id ,
                 'gravatar' => Gravatar::src($creator->email)

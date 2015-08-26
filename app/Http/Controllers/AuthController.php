@@ -65,7 +65,6 @@ class AuthController extends Controller
             // check if it was external website called
             if($callback_uri != null) {
 
-
                 // generate a auth token for this external site
                 $auth = AuthTable::add($callback_uri, $user->id);
 

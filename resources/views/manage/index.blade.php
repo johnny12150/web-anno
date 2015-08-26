@@ -10,6 +10,9 @@
         <div id="anno-filter">
             <form action="" class="form-horizontal" method="POST">
                 <div class="form-group">
+                    <h4 class="col-sm-2">搜尋</h4>
+                </div>
+                <div class="form-group">
                     <label for="search_text" class="col-sm-2 control-label">標記內容</label>
                     <div class="col-sm-10">
                         <input type="text" name="search_text" class="form-control" id="search_text" value="{{ $old['search_text'] }}" placeholder="標記內容">
@@ -27,7 +30,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-1 col-md-offset-5">
+                    <div class="col-md-1 col-md-offset-6">
                         <button class="btn btn-default" type="submit">搜尋</button>
                     </div>
                 </div>

@@ -42,16 +42,44 @@ class AnnotationController extends Controller
         $is_public = count($permissions['read']) == 0;
         $tags = Request::input('tags');
 
+        $isImage = Request::input('type') == 'image';
+        $image_src = Request::input('src');
+        $ranges_start = '';
+        $ranges_end = '';
+        $ranges_startOffset = '';
+        $ranges_endOffset = '';
+        $x = 0;
+        $y = 0;
+
+        if(isset(Request::input('ranges')[0]['start']))
+            $ranges_start = Request::input('ranges')[0]['start'];
+        if(isset(Request::input('ranges')[0]['end']))
+            $ranges_end = Request::input('ranges')[0]['end'];
+        if(isset(Request::input('ranges')[0]['startOffset']))
+            $ranges_startOffset = Request::input('ranges')[0]['startOffset'];
+        if(isset(Request::input('ranges')[0]['endOffset']))
+            $ranges_endOffset = Request::input('ranges')[0]['endOffset'];
+
+        $x = ($isImage && isset(Request::input('position')['x'])) ?  Request::input('position')['x'] : 0;
+        $y = ($isImage && isset(Request::input('position')['y'])) ?  Request::input('position')['y'] : 0;
+        $src = ($isImage && Request::input('src') != '') ? Request::input('src') : '';
         /* 新增標記 */
         $anno = Annotation::add([
             'creator_id' => User::user()->id,
             'text' => Request::input('text'),
             'quote' => Request::input('quote'),
             'uri' => Request::input('uri'),
-            'ranges_start' => Request::input('ranges')[0]['start'],
-            'ranges_end' => Request::input('ranges')[0]['end'],
-            'ranges_startOffset' => Request::input('ranges')[0]['startOffset'],
-            'ranges_endOffset' => Request::input('ranges')[0]['endOffset'],
+            'ranges_start' =>  $ranges_start,
+            'ranges_end' => $ranges_end,
+            'type' => $isImage ? Request::input('type') : 'text',
+            'src' => $isImage ? Request::input('src') : null,
+            'position' => $isImage ? [
+                'x' => $x,
+                'y' => $y
+            ] : null,
+            'src' => $isImage ? $src : null,
+            'ranges_startOffset' => $ranges_startOffset,
+            'ranges_endOffset' => $ranges_endOffset,
             'is_public' => $is_public,
             'tags' => $tags
         ]);

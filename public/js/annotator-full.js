@@ -1042,18 +1042,20 @@
       annotation.ranges || (annotation.ranges = this.selectedRanges);
       normedRanges = [];
       _ref1 = annotation.ranges;
-      for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-        r = _ref1[_k];
-        try {
-          normedRanges.push(Range.sniff(r).normalize(root));
-        } catch (_error) {
-          e = _error;
-          if (e instanceof Range.RangeError) {
-            this.publish('rangeNormalizeFail', [annotation, r, e]);
-          } else {
-            throw e;
+      if( _ref1 != null ) {
+          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+              r = _ref1[_k];
+              try {
+                  normedRanges.push(Range.sniff(r).normalize(root));
+              } catch (_error) {
+                  e = _error;
+                  if (e instanceof Range.RangeError) {
+                      this.publish('rangeNormalizeFail', [annotation, r, e]);
+                  } else {
+                      throw e;
+                  }
+              }
           }
-        }
       }
       annotation.quote = [];
       annotation.ranges = [];

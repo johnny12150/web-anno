@@ -64,28 +64,32 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 data: data,
                 success: function(data) {
                     _this.data = [];
-                    $('.annotator-hl').removeClass('annotator-hl');
+                    $('.annotator-hl').not('.hl-keywords').removeClass('annotator-hl');
                     $('.anno-tags ul li').remove();
                     $('.anno-users ul li').remove();
                     _this.annotator.loadAnnotations(data.rows);
                 },
                 dataType: 'json'
             });
-        })
+        });
+
+        $(document).on( 'click', '.annotator-starts',function(e) {
+           alert('XD');
+        });
     };
 
     this.refreshHighLights = function() {
 
         var filter_users = [];
         var filter_tags = [];
-
+        var i;
 
         //抓出user list 跟 tag list 的勾選input
         var checkboxs = $('.anno-tags ul li input[type=checkbox],.anno-users ul li input[type=checkbox]');
 
         var tags_count = $('.anno-tags ul li input[type=checkbox]').length;
 
-        for(var i = 0 ; i < checkboxs.length; i++)
+        for(i = 0 ; i < checkboxs.length; i++)
         {
             if(checkboxs[i].checked) {
                 //種類
@@ -105,15 +109,18 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         var new_tmp_data = [];
 
         //開始搜尋
-        for(var i = 0 ; i < _this.data.length; i++)
+        for(i = 0 ; i < _this.data.length; i++)
         {
             _this.data[i].highlights = [];
+            var user = _this.data[i];
             // 確認建立標記的使用者
-            if (filter_users.indexOf(_this.data[i].user.id) != -1) {
+            if (filter_users.indexOf(user) != -1) {
                 //如果tag清單上沒有全部勾選 則確認標記的tag
                 if(filter_tags.length != tags_count) {
-                    for (var j = 0; j < _this.data[i].tags.length; j++) {
-                        if (filter_tags.indexOf(_this.data[i].tags[j]) != -1) {
+                    var tags = _this.data[i].tags;
+                    for (var j = 0; j < tags.length; j++) {
+                        var tag = tags[j];
+                        if (filter_tags.indexOf(tag) != -1) {
                             new_tmp_data.push(_this.data[i]);
                             break;
                         }
@@ -128,12 +135,12 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         $('.annotator-hl').removeClass('annotator-hl');
         _this.annotator.loadAnnotations(new_tmp_data);
 
-    }
+    };
 
     this.addReference = function(annotation) {
 
-        var user_id = null
-        var gravatar = '#';
+        var user_id;
+        var gravatar_url = '#';
 
         // get user id from annotation
         if( annotation.user != null)
@@ -146,16 +153,24 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         if(user_id == null || user_id == 0 )
             return;
 
+        var user = annotation.user;
+
         // get user gravatar url
-        if( annotation.user != null)
-            gravatar = annotation.user.gravatar;
+        if( user != null)
+            gravatar_url = user.gravatar;
 
         // check user is added to userlist
         if( _this.ui.find('#anno-user-'+ user_id ).length == 0) {
             //add user list item and bind to user list
-            _this.ui.find('.anno-users ul').append('<li id="anno-user-'
-            + user_id + '"><input type="checkbox" checked data-search="user-' + user_id + '"/><img class="gravatar" src="'+ gravatar +'" alt=""/><span>user_' + user_id + '</span></li>');
-            $('#anno-user-' + user_id).find('input[type=checkbox]').click(_this.refreshHighLights);
+            _this.ui.find('.anno-users ul')
+                .append('<li id="anno-user-' + user_id + '">' +
+                            '<input type="checkbox" checked data-search="user-' + user_id + '"/>' +
+                            '<img class="gravatar" src="'+ gravatar_url +'" alt=""/>' +
+                            '<span>user_' + user_id + '</span>' +
+                        '</li>');
+            $('#anno-user-' + user_id)
+                .find('input[type=checkbox]')
+                .click(_this.refreshHighLights);
         }
 
         //add tag to tag list
@@ -168,9 +183,14 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
                 if(_this.ui.find('#' + tagId ).length == 0) {
 
-                    _this.ui.find('.anno-tags ul').append('<li id="'
-                    + tagId + '"><input type="checkbox" checked data-search="tag-' + tagName + '"/><span>' + tagName + '</span></li>');
-                    $('#' + tagId).find('input[type=checkbox]').click(_this.refreshHighLights);
+                    _this.ui.find('.anno-tags ul')
+                        .append($('<li>').attr('id', tagId)
+                            .append($('<input>').attr('type', 'checkbox')
+                                            .attr('checked', '')
+                                            .attr('data-search', 'tag-' + tagName))
+                            .append($('<span>').text(tagName)));
+                    $('#' + tagId).find('input[type=checkbox]')
+                        .click(_this.refreshHighLights);
                 }
 
 
@@ -181,8 +201,26 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
     };
 
     // add user filed to Annotation View
-    this.updateViewer = function(field, annotation) {
-        $(field).addClass('annotator-user').html('<strong>Creator: </strong><span>user_' + annotation.user.id.toString() + '</span>');
+    this.updateCreatorViewer = function(field, annotation) {
+        $(field)
+            .addClass('annotator-user')
+            .html($('<strong>').text('建立者: ')
+                    .append($('<span>')
+                                .text('user_' + annotation.user.id.toString())));
+        return field;
+    };
+
+    this.updateStarsViewer = function(field, annotation) {
+        $(field)
+            .addClass('annotator-mark')
+            .html('<strong>評分: </strong>' +
+                  '<span class="annotator-stars">' +
+                    '<a class="fa fa-star" href=""></a>' +
+                    '<a class="fa fa-star" href=""></a>' +
+                    '<a class="fa fa-star" href=""></a>' +
+                    '<a class="fa fa-star" href=""></a>' +
+                    '<a class="fa fa-star" href=""></a>' +
+                  '</span>');
         return field;
     };
 
@@ -192,7 +230,8 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             _this.insertPanelUI();
             this.annotator.subscribe("annotationsLoaded", function (annotations) {
                     for(var i = 0 ; i < annotations.length; i++) {
-                        if(_this.data.indexOf(annotations[i]) == -1)
+                        var index = $.inArray(_this.data, annotations[i]);
+                        if(~index)
                             _this.data.push(annotations[i]);
                         _this.addReference(annotations[i]);
 
@@ -223,7 +262,11 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             });
 
             this.annotator.viewer.addField({
-                load: _this.updateViewer
+                load: _this.updateCreatorViewer
+            });
+
+            this.annotator.viewer.addField({
+                load: _this.updateStarsViewer
             });
 
 

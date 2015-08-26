@@ -43,6 +43,7 @@
 @section('custom_script')
 
     <script src="{{ asset('js/tinymce/tinymce.min.js')}}"></script>
+
     <script src="{{ asset('js/annotation.full.js')}}"></script>
     <script type="text/javascript">
 

@@ -73,6 +73,8 @@ var annotation = function(e) {
         // init annotator
         var content = $(_annotation.element).annotator();
 
+
+
         // set permission options
         var permissionsOptions = {};
         permissionsOptions['user'] = user_id;
@@ -89,7 +91,8 @@ var annotation = function(e) {
             }
         };
 
-        content.annotator('addPlugin', 'ViewPanel', {
+        content.annotator('addPlugin', 'ImageAnnotation', {})
+            .annotator('addPlugin', 'ViewPanel', {
             user_id: user_id ,
             target_anno : target_anno
         }).annotator('addPlugin', 'Store', {
@@ -118,7 +121,8 @@ var annotation = function(e) {
                 anno_token : anno_token,
                 uri: _annotation.uri
             })
-            .annotator('addPlugin', 'Permissions', permissionsOptions);
+            .annotator('addPlugin', 'Permissions', permissionsOptions)
+            .annotator('addPlugin', 'KeywordsAnnotation', {});
     }
 
     return this;
