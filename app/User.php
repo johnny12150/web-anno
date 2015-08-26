@@ -148,7 +148,6 @@ class User extends Model {
 
         $user = self::getByFacebook($fbuser->id);
 
-        dd($user);
         if($user == null)
             $user = self::addByFacebook($fbuser, $fbtoken);
 
@@ -173,5 +172,7 @@ class User extends Model {
         } else {
             Session::flash('user', $user);
         }
+
+        dd(Session::get('user'));
     }
 }
