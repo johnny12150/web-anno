@@ -53,6 +53,7 @@ class AuthController extends Controller
                     // This was a callback request from facebook, get the token
                     $token = $fb->requestAccessToken($code);
                 } catch(TokenResponseException $e) {
+                    dd($e);
                     return redirect('auth/login');
                 }
                 // Send a request with it
