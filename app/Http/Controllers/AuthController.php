@@ -58,7 +58,7 @@ class AuthController extends Controller
                 }
                 // Send a request with it
                 $fbuser = json_decode($fb->request('/me'), false);
-
+                dd($fbuser);
                 // user login
                 $user = User::login($fbuser, $token->getAccessToken());
             }
