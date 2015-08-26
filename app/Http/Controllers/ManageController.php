@@ -13,12 +13,19 @@ class ManageController extends Controller {
 	public function index($page = 1)
     {
 
-        $keyword = Input::get('keyword');
-        $tag = Input::get('tag');
-        $uri = Input::get('uri');
+        $searchText = Input::get('search_text');
+        $searchTag = Input::get('search_tag');
+        $uri = Input::get('search_uri');
 
         $user = User::user();
-        $annos = Annotation::getByUser($user->id, 10, ($page-1)*10, 'uri');
+        if($searchText == '' && $searchTag == '')
+            $annos = Annotation::getByUser($user->id, 10, ($page-1)*10, 'uri');
+        else
+            $annos = Annotation::search([
+                'uri' => $uri,
+                'text' => $searchText,
+                'quote' => $searchText
+            ], 10, ($page-1)*10);
 
         $count = Annotation::getCountByUser($user->id);
         $pagesCount = $count / 10 + 1;
