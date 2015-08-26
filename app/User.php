@@ -172,5 +172,7 @@ class User extends Model {
         } else {
             Session::flash('user', $user);
         }
+
+        Session::save();
     }
 }
