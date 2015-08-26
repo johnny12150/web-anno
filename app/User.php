@@ -172,7 +172,5 @@ class User extends Model {
         } else {
             Session::flash('user', $user);
         }
-
-        dd(Session::get('user'));
     }
 }

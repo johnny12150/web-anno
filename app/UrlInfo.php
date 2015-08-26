@@ -73,7 +73,7 @@ class UrlInfo extends Model {
             $title = preg_match('/<title[^>]*>(.*?)<\/title>/ims', $html, $matches) ? $matches[1] : null;
             return $title;
         } catch(Exception $e) {
-            return null;
+            return '';
         }
 
     }
