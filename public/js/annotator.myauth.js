@@ -61,13 +61,14 @@ Annotator.Plugin.MyAuth = function (element, settings) {
             _this.insertAuthUI();
             _this.annotator
                 .subscribe("annotationCreated", function (annotation) {
-                    _this.checkAuth();
+                        _this.checkAuth();
                 })
                 .subscribe("annotationUpdated", function (annotation) {
-                    _this.checkAuth();
+
+                        _this.checkAuth();
                 })
                 .subscribe("annotationDeleted", function (annotation) {
-                    _this.checkAuth();
+                        _this.checkAuth();
                 });
         }
     }

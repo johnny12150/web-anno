@@ -30,11 +30,11 @@ Route::group(['prefix' => '/api'], function()
     Route::get('search', 'AnnotationController@search');
 
     Route::group(['middleware' => 'api_auth'] , function() {
+        Route::post('likes', 'AnnotationController@like');
         Route::post('annotations', 'AnnotationController@add');
         Route::put('annotations/{id}', 'AnnotationController@update');
         Route::get('annotations/{id}', 'AnnotationController@add');
         Route::delete('annotations/{id}', 'AnnotationController@delete');
-
         Route::get('check', 'AnnotationController@check');
     });
 });

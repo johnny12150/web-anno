@@ -4768,13 +4768,14 @@ Annotator.Plugin.MyAuth = function (element, settings) {
             _this.insertAuthUI();
             _this.annotator
                 .subscribe("annotationCreated", function (annotation) {
-                    _this.checkAuth();
+                        _this.checkAuth();
                 })
                 .subscribe("annotationUpdated", function (annotation) {
-                    _this.checkAuth();
+
+                        _this.checkAuth();
                 })
                 .subscribe("annotationDeleted", function (annotation) {
-                    _this.checkAuth();
+                        _this.checkAuth();
                 });
         }
     }
@@ -4787,6 +4788,9 @@ var x =  0;
 Annotator.Plugin.ViewPanel = function (element, settings) {
 
     var _this = this;
+
+    this.uri = settings.uri;
+    this.anno_token = settings.anno_token;
 
     this.user_id = settings.user_id;
     this.data = [];
@@ -4857,21 +4861,31 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         });
 
         $(document).on( 'click', '.anno-like',function(e) {
-            $.post(postlikeUrl, {
+            var target = $(e.target);
+            var aid = target.attr('data-id');
+            $.post(_this.postlikeUrl, {
+                aid : aid,
+                uri : _this.uri,
+                anno_token : _this.anno_token,
                 'like' : '1'
-            }).success(function(data) {
-                alert(data);
+            }).success(function(annotation) {
+                target.parents().find('.annotator-likes-total').text(annotation.likes);
             }).error(function(e) {
-                alert('XD');
+
             })
             e.preventDefault();
         }).on( 'click', '.anno-dislike',function(e) {
-            $.post(postlikeUrl, {
+            var target = $(e.target);
+            var aid = target.attr('data-id');
+            $.post(_this.postlikeUrl, {
+                aid : aid,
+                uri : _this.uri,
+                anno_token : _this.anno_token,
                 'like' : '-1'
-            }).success(function(data) {
-                alert(data);
+            }).success(function(annotation) {
+                target.parents().find('.annotator-likes-total').text(annotation.likes);
             }).error(function(e) {
-                alert('XD');
+
             })
             e.preventDefault();
         });
@@ -4893,7 +4907,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             if(checkboxs[i].checked) {
                 //種類
                 var cls = $(checkboxs[i]).attr('data-search').split('-')[0];
-                //數值
+                //id
                 var val = $(checkboxs[i]).attr('data-search').split('-')[1];
                 if( cls == 'user')
                 {
@@ -4910,10 +4924,12 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         //開始搜尋
         for(i = 0 ; i < _this.data.length; i++)
         {
+            var user = _this.data[i].user;
+
             _this.data[i].highlights = [];
-            var user = _this.data[i];
+
             // 確認建立標記的使用者
-            if (filter_users.indexOf(user) != -1) {
+            if (filter_users.indexOf(user.id.toString()) != -1) {
                 //如果tag清單上沒有全部勾選 則確認標記的tag
                 if(filter_tags.length != tags_count) {
                     var tags = _this.data[i].tags;
@@ -4931,7 +4947,8 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
         }
 
-        $('.annotator-hl').removeClass('annotator-hl');
+        $('.annotator-hl').not('.hl-keywords').removeClass('annotator-hl');
+
         _this.annotator.loadAnnotations(new_tmp_data);
 
     };
@@ -5001,23 +5018,29 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
     // add user filed to Annotation View
     this.updateCreatorViewer = function(field, annotation) {
-        $(field)
-            .addClass('annotator-user')
-            .html($('<strong>').text('建立者: ')
+        if(annotation.user.id != 0 ) {
+            $(field)
+                .addClass('annotator-user')
+                .html($('<strong>').text('建立者: ')
                     .append($('<span>')
-                                .text('user_' + annotation.user.id.toString())));
-        return field;
+                        .text('user_' + annotation.user.id.toString())));
+        }
+        return '';
     };
 
     this.updateStarsViewer = function(field, annotation) {
-        $(field)
-            .addClass('annotator-mark')
-            .html('<strong>評分: </strong>' +
-                  '<span class="annotator-stars">' +
-                    '<a href="#" class="anno-like fa fa-thumbs-up"><span>123</span></a>' +
-                    '<a href="#" class="anno-dislike fa fa-thumbs-down"><span>123</span></a>' +
-            '</span>');
-        return field;
+        if(annotation.likes != undefined ){
+            $(field)
+                .addClass('annotator-mark')
+                .html('<strong>評分: </strong>' +
+                '<span class="annotator-likes">' +
+                '<span class="annotator-likes-total">'+annotation.likes+'</span>' +
+                '<a href="#" data-id="'+ annotation.id +'" class="anno-like fa fa-thumbs-up"></a>' +
+                '<a href="#" data-id="'+ annotation.id +'" class="anno-dislike fa fa-thumbs-down"></a>' +
+                '</span>');
+        }
+
+        return '';
     };
 
     return {
@@ -5025,6 +5048,8 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             _this.annotator = this.annotator;
             _this.insertPanelUI();
             this.annotator.subscribe("annotationsLoaded", function (annotations) {
+                    if( _this.data.length == 0 )
+                        _this.data = annotations;
                     for(var i = 0 ; i < annotations.length; i++) {
                         var index = $.inArray(_this.data, annotations[i]);
                         if(~index)
@@ -5037,7 +5062,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                             if (annotations[i].id.toString() != _this.target_anno && annotations[i].highlights != null) {
 
                                 for(var j = 0 ; j < annotations[i].highlights.length; j++) {
-                                    $(annotations[i].highlights[j]).removeClass('annotator-hl');
+                                    $(annotations[i].highlights[j]).not('.hl-keywords').removeClass('annotator-hl');
                                 }
                             }
                         }
@@ -5077,44 +5102,87 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 /**
  * Created by flyx on 7/22/15.
  */
-Annotator.Plugin.KeywordsAnnotation = function (element, settings) {
+function Keyword(element, settings) {
 
     var scope = this;
     var _element = element;
+    var keyword_index = 1;
+    this.data = [];
+
+    function clone(obj) {
+        if (null == obj || "object" != typeof obj) return obj;
+        var copy = obj.constructor();
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+        }
+        return copy;
+    }
+
 
     this.init = function() {
         $.ajax('http://140.109.18.158/api/annotation.jsp', {
-            mathod: 'POST',
+            method: 'POST',
+            async: false,
             crossDomain: true,
+            dataType: 'json',
             data :{
-
                 text : $(element).html()
             },
-            success: function(e) {
-                console.log(e);
+            success: function(data) {
+
+                for( var i in data) {
+                    var row = data[i];
+                    $(_element).html(
+                        $(_element)
+                            .html()
+                            .replace(new RegExp(row.keyword, "g"),
+                            $('<div>').append(
+                                $('<span/>').attr('id', 'keyword-' + row.id).addClass('annotator-hl').html(row.keyword)).html()
+                        )
+                    );
+                }
+
+                for ( var i in data) {
+                    var row = data[i];
+
+                    $('.annotator-hl').filter('#keyword-' + row.id).each(function(index) {
+
+                            var obj = new function() {
+                                return {
+                                    "id": "keyword-" + keyword_index.toString(),  // unique id (added by backend)
+                                    "text": row.description,                  // content of annotation
+                                    "quote": row.description,    // the annotated text (added by frontend)
+                                    "ranges": [                                // list of ranges covered by annotation (usually only one entry)
+                                        {
+                                            "start": "",           // (relative) XPath to start element
+                                            "end": "",             // (relative) XPath to end element
+                                            "startOffset": 0,                      // character offset within start element
+                                            "endOffset": 0                       // character offset within end element
+                                        }
+                                    ],
+                                    "user": {
+                                        id: '0'
+                                    },                           // user id of annotation owner (can also be an object with an 'id' property)
+                                    "tags": [],             // list of tags (from Tags plugin)
+                                    "permissions": {                           //annotation permissions (from Permissions/AnnotateItPermissions plugin)
+                                        "read": [],
+                                        "update": [0],
+                                        "delete": [0]
+                                    }
+                                };
+                            }();
+
+                            $(this).addClass('hl-keywords').data('annotation',obj);
+                            console.log(this);
+                            keyword_index++;
+                        });
+                }
             }
         });
 
     };
-
-
-    return {
-        pluginInit: function () {
-            scope.init();
-            this.annotator
-                .subscribe("annotationCreated", function (annotation) {
-
-                })
-                .subscribe("annotationDeleted", function (annotation) {
-
-
-                })
-                .subscribe("annotationsLoaded", function (annotations) {
-
-                });
-        }
-    }
-}
+    this.init();
+};
 
 /**
  * Created by flyx on 7/6/15.
@@ -5188,6 +5256,8 @@ var annotation = function(e) {
             setCookie('user_id', user_id, 30);
         }
 
+        var keyword = new Keyword(_annotation.element, {});
+
         // init annotator
         var content = $(_annotation.element).annotator();
 
@@ -5209,10 +5279,14 @@ var annotation = function(e) {
             }
         };
 
-        content.annotator('addPlugin', 'ImageAnnotation', {})
+        content
+            .annotator('addPlugin', 'ImageAnnotation', {})
             .annotator('addPlugin', 'ViewPanel', {
-            user_id: user_id ,
-            target_anno : target_anno
+                user_id: user_id ,
+                target_anno : target_anno,
+                anno_token : anno_token,
+                uri: _annotation.uri
+
         }).annotator('addPlugin', 'Store', {
             prefix: '',
             urls: {
@@ -5240,7 +5314,9 @@ var annotation = function(e) {
                 uri: _annotation.uri
             })
             .annotator('addPlugin', 'Permissions', permissionsOptions)
-            .annotator('addPlugin', 'KeywordsAnnotation', {});
+            ;
+
+
     }
 
     return this;

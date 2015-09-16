@@ -1,7 +1,9 @@
 <?php namespace App\Http\Controllers;
 
 use App\Annotation;
+use App\AnnotationView;
 use App\Http\Requests;
+use App\Like;
 use App\TagUse;
 use App\Tag;
 
@@ -123,9 +125,11 @@ class AnnotationController extends Controller
     public static function get($id)
     {
         // Find tags
-        $anno = Annotation::getById($id);
+        $anno = AnnotationView::search(array(
+            'id' => $id
+        ), 1, 0);
 
-        return $anno;
+        return (isset($anno[0]) ? $anno[0] : []);
     }
 
     public static function delete($id)
@@ -148,30 +152,34 @@ class AnnotationController extends Controller
         // 搜尋的標記內容
         $searchText = Request::input('search');
 
-        $annos_result = [];
 
-        if ($searchText == '') {
-            // 如果沒有特定使用者，就直接抓公開的標記，反之，只抓特定使用者的標記
-            if ($user_id == '')
-                $annos_result = Annotation::getPublicByUri($uri, $limit);
-            else
-                $annos_result = Annotation::getByUserUri($user_id, $uri, $limit);
-        } else {
-            //用標記內容、網址搜尋
-            $annos_result = Annotation::search([
-                'uri' => $uri,
-                'creator_id' => $user_id,
-                'text' => $searchText,
-                'quote' => $searchText
-            ], 999);
-        }
+        $annos = AnnotationView::search([
+            'uri' => $uri,
+            'creator_id' => $user_id,
+            'quote' => $searchText,
+            'text' => $searchText
+        ], 999, 0);
 
         $result = [
-            'total' => count($annos_result),
-            'rows' => $annos_result
+            'total' => count($annos),
+            'rows' => $annos
         ];
 
         return $result;
+    }
+
+    public static function like()
+    {
+        $aid =  Request::input('aid');
+        $user_id = User::user()->id;
+        $like = Request::input('like');
+        $like = intval($like);
+
+        if ($like > 1 | $like < -1)
+            $like = 0;
+
+        Like::setLike($user_id, $aid, $like);
+        return self::get($aid);
     }
 
     public static function check()

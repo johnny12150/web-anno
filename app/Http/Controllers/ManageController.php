@@ -1,11 +1,12 @@
 <?php namespace App\Http\Controllers;
 
+
+use App\AnnotationView;
 use App\Annotation;
 use App\Tag;
 use App\User;
 use App\UrlInfo;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Request;
 
 class ManageController extends Controller {
 
@@ -18,13 +19,16 @@ class ManageController extends Controller {
         $uri = Input::get('search_uri');
 
         $user = User::user();
+
+
         if($searchText == '' && $searchTag == '')
             $annos = Annotation::getByUser($user->id, 10, ($page-1)*10, 'uri');
         else
-            $annos = Annotation::search([
+            $annos = AnnotationView::search([
                 'uri' => $uri,
                 'text' => $searchText,
-                'quote' => $searchText
+                'quote' => $searchText,
+                'tag' => $searchTag,
             ], 10, ($page-1)*10);
 
         $count = Annotation::getCountByUser($user->id);

@@ -237,6 +237,7 @@ class Annotation extends Model {
             $tags = array_unique($tags);
 
             foreach( $tags as $tagName) {
+                $tagName = str_replace(',','',$tagName);
                 $tag = Tag::getByName($tagName);
                 if ($tag == null)
                     $tag = Tag::add($tagName);
@@ -314,6 +315,7 @@ class Annotation extends Model {
 
                 foreach( $tags as $tagName) {
                     //find this tag
+                    $tagName = str_replace(',','',$tagName);
                     $tag = Tag::getByName($tagName);
 
                     if ($tag == null)

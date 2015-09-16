@@ -1,6 +1,5 @@
 @extends('app')
 @section('custom_css')
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 @endsection
 @section('content')
     <div class="container">

@@ -54,6 +54,7 @@ class Tag extends Model {
     public static function add($name)
     {
         if( $name != '') {
+            $name = str_replace(',', '', $name);
             return self::create([
                 'name' => $name
             ]);

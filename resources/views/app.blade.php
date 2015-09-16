@@ -8,7 +8,7 @@
 	<title>數位人文工具</title>
 
 	<link href="{{ asset('/css/style.css') }}" rel="stylesheet">
-
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     @yield('custom_css')
 
 	<!-- Fonts -->

@@ -156,9 +156,17 @@
 .annotator-hl.img-anno-item {
   background-color: transparent; }
 
-.anno-like, .anno-dislike {
+.annotator-likes .anno-like, .annotator-likes .anno-dislike {
+  text-decoration: none;
   margin-left: 2px;
   margin-right: 5px; }
+  .annotator-likes .anno-like:hover, .annotator-likes .anno-like:active, .annotator-likes .anno-like:focus, .annotator-likes .anno-dislike:hover, .annotator-likes .anno-dislike:active, .annotator-likes .anno-dislike:focus {
+    text-decoration: none; }
+.annotator-likes > span {
+  padding: 6px; }
+
+.hl-keywords {
+  background-color: #DDEFFB; }
 
 
 /*# sourceMappingURL=anno.css.map */

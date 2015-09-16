@@ -23,12 +23,27 @@ class AuthController extends Controller
         ]);
     }
 
+    function postLogin()
+    {
+
+    }
+
     function getLogout()
     {
         //clear session
         User::logout();
         //back to login page
         return redirect('auth/login');
+    }
+
+    function getRegister()
+    {
+
+    }
+
+    function  postRegister()
+    {
+
     }
 
     public function getFacebook()

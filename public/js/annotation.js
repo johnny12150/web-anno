@@ -70,6 +70,8 @@ var annotation = function(e) {
             setCookie('user_id', user_id, 30);
         }
 
+        var keyword = new Keyword(_annotation.element, {});
+
         // init annotator
         var content = $(_annotation.element).annotator();
 
@@ -91,10 +93,14 @@ var annotation = function(e) {
             }
         };
 
-        content.annotator('addPlugin', 'ImageAnnotation', {})
+        content
+            .annotator('addPlugin', 'ImageAnnotation', {})
             .annotator('addPlugin', 'ViewPanel', {
-            user_id: user_id ,
-            target_anno : target_anno
+                user_id: user_id ,
+                target_anno : target_anno,
+                anno_token : anno_token,
+                uri: _annotation.uri
+
         }).annotator('addPlugin', 'Store', {
             prefix: '',
             urls: {
@@ -122,7 +128,9 @@ var annotation = function(e) {
                 uri: _annotation.uri
             })
             .annotator('addPlugin', 'Permissions', permissionsOptions)
-            .annotator('addPlugin', 'KeywordsAnnotation', {});
+            ;
+
+
     }
 
     return this;

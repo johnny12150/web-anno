@@ -215,11 +215,21 @@
 .annotator-hl.img-anno-item {
   background-color: rgba(0,0,0,0);
 }
-
-.anno-like,.anno-dislike {
-  margin-left: 2px;
-  margin-right: 5px;
+.annotator-likes {
+  .anno-like, .anno-dislike {
+    &:hover, &:active, &:focus {
+      text-decoration: none;
+    }
+    text-decoration: none;
+    margin-left: 2px;
+    margin-right: 5px;
+  }
+  > span {
+    padding: 6px;
+  }
 }
 
-
+.hl-keywords {
+  background-color: #DDEFFB;
+}
 
