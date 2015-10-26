@@ -106,22 +106,22 @@ var annotation = function(e) {
 
         content
             .annotator('addPlugin', 'ImageAnnotation', {
-                server : annotation.server
+                server : _this.server
             })
             .annotator('addPlugin', 'ViewPanel', {
-                user_id: user_id ,
+                user_id: _annotation ,
                 target_anno : target_anno,
                 anno_token : anno_token,
                 uri: _annotation.uri,
-                server : annotation.server
+                server : _annotation.server
         }).annotator('addPlugin', 'Store', {
             prefix: '',
             urls: {
-                create:  'http://' + annotation.server + '/api/annotations/',
-                read:    'http://' + annotation.server + '/api/annotations/:id/',
-                update:  'http://' + annotation.server + '/api/annotations/:id/',
-                destroy: 'http://' + annotation.server + '/api/annotations/:id/',
-                search:  'http://' + annotation.server + '/api/search/'
+                create:  'http://' + _annotation.server + '/api/annotations/',
+                read:    'http://' + _annotation.server + '/api/annotations/:id/',
+                update:  'http://' + _annotation.server + '/api/annotations/:id/',
+                destroy: 'http://' + _annotation.server + '/api/annotations/:id/',
+                search:  'http://' + _annotation.server + '/api/search/'
             },
             annotationData: {
                 uri: _annotation.uri,
