@@ -3,6 +3,7 @@
  */
 var annotation = function(e) {
 
+    this.server = '140.109.143.48';
     this.element = e;
     var _annotation = this;
 
@@ -104,21 +105,23 @@ var annotation = function(e) {
         };
 
         content
-            .annotator('addPlugin', 'ImageAnnotation', {})
+            .annotator('addPlugin', 'ImageAnnotation', {
+                server : annotation.server
+            })
             .annotator('addPlugin', 'ViewPanel', {
                 user_id: user_id ,
                 target_anno : target_anno,
                 anno_token : anno_token,
-                uri: _annotation.uri
-
+                uri: _annotation.uri,
+                server : annotation.server
         }).annotator('addPlugin', 'Store', {
             prefix: '',
             urls: {
-                create:  'http://140.109.143.48/api/annotations/',
-                read:    'http://140.109.143.48/api/annotations/:id/',
-                update:  'http://140.109.143.48/api/annotations/:id/',
-                destroy: 'http://140.109.143.48/api/annotations/:id/',
-                search:  'http://140.109.143.48/api/search/'
+                create:  'http://' + annotation.server + '/api/annotations/',
+                read:    'http://' + annotation.server + '/api/annotations/:id/',
+                update:  'http://' + annotation.server + '/api/annotations/:id/',
+                destroy: 'http://' + annotation.server + '/api/annotations/:id/',
+                search:  'http://' + annotation.server + '/api/search/'
             },
             annotationData: {
                 uri: _annotation.uri,

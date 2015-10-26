@@ -13,6 +13,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
     this.anno_token = settings.anno_token;
     this.user_id = settings.user_id;
     this.target_anno = settings.target_anno;
+    this.server = settings.server;
 
     this.domain = location.host;
     this.callback_url = location.href.split('#')[0];
@@ -21,9 +22,9 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
     this.search = [];
     this.ui = null;
     //確認是否登入的網址
-    this.postlikeUrl = 'http://140.109.143.48/api/likes';
-    this.authCheckurl = 'http://140.109.143.48/api/check';
-    this.loginUrl = 'http://140.109.143.48/auth/login?callback_url='
+    this.postlikeUrl = 'http://' + this.server + '/api/likes';
+    this.authCheckurl = 'http://' + this.server + '/api/check';
+    this.loginUrl = 'http://' + this.server + '/auth/login?callback_url='
     + encodeURIComponent(_this.callback_url)  + '&uri=' + _this.uri + '&domain=' + _this.domain ;
 
 
