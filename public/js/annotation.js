@@ -106,10 +106,10 @@ var annotation = function(e) {
 
         content
             .annotator('addPlugin', 'ImageAnnotation', {
-                server : _this.server
+                server : _annotation.server
             })
             .annotator('addPlugin', 'ViewPanel', {
-                user_id: _annotation ,
+                user_id: _annotation.user_id ,
                 target_anno : target_anno,
                 anno_token : anno_token,
                 uri: _annotation.uri,
