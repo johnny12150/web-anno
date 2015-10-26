@@ -14,11 +14,11 @@ class TagsView extends Migration {
 	public function up()
 	{
 
-        DB::Raw('create or replace view `tags_view` as
+        DB::statement("create or replace view `tags_view` as
             select group_concat(tags.name separator ',') AS tags , tags_use.annotation_id
-            from ( tags join  tags_use )
-            where ( tags.id = tags_usetag_id )
-            group by tags_use,annotation_id);');
+            from  tags join  tags_use
+            where  tags.id = tags_use.tag_id
+            group by tags_use.annotation_id ;");
 
 	}
 
@@ -29,7 +29,7 @@ class TagsView extends Migration {
 	 */
 	public function down()
 	{
-        DB::Raw( 'DROP VIEW tags_view' );
+        DB::statement( 'DROP VIEW tags_view' );
 	}
 
 }

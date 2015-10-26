@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 class LikesView extends Migration {
 
@@ -12,8 +13,8 @@ class LikesView extends Migration {
      */
     public function up()
     {
-        DB::Raw('create or replace view `likes_view` as
-            select likes.aid, sum(likes.like) from likes group by likes.aid;');
+        DB::statement('create or replace view `likes_view` as
+            select likes.aid, sum(likes.like) as likes from likes group by likes.aid;');
     }
 
     /**
@@ -21,9 +22,10 @@ class LikesView extends Migration {
      *
      * @return void
      */
+
     public function down()
     {
-        DB::Raw( 'DROP VIEW likes_view' );
+        DB::statement( 'DROP VIEW likes_view' );
     }
 
 }

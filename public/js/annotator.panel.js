@@ -5,29 +5,144 @@ var x =  0;
 Annotator.Plugin.ViewPanel = function (element, settings) {
 
     var _this = this;
-
+    this.annotator = $(element).annotator().data('annotator');
     this.uri = settings.uri;
-    this.anno_token = settings.anno_token;
+    if(this.uri == null)
+        this.uri = location.href.split('#')[0];
 
+    this.anno_token = settings.anno_token;
     this.user_id = settings.user_id;
-    this.data = [];
     this.target_anno = settings.target_anno;
 
+    this.domain = location.host;
+    this.callback_url = location.href.split('#')[0];
+    this.data = [];
+    this.is_authed = false;
     this.search = [];
     this.ui = null;
     //確認是否登入的網址
-    this.postlikeUrl = 'http://annotator.local:8000/api/likes';
+    this.postlikeUrl = 'http://140.109.143.48/api/likes';
+    this.authCheckurl = 'http://140.109.143.48/api/check';
+    this.loginUrl = 'http://140.109.143.48/auth/login?callback_url='
+    + encodeURIComponent(_this.callback_url)  + '&uri=' + _this.uri + '&domain=' + _this.domain ;
+
+
+
+    //登入Anntation的 Madal UI
+    this.insertAuthUI = function() {
+        $('body').append('<div id="openAuthUI" class="authDialog">'
+        + '     <div>'
+        + '         <h2>本網站使用了標記的服務</h2>'
+        + '         <span><a id="anno-btn-login" class="btn anno-btn-login">永久儲存標記</a></span>'
+        + '         <span><a href="#" id="anno-btn-close" class="btn anno-btn-close">關閉視窗</a></span>'
+        + '     </div>'
+        + '</div>');
+
+        $(document)
+            .on('click', '#anno-btn-login', function(e) {
+                location.href =_this.loginUrl;
+            })
+            .on('click', '#anno-btn-close', function(e) {
+                $('#openAuthUI').removeClass('show');
+                return false;
+            });
+    };
+
+    this.checkAuth = function() {
+
+        if(!this.is_authed) {
+            $.ajax({
+                crossDomain : true,
+                async : false,
+                dataType: 'json',
+                data: {
+                    'anno_token': _this.anno_token,
+                    'domain' : _this.domain
+                },
+                url: _this.authCheckurl,
+
+                statusCode: {
+                    200 : function() {
+                        _this.is_authed = true;
+                        $('.anno-login').html('');
+                    },
+                    401: function () {
+                        $('.anno-login').html('login');
+                        $('#openAuthUI').addClass('show');
+                    }
+                }
+            });
+        }
+    };
+
 
     this.insertPanelUI = function() {
 
-        $('body').append('<div class="anno-panel">        <div class="anno-search">            <p><strong>搜尋標記內容</strong></p>            <form action="#" id="form-search">                <button id="anno-search-submit" type="submit"><i class="fa fa-search fa-2x"></i></button>                <input id="anno-search-input" type="text" />            </form>        </div>        <div class="anno-users">            <p><strong>在此網頁標記的人</strong></p>            <ul>            </ul>        </div>        <div class="anno-tags">            <p><strong>標籤</strong></p>            <ul></ul>        </div>        <hr/>        <div class="anno-search-list">            <ul>                <!-- <li >                    <img src="gravatar.jpg" class="gravatar" />                    <div class="anno-quote">                        Annotation                    </div>                </li> -->            </ul>        </div>        <div class="btn-appear">        </div>    </div>');
+        $('body').append(
+            '<div class="anno-panel">' +
+                '<div class="anno-login">' +
+                '</div>' +
+                '<div class="anno-search">' +
+                    '<p><strong>搜尋標記內容</strong></p>' +
+                    '<form action="#" id="form-search">' +
+                        '<button id="anno-search-submit" type="submit">' +
+                            '<i class="fa fa-search fa-2x"></i>' +
+                        '</button>' +
+                        '<input id="anno-search-input" type="text" />' +
+                    '</form>' +
+                '</div>' +
+                '<div class="anno-users">' +
+                    '<p><strong>在此網頁標記的人</strong></p>' +
+                    '<ul>' +
+                    '</ul>' +
+                '</div>' +
+                '<div class="anno-tags"><p><strong>標籤</strong></p>' +
+                    '<ul>' +
+                    '</ul>' +
+                '</div>' +
+                '<hr/>' +
+                '<div class="anno-search-list">' +
+                    '<ul>' +
+                    '</ul>' +
+                '</div>' +
+                '<div class="btn-appear">' +
+                '</div>' +
+            '</div>');
+        /*var ui = $('<div>').addClass('anno-panel')
+            .append(
+            $('<div>').addClass('anno-login').append(
+                $('<p><strong>').text('在此網頁標記的人')).append(
+                $('<ul>'))
+            )
+            .append(
+            $('<div>').addClass('anno-search').append(
+                $('<p><strong>').text('搜尋標記內容')).append(
+                $('<form>').attr('action','#').attr('id','form-search').append(
+                    $('<button>').attr('id','anno-search-submit').attr('type','submit').append(
+                        $('<i>').addClass('fa').addClass('fa-search').addClass('fa-2x'))).append(
+                    $('<input>').attr('id','anno-search-input').attr('type','text')))
+            ).append(
+                $('<div>').addClass('anno-users').append(
+                    $('<p><strong>').text('在此網頁標記的人')).append(
+                    $('<ul>'))
+            ).append(
+                $('<div>').addClass('anno-tags').append(
+                    $('<p><strong>').text('標籤')).append(
+                    $('<ul>'))
+            ).append($('<hr>')
+            ).append(
+                $('<div>').addClass('anno-search-list').append(
+                        $('<ul>'))
+            ).append($('<div>').addClass('btn-appear'));
+        $('body').append(ui);*/
         _this.ui = $('.anno-panel');
         /*
          <div class="anno-panel">
             <div class="anno-search">
                 <p><strong>搜尋標記內容</strong></p>
                 <form action="#" id="form-search">
-                    <button id="anno-search-submit" type="submit"><i class="fa fa-search fa-2x"></i></button>
+                    <button id="anno-search-submit" type="submit">
+                        <i class="fa fa-search fa-2x"></i></button>
                     <input id="anno-search-input" type="text" />
                 </form>
             </div>
@@ -58,7 +173,8 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         $('#anno-search-submit').click(function(e) {
             e.preventDefault();
             var url_search = _this.annotator.plugins.Store.options.urls.search;
-            var data = _this.annotator.plugins.Store.options.annotationData;
+
+            var data = _this.annotator.plugins.Store.options.loadFromSearch;
             data.search = _this.ui.find('#anno-search-input').val();
             $.ajax({
                 xhrFields: {
@@ -86,7 +202,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 anno_token : _this.anno_token,
                 'like' : '1'
             }).success(function(annotation) {
-                target.parents().find('.annotator-likes-total').text(annotation.likes);
+                target.parent().find('.annotator-likes-total').text(annotation.likes);
             }).error(function(e) {
 
             })
@@ -100,12 +216,12 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 anno_token : _this.anno_token,
                 'like' : '-1'
             }).success(function(annotation) {
-                target.parents().find('.annotator-likes-total').text(annotation.likes);
+                target.parent().find('.annotator-likes-total').text(annotation.likes);
             }).error(function(e) {
 
             })
             e.preventDefault();
-        });
+        }).on('mouseover');
     };
 
     this.refreshHighLights = function() {
@@ -212,20 +328,22 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         if ( tags != null ) {
             for (var i = 0; i < tags.length; i++) {
                 var tagName = tags[i];
-                var tagId = 'anno-tag-' + tagName;
 
-                if(_this.ui.find('#' + tagId ).length == 0) {
+                if(tagName != '') {
+                    var tagId = 'anno-tag-' + tagName;
 
-                    _this.ui.find('.anno-tags ul')
-                        .append($('<li>').attr('id', tagId)
-                            .append($('<input>').attr('type', 'checkbox')
-                                            .attr('checked', '')
-                                            .attr('data-search', 'tag-' + tagName))
-                            .append($('<span>').text(tagName)));
-                    $('#' + tagId).find('input[type=checkbox]')
-                        .click(_this.refreshHighLights);
+                    if (_this.ui.find('#' + tagId).length == 0) {
+
+                        _this.ui.find('.anno-tags ul')
+                            .append($('<li>').attr('id', tagId)
+                                .append($('<input>').attr('type', 'checkbox')
+                                    .attr('checked', '')
+                                    .attr('data-search', 'tag-' + tagName))
+                                .append($('<span>').text(tagName)));
+                        $('#' + tagId).find('input[type=checkbox]')
+                            .click(_this.refreshHighLights);
+                    }
                 }
-
 
             }
         }
@@ -263,7 +381,9 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
     return {
         pluginInit: function () {
             _this.annotator = this.annotator;
+            _this.checkAuth();
             _this.insertPanelUI();
+            _this.insertAuthUI();
             this.annotator.subscribe("annotationsLoaded", function (annotations) {
                     if( _this.data.length == 0 )
                         _this.data = annotations;
@@ -286,12 +406,15 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
                     }
             }).subscribe("annotationCreated", function (annotation) {
+                _this.checkAuth();
                 if(_this.data.indexOf(annotation) == -1)
                     _this.data.push(annotation);
                 _this.addReference(annotation);
             }).subscribe("annotationUpdated", function (annotation) {
+                _this.checkAuth();
                 _this.addReference(annotation);
             }).subscribe("annotationDeleted", function (annotation) {
+                _this.checkAuth();
                 //console.log(_this.data.length);
                 var index = $.inArray(annotation, _this.data);
                 if( ~index )

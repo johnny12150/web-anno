@@ -18,12 +18,16 @@ class AnnotationView extends Model
     protected $table = 'annotation_view';
 
     /**
-     * @param $data the data that will be verified
+     * @param $conditions
+     * @param $limit
+     * @param $offset
+     * @param string $orderBy
+     * @param string $sort
      * @return bool result of validation
+     * @internal param the $data data that will be verified
      */
 
-
-    public static function search($conditions , $limit, $offset)
+    public static function search($conditions , $limit, $offset, $orderBy = 'likes', $sort='desc')
     {
         $query = DB::table('annotations_view');
 
@@ -35,12 +39,12 @@ class AnnotationView extends Model
             $query = $query->where('creator_id', $conditions['creator_id']);
         if( isset($conditions['text']) && $conditions['text'] != '')
             $query = $query->where('text', 'like', '%'.$conditions['text'].'%');
-        if( isset($conditions['quote']) && $conditions['quote'] != '')
-            $query = $query->where('quote', 'like', '%'.$conditions['quote'].'%');
+        //if( isset($conditions['quote']) && $conditions['quote'] != '')
+        //    $query = $query->where('quote', 'like', '%'.$conditions['quote'].'%');
         if( isset($conditions['tag']) && $conditions['tag'] != '')
             $query = $query->whereRaw('tags = "'.$conditions['tag'].'" OR tags LIKE "% ,'.$conditions['tag'].'%"'.' OR tags LIKE "%'.$conditions['tag'].' ,%"');
 
-        $annos = $query->skip($offset)->take($limit)->orderBy('likes', 'desc')->get();
+        $annos = $query->skip($offset)->take($limit)->orderBy($orderBy, $sort)->get();
 
         $ret = [];
         foreach($annos as $anno) {
@@ -67,7 +71,7 @@ class AnnotationView extends Model
                     'endOffset' => $row->ranges_endOffset
                 ]
             ],
-            'tags' => explode(' ,',$row->tags),
+            'tags' => explode(',',$row->tags),
             'permissions' => [
                 "read" => $row->is_public ? [] :[(int)$row->creator_id],
                 "admin" => [(int)$row->creator_id],

@@ -35,7 +35,7 @@ class HomeController extends Controller {
 	{
 
 		return view('home', [
-            'email' => User::user()->email
+            'email' => Auth::user()->email
         ]);
 	}
 

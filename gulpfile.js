@@ -23,7 +23,6 @@ elixir(function(mix) {
             './public/js/annotator-full.js',
             './public/js/richText-annotator.min.js',
             './public/js/annotator.img.js',
-            './public/js/annotator.myauth.js',
             './public/js/annotator.panel.js',
             './public/js/annotator.keywords.js',
             './public/js/annotation.js'],

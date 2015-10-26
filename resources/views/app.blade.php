@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh_TW">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -37,14 +37,16 @@
 
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
+                    @if (Auth::check())
 					<li class="active"><a href="{{ url('/manage') }}">編輯標記</a></li>
+                    @endif
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
-					@if (\App\User::guest())
+					@if (!Auth::check())
 						<li><a href="{{ url('/auth/login') }}">Login</a></li>
 					@else
 						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ \App\User::user()->name }} <span class="caret"></span></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ Auth::user()->name }} <span class="caret"></span></a>
 							<ul class="dropdown-menu" role="menu">
 								<li><a href="{{ url('/auth/logout') }}">Logout</a></li>
 							</ul>

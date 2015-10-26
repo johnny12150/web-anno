@@ -1,8 +1,8 @@
 <?php namespace App\Http\Controllers;
 
 use App\Http\Requests;
-use App\Service\Auth;
 use App\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use App\Article;
 use Input;
@@ -33,7 +33,7 @@ class ArticleController extends Controller {
 	 */
 	public function add()
 	{
-        $article = Article::add(User::user()->id, [
+        $article = Article::add(Auth::user()->id, [
             'title' => Request::input('title'),
             'content' => Request::input('content')
         ]);
@@ -78,7 +78,7 @@ class ArticleController extends Controller {
 	 */
 	public function delete($aid)
 	{
-		$result = Article::del(User::user()->id, $aid);
+		$result = Article::del(Auth::user()->id, $aid);
 
         return [
             'response' => !is_string($result)  ? 1 : 0,

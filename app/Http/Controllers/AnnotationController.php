@@ -9,7 +9,9 @@ use App\Tag;
 
 use App\User;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 use OAuth\Common\Exception\Exception;
+
 
 
 class AnnotationController extends Controller
@@ -18,13 +20,8 @@ class AnnotationController extends Controller
 
     function __construct()
     {
-        //設定cross domain 的header
-        header('Access-Control-Allow-Origin', '*');
-        header('Allow', 'GET, POST, OPTIONS');
-        header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization, X-Request-With');
-        header('Access-Control-Allow-Credentials', 'true');
-    }
 
+    }
     /**
      * Get Annotation JS version.
      *
@@ -38,8 +35,12 @@ class AnnotationController extends Controller
         ];
     }
 
-    public static function add()
+    public function add()
     {
+
+
+        $user = Session::get('user');
+
         $permissions = Request::input('permissions');
         $is_public = count($permissions['read']) == 0;
         $tags = Request::input('tags');
@@ -67,7 +68,7 @@ class AnnotationController extends Controller
         $src = ($isImage && Request::input('src') != '') ? Request::input('src') : '';
         /* 新增標記 */
         $anno = Annotation::add([
-            'creator_id' => User::user()->id,
+            'creator_id' => $user->id,
             'text' => Request::input('text'),
             'quote' => Request::input('quote'),
             'uri' => Request::input('uri'),
@@ -90,8 +91,9 @@ class AnnotationController extends Controller
         return $anno;
     }
 
-    public static function update($id)
+    public function update($id)
     {
+        $user = Session::get('user');
         //權限
         $permissions = Request::input('permissions');
         //標籤
@@ -99,8 +101,8 @@ class AnnotationController extends Controller
         //是否公開
         $is_public = count($permissions['read']) == 0;
         /* 編輯標記 */
-        $result = Annotation::edit(User::user()->id, $id, [
-            'creator_id' => User::user()->id,
+        $result = Annotation::edit($user->id, $id, [
+            'creator_id' => $user->id,
             'text' => Request::input('text'),
             'quote' => Request::input('quote'),
             'uri' => Request::input('uri'),
@@ -122,7 +124,7 @@ class AnnotationController extends Controller
 
     }
 
-    public static function get($id)
+    public function get($id)
     {
         // Find tags
         $anno = AnnotationView::search(array(
@@ -132,16 +134,17 @@ class AnnotationController extends Controller
         return (isset($anno[0]) ? $anno[0] : []);
     }
 
-    public static function delete($id)
+    public function delete($id)
     {
+        $user = Session::get('user');
         //Delete Annotation
-        Annotation::del(User::user()->id, $id);
+        Annotation::del($user->id, $id);
         //return 204 code
         abort(204);
     }
 
 
-    public static function search()
+    public function search()
     {
         // limit 沒設定的話目前預設暫定 999 個標記
         $limit = Request::input('limit') == '' ? 999 : intval(Request::input('limit')) == 0 ? 999 : intval(Request::input('limit'));
@@ -158,7 +161,7 @@ class AnnotationController extends Controller
             'creator_id' => $user_id,
             'quote' => $searchText,
             'text' => $searchText
-        ], 999, 0);
+        ], $limit, 0);
 
         $result = [
             'total' => count($annos),
@@ -168,10 +171,11 @@ class AnnotationController extends Controller
         return $result;
     }
 
-    public static function like()
+    public function like()
     {
+        $user = Session::get('user');
         $aid =  Request::input('aid');
-        $user_id = User::user()->id;
+        $user_id = $user->id;
         $like = Request::input('like');
         $like = intval($like);
 
@@ -182,9 +186,11 @@ class AnnotationController extends Controller
         return self::get($aid);
     }
 
-    public static function check()
+    public function check()
     {
-        return '';
+        return [
+            'user' => $user = Session::get('user'),
+        ];
     }
 
 }

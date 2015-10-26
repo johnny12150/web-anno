@@ -19,12 +19,13 @@ class ApiMiddleWare {
 	 */
 	public function handle($request, Closure $next)
 	{
-        $uri = Request::input('uri');
-        $token = Request::input('anno_token');
 
-        if(AuthTable::check($uri, $token)) {
-            $user = User::get(AuthTable::getByUriToken($uri, $token)->uid);
-            User::storeUserToSession($user);
+        $domain = Request::input('domain');
+        $token = Request::input('anno_token');
+        $domain = urldecode($domain);
+        if(AuthTable::check($domain, $token)) {
+            $user = User::get(AuthTable::getByDomainToken($domain, $token)->uid);
+            $request->session()->flash('user', $user);
 		    return $next($request);
         }
         App::abort(401, 'Not authenticated');

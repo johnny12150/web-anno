@@ -144,9 +144,10 @@ return [
 		'App\Providers\ConfigServiceProvider',
 		'App\Providers\EventServiceProvider',
 		'App\Providers\RouteServiceProvider',
-        'Artdarek\OAuth\OAuthServiceProvider',
 
         'Thomaswelton\LaravelGravatar\LaravelGravatarServiceProvider',
+
+        'Greggilbert\Recaptcha\RecaptchaServiceProvider',
 	],
 
 	/*
@@ -161,7 +162,7 @@ return [
 	*/
 
 	'aliases' => [
-
+        'Auth'      => 'Illuminate\Support\Facades\Auth',
 		'App'       => 'Illuminate\Support\Facades\App',
 		'Artisan'   => 'Illuminate\Support\Facades\Artisan',
 		'Blade'     => 'Illuminate\Support\Facades\Blade',
@@ -193,8 +194,8 @@ return [
 		'URL'       => 'Illuminate\Support\Facades\URL',
 		'Validator' => 'Illuminate\Support\Facades\Validator',
 		'View'      => 'Illuminate\Support\Facades\View',
-        'OAuth' => 'Artdarek\OAuth\Facade\OAuth',
         'Gravatar' => 'Thomaswelton\LaravelGravatar\Facades\Gravatar',
+        'Recaptcha' => 'Greggilbert\Recaptcha\Facades\Recaptcha',
 	],
 
 ];

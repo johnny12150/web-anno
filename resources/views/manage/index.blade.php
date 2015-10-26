@@ -37,18 +37,18 @@
         </div>
         <hr/>
         <div class="anno-list">
-            @foreach( $annos as $anno )
-                <div class="anno-list-item" id="anno-{{ $anno['id'] }}">
+
+            @foreach( $annoData as $uri => $annos )
+                <div class="anno-list-item">
                     <div class="anno-item-top">
-                        <p class="anno-title">
-                            <a href="{{$anno['uri']}}">{{ $titles[$anno['uri']] }}</a>
-                        </p>
                         <p>
-                            <span>網址：</span>
-                            <a href="{{ $anno['uri'] }}">{{ $anno['uri'] }}</a>
+                            <span>識別路徑：</span>
+                            <a href="#">{{ $uri }}</a>
                         </p>
                     </div>
-                    <div class="anno-item-bottom">
+                @foreach( $annos as $index => $anno)
+
+                    <div class="anno-item-bottom"  id="anno-{{ $anno['id'] }}">
                         <p>標記：</p>
                         <div class="anno-quote">
                             {{ $anno['quote'] }}
@@ -63,6 +63,9 @@
                                     <span class="anno-tag">{{ $tag }}</span>
                                 @endforeach
                             </div>
+                        </div>
+                        <div class="anno-likes">
+
                         </div>
                         <!--<a href="#">
                             <i class="fa fa-share-alt" style="color: dodgerblue"></i>
@@ -81,6 +84,8 @@
                             <span>刪除標記</span>
                         </a>
                     </div>
+                        <hr/>
+                    @endforeach
                 </div>
             @endforeach
         </div>

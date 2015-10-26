@@ -6,6 +6,7 @@ use App\Annotation;
 use App\Tag;
 use App\User;
 use App\UrlInfo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 
 class ManageController extends Controller {
@@ -18,7 +19,7 @@ class ManageController extends Controller {
         $searchTag = Input::get('search_tag');
         $uri = Input::get('search_uri');
 
-        $user = User::user();
+        $user = Auth::user();
 
 
         if($searchText == '' && $searchTag == '')
@@ -26,32 +27,28 @@ class ManageController extends Controller {
         else
             $annos = AnnotationView::search([
                 'uri' => $uri,
+                'creator_id' => $user->id,
                 'text' => $searchText,
                 'quote' => $searchText,
                 'tag' => $searchTag,
-            ], 10, ($page-1)*10);
+            ], 10, ($page-1)*10, 'uri');
 
         $count = Annotation::getCountByUser($user->id);
         $pagesCount = $count / 10 + 1;
         $titles = [];
         $tags = Tag::getAllTags();
 
-        foreach($annos as $anno) {
-            $urlinfo = UrlInfo::getByUrl($anno['uri']);
-            $title = null;
-            if( $urlinfo == null ) {
-                $title = UrlInfo::getTitleFromInternet($anno['uri']);
-                $urlinfo = UrlInfo::updateTitle($anno['uri'], $title);
-            }
-            $titles[$anno['uri']] = ( $urlinfo != null ? $urlinfo['title']  : '無標題');
+        $annoData = [];
 
+        foreach($annos as $anno) {
+            $annoData[$anno['uri']] []= $anno;
         }
 
         $tags = array_unique($tags);
 
 
         return view('manage.index', [
-            'annos' => $annos,
+            'annoData' => $annoData,
             'titles' => $titles,
             'page' => $page,
             'pagesCount' => $pagesCount,
@@ -67,7 +64,7 @@ class ManageController extends Controller {
     public function delete()
     {
         $id = Input::get('id');
-        $user_id = User::user()->id;
+        $user_id = Auth::user()->id;
         $result = Annotation::del($user_id, $id);
         return [
             'result' => $result > 0
@@ -78,7 +75,7 @@ class ManageController extends Controller {
     {
         $text = Input::get('text');
         $id = Input::get('id');
-        $user_id = User::user()->id;
+        $user_id = Auth::user()->id;
         $result = Annotation::editText($user_id, $id, $text);
 
         return [

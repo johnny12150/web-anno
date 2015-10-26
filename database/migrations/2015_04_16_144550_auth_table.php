@@ -16,7 +16,7 @@ class AuthTable extends Migration {
         {
             $table->increments('id');
             $table->integer('uid')->unsigned();
-            $table->string('uri');
+            $table->string('domain');
             $table->string('auth_token');
             $table->timestamp('auth_expire');
         });

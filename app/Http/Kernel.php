@@ -23,8 +23,11 @@ class Kernel extends HttpKernel {
 	 * @var array
 	 */
 	protected $routeMiddleware = [
-        'auth' => 'App\Http\Middleware\AuthMiddleWare',
         'api_auth' => 'App\Http\Middleware\ApiMiddleWare',
+        'auth' => '\App\Http\Middleware\Authenticate',
+        'auth.basic' => '\Illuminate\Auth\Middleware\AuthenticateWithBasicAuth',
+        'guest' => '\App\Http\Middleware\RedirectIfAuthenticated',
+        'crossdomain' => '\App\Http\Middleware\CrossDomainMiddleWare',
 	];
 
 }

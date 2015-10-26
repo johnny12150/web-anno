@@ -19,37 +19,37 @@ class AuthTable extends Model{
      *
      * @var array
      */
-    protected $fillable = ['uid', 'uri', 'auth_token', 'auth_expire'];
+    protected $fillable = ['uid', 'domain', 'auth_token', 'auth_expire'];
 
     public $timestamps = false;
 
 
-    public static function getByUriUser($uri, $uid)
+    public static function getByDomainUser($domain, $uid)
     {
-        return self::where('uid', $uid)->where('uri', $uri)->first();
+        return self::where('uid', $uid)->where('domain', $domain)->first();
     }
 
-    public static function getByUriToken($uri, $token)
+    public static function getByDomainToken($domain, $token)
     {
-        return self::where('uri', $uri)->where('auth_token', $token)->first();
+        return self::where('domain', $domain)->where('auth_token', $token)->first();
     }
 
-    public static function check($uri, $token)
+    public static function check($domain, $token)
     {
-        return self::where('uri', $uri)->where('auth_token', $token)->first() != null;
+        return self::where('domain', $domain)->where('auth_token', $token)->first() != null;
     }
 
-    public static function add($uri, $uid)
+    public static function add($domain, $uid)
     {
-        $auth = self::getByUriUser($uid, $uri);
+        $auth = self::getByDomainUser($uid, $domain);
 
         if($auth != null) {
             $auth = self::updateExpire($auth);
         } else {
             $auth = new self();
             $auth->uid = $uid;
-            $auth->uri = $uri;
-            $auth->auth_token = self::generateToken($uid, $uri);
+            $auth->domain = $domain;
+            $auth->auth_token = self::generateToken($uid, $domain);
             $auth->auth_expire = Carbon::now()->addMonths(1);
             $auth->save();
         }
@@ -64,11 +64,11 @@ class AuthTable extends Model{
         return $auth;
     }
 
-    private static function generateToken($uri, $uid)
+    private static function generateToken($domain, $uid)
     {
-        $token = sha1($uid.$uri.time());
-        while(self::check($uri, $token))
-            $token = sha1($uid.$uri.time());
+        $token = sha1($uid.$domain.time());
+        while(self::check($domain, $token))
+            $token = sha1($uid.$domain.time());
         return $token;
     }
 

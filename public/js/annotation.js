@@ -15,11 +15,21 @@ var annotation = function(e) {
         }
         _annotation.uri = setting.uri
         //---------------------------------------------------------------
+
+        function deleteCookie( name, path, domain ) {
+            if( getCookie( name ) ) {
+                document.cookie = name + "=" +
+                ((path) ? ";path="+location.host:"")+
+                ((domain)?";domain="+domain:"") +
+                ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
+            }
+        }
+
         function setCookie(cname, cvalue, exdays) {
             var d = new Date();
             d.setTime(d.getTime() + (exdays*24*60*60*1000));
             var expires = "expires="+d.toUTCString();
-            document.cookie = cname + "=" + cvalue + ";path=" + location.pathname +  "; " + expires;
+            document.cookie = cname + "=" + cvalue + ";path=" + location.host +  "; " + expires;
         }
 
         function getCookie(cname) {
@@ -104,29 +114,28 @@ var annotation = function(e) {
         }).annotator('addPlugin', 'Store', {
             prefix: '',
             urls: {
-                create:  'http://annotator.local:8000/api/annotations/',
-                read:    'http://annotator.local:8000/api/annotations/:id/',
-                update:  'http://annotator.local:8000/api/annotations/:id/',
-                destroy: 'http://annotator.local:8000/api/annotations/:id/',
-                search:  'http://annotator.local:8000/api/search/'
+                create:  'http://140.109.143.48/api/annotations/',
+                read:    'http://140.109.143.48/api/annotations/:id/',
+                update:  'http://140.109.143.48/api/annotations/:id/',
+                destroy: 'http://140.109.143.48/api/annotations/:id/',
+                search:  'http://140.109.143.48/api/search/'
             },
             annotationData: {
                 uri: _annotation.uri,
-                anno_token : anno_token
+                domain : location.host,
+                anno_token : anno_token,
+                likes: 0
             },
             loadFromSearch: {
                 limit: 0,
                 all_fields: 1,
                 uri: uri,
+                domain : location.host,
                 anno_token : anno_token
             }
         })
             .annotator('addPlugin','RichText',optionsRichText)
             .annotator('addPlugin', 'Tags')
-            .annotator('addPlugin', 'MyAuth', {
-                anno_token : anno_token,
-                uri: _annotation.uri
-            })
             .annotator('addPlugin', 'Permissions', permissionsOptions)
             ;
 

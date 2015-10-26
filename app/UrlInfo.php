@@ -67,11 +67,12 @@ class UrlInfo extends Model {
      */
     public static function getTitleFromInternet($url)
     {
+
         try {
             $url = str_replace('annotator.local:8000', 'annotator.local:5000', $url);
             $html = self::file_get_contents_curl($url);
             $title = preg_match('/<title[^>]*>(.*?)<\/title>/ims', $html, $matches) ? $matches[1] : null;
-            return $title;
+            return $title or '';
         } catch(Exception $e) {
             return '';
         }

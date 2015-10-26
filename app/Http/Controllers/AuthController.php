@@ -3,9 +3,17 @@
 use App\AuthTable;
 use App\User;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\URL;
 use League\Flysystem\Exception;
 use OAuth;
 use OAuth\Common\Http\Exception\TokenResponseException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\MessageBag;
+use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
 /**
  * Created by PhpStorm.
@@ -15,41 +23,224 @@ use OAuth\Common\Http\Exception\TokenResponseException;
  */
 class AuthController extends Controller
 {
+    use AuthenticatesAndRegistersUsers;
+    /*
+        |--------------------------------------------------------------------------
+        | Registration & Login Controller
+        |--------------------------------------------------------------------------
+        |
+        | This controller handles the registration of new users, as well as the
+        | authentication of existing users. By default, this controller uses
+        | a simple trait to add these behaviors. Why don't you explore it?
+        |
+        */
+    /**
+     * Create a new authentication controller instance.
+     *
+     *
+     */
+    public function __construct()
+    {
+        $this->middleware('guest', ['except' => 'getLogout']);
+    }
+    /**
+     * Get a validator for an incoming registration request.
+     *
+     * @param  array  $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'name' => 'required|max:255|min:2',
+            'email' => 'required|email|max:255|unique:users',
+            'password' => 'required|confirmed|min:6',
+            //'g-recaptcha-response' => 'required|recaptcha',
+        ]);
+    }
 
     function getLogin()
     {
+
         return view('auth.login', [
-            'callback_uri' => Request::input('callback_uri')
+            'callback_url' => Request::input('callback_url') ,
+            'uri' => Request::input('uri') ,
+            'domain' => Request::input('domain') ,
+            'register_url' =>  Request::input('callback_url') != ''
+                && Request::input('uri') != ''
+                && Request::input('domain') != ''  ? url('auth/register?'.http_build_query([
+                'callback_url' => Request::input('callback_url') ,
+                'uri' => Request::input('uri') ,
+                'domain' => Request::input('domain')]))
+            : url('/auth/register')
         ]);
     }
 
     function postLogin()
     {
 
-    }
+        $callback_url = Request::input('callback_url');
+        $uri = Request::input('uri');
+        $domain = Request::input('domain');
 
-    function getLogout()
-    {
-        //clear session
-        User::logout();
-        //back to login page
-        return redirect('auth/login');
+        $rules = array(
+            'email' => 'required|email|max:255', // make sure the email is an actual email
+            'password' => 'required|min:6|max:255' // password can only be alphanumeric and has to be greater than 3 characters
+        );
+
+        $validator = Validator::make(Input::all(), $rules);
+
+
+        // if the validator fails, redirect back to the form
+        if ($validator->fails())
+        {
+
+            $inputs = Input::except('password');
+            $inputs ['register_url'] = ( Request::input('callback_url') != ''
+                && Request::input('uri') != ''
+                && Request::input('domain') != '' )
+                ? url('auth/register?'.http_build_query([
+                        'callback_url' => Request::input('callback_url') ,
+                        'uri' => Request::input('uri') ,
+                        'domain' => Request::input('domain')])) : url('/auth/register');
+            return redirect('auth/login')
+                ->withInputs($inputs)
+                ->withErrors($validator);
+        }
+        else
+        {
+
+            // create our user data for the authentication
+            $userdata = array(
+                'email'     => Input::get('email'),
+                'password'  => Input::get('password')
+            );
+            if (Auth::attempt($userdata))
+            {
+                if( $callback_url != null
+                    && $uri != null
+                    && $domain != null ) {
+
+                    $callback_url = urldecode($callback_url);
+                    $uri = urldecode($uri);
+                    $domain = urldecode($domain);
+
+                    $user = Auth::user();
+                    // generate a auth token for this external site
+                    $auth = AuthTable::add($domain, $user->id);
+
+                    //check callback query string exist
+                    $hasQuery = strstr($callback_url, '?');
+
+                    //add token to query string
+                    $callback_url .= '#user_id='. $user->id .'&anno_token='. $auth->auth_token;
+
+                    //back to this external site
+                    return redirect($callback_url);
+                } else {
+
+
+                    return redirect('/');
+                }
+            }
+            else
+            {
+
+                $errors = new MessageBag(['password' => ['Account and/or password invalid.']]); //
+                // validation not successful, send back to form
+                $inputs = Input::except('password');
+                $inputs ['register_url'] = ( Request::input('callback_url') != ''
+                    && Request::input('uri') != ''
+                    && Request::input('domain') != '' )
+                    ? url('auth/register?'.http_build_query([
+                            'callback_url' => Request::input('callback_url') ,
+                            'uri' => Request::input('uri') ,
+                            'domain' => Request::input('domain')])) : url('/auth/register');
+                return view('auth.login', $inputs)
+                    ->withErrors($errors);
+            }
+        }
     }
 
     function getRegister()
     {
+        return view('auth.register', [
+            'callback_url' => urlencode(Request::input('callback_url')) ,
+            'uri' => urlencode(Request::input('uri')) ,
+            'domain' => urlencode(Request::input('domain')) ,
+        ]);
+    }
+
+    /**
+     * Handle a registration request for the application.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function postRegister()
+    {
+        $callback_url = Request::input('callback_url');
+        $uri = Request::input('uri');
+        $domain = Request::input('domain');
+
+
+        $validator = $this->validator(Request::all());
+        if ($validator->fails()) {
+            return view('auth.register', Input::except('password'))
+                ->withErrors($validator) // send back all errors to the login form
+                ->withInput(Input::except('password')); // send back the input (not the password) so that we can repopulate the form
+        }
+
+        Auth::login($this->create(Request::all()));
+
+        if( $callback_url != null
+            && $uri != null
+            && $domain != null ) {
+
+            $callback_url = urldecode($callback_url);
+            $uri = urldecode($uri);
+            $domain = urldecode($domain);
+
+
+            $user = Auth::user();
+            // generate a auth token for this external site
+            $auth = AuthTable::add($domain, $user->id);
+
+            //check callback query string exist
+            $hasQuery = strstr($callback_url, '?');
+
+            //add token to query string
+            $callback_url .= '#user_id='. $user->id .'&anno_token='. $auth->auth_token;
+
+            //back to this external site
+            return redirect($callback_url);
+        } else {
+
+            return redirect($this->redirectPath());
+        }
+
 
     }
 
-    function  postRegister()
-    {
 
+    /**
+     * Create a new user instance after a valid registration.
+     *
+     * @param  array  $data
+     * @return User
+     */
+    protected function create(array $data)
+    {
+        return User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password']),
+        ]);
     }
 
     public function getFacebook()
     {
 
-        $callback_uri = Request::input('callback_uri');
+        /*$callback_url = Request::input('callback_url');
         // get data from request
         $code = Request::input('code');
 
@@ -79,19 +270,19 @@ class AuthController extends Controller
             }
 
             // check if it was external website called
-            if($callback_uri != null) {
+            if($callback_url != null) {
 
                 // generate a auth token for this external site
-                $auth = AuthTable::add($callback_uri, $user->id);
+                $auth = AuthTable::add($callback_url, $user->id);
 
                 //check callback query string exist
-                $hasQuery = strstr($callback_uri, '?');
+                $hasQuery = strstr($callback_url, '?');
 
                 //add token to query string
-                $callback_uri .= '#user_id='. $user->id .'&anno_token='. $auth->auth_token;
+                $callback_url .= '#user_id='. $user->id .'&anno_token='. $auth->auth_token;
 
                 //back to this external site
-                return redirect($callback_uri);
+                return redirect($callback_url);
             } else {
                 //back to home page
                 return redirect('/');
@@ -103,7 +294,13 @@ class AuthController extends Controller
             // return to facebook login url
 
             return redirect((string)$url);
-        }
+        }*/
+    }
+
+
+    function getLogout() {
+        Auth::logout();
+        return redirect('/home');
     }
 
 }

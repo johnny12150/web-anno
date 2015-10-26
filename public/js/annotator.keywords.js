@@ -6,10 +6,11 @@
  */
 function Keyword(element, settings) {
 
-    var scope = this;
+    var _this = this;
     var _element = element;
     var keyword_index = 1;
     this.data = [];
+    this.keywordUrl = 'http://140.109.18.158/api/annotation.jsp';
 
     function clone(obj) {
         if (null == obj || "object" != typeof obj) return obj;
@@ -22,7 +23,7 @@ function Keyword(element, settings) {
 
 
     this.init = function() {
-        $.ajax('http://140.109.18.158/api/annotation.jsp', {
+        $.ajax(_this.keywordUrl , {
             method: 'POST',
             async: false,
             crossDomain: true,
@@ -32,7 +33,7 @@ function Keyword(element, settings) {
             },
             success: function(data) {
 
-                for( var i in data) {
+                for( i in data) {
                     var row = data[i];
                     $(_element).html(
                         $(_element)

@@ -4,10 +4,21 @@
 
 Annotator.Plugin.MyAuth = function (element, settings) {
 
+    var _this = this;
     //Annotation 物件
-    this.annotator = $(element).annotator().data('annotator');
+
     //確認是否登入的網址
-    this.authCheckurl = 'http://annotator.local:8000/api/check';
+    this.authCheckurl = 'http://140.109.143.48/api/check';
+
+    this.user = null;
+
+    this.site = location.href;
+    this.uri = settings.uri;
+    if(this.uri == null)
+        this.uri = location.href.split('#')[0];
+    this.domain = location.host;
+    this.callback_url = location.href.split('#')[0];
+
 
     //登入Anntation的 Madal UI
     this.insertAuthUI = function() {
@@ -21,14 +32,14 @@ Annotator.Plugin.MyAuth = function (element, settings) {
 
         $(document)
             .on('click', '#anno-btn-login', function(e) {
-                location.href = 'http://annotator.local:8000/auth/login?callback_uri=' + location.href;
+                location.href = 'http://annotator.local/auth/login?callback_url='
+                    + encodeURIComponent(_this.callback_url)  + '&uri=' + _this.uri + '&domain=' + _this.domain ;
             })
             .on('click', '#anno-btn-close', function(e) {
                 $('#openAuthUI').removeClass('show');
+                return false;
             });
     };
-
-    var _this = this;
 
     this.anno_token = settings.anno_token != null ? settings.anno_token : '';
     this.uri = settings.uri != null ? settings.uri : '';
@@ -38,11 +49,17 @@ Annotator.Plugin.MyAuth = function (element, settings) {
 
         if(!this.is_authed) {
             $.ajax({
+                async: false,
+                crossDomain: true,
+                dataType: 'json',
                 data: {
                     'anno_token': _this.anno_token,
-                    'uri': _this.uri
+                    'domain' : _this.domain
                 },
-                url: this.authCheckurl,
+                url: _this.authCheckurl,
+                success: function(data) {
+                    _this.user = data.user;
+                },
                 statusCode: {
                     200 : function() {
                         _this.is_authed = true;

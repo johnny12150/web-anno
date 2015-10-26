@@ -70,7 +70,7 @@
 
 .anno-panel {
   font-family: Arial, "Microsoft YaHei", "黑體", "文泉驛正黑", "WenQuanYi Zen Hei", "儷黑 Pro", "LiHei Pro", "微軟正黑體", "Microsoft JhengHei", "標楷體", DFKai-SB, sans-serif;
-  width: 260px;
+  max-width: 260px;
   padding: 25px;
   background-color: #FFFFFF;
   border-top-left-radius: 5px;
@@ -91,7 +91,7 @@
     position: absolute;
     z-index: 100;
     background-color: #FFFFFF;
-    left: -25px;
+    left: -10px;
     top: 130px;
   }
 
@@ -105,21 +105,13 @@
 
   .anno-tags {
     margin-top: 10px;
+
+    ul {
+      max-height: 300px;
+      overflow-y: scroll;
+    }
   }
 
-
-
-  .btn-appear {
-    width: 25px;
-    height: 50px;
-    border-left: 2px solid #cccccc;
-    border-radius: 100%;
-    position: absolute;
-    z-index: 100;
-    background-color: #FFFFFF;
-    left: -25px;
-    top: 130px;
-  }
 
   hr {
     margin-top: 25px;
@@ -158,7 +150,7 @@
         height: 30px;
         width: 30px;
         display: inline-block;
-
+        vertical-align: middle;
       }
 
       span {
@@ -189,6 +181,7 @@
     background-color: transparent;
     margin-right: 0;
     padding-bottom: 10px;
+
   }
 
   .fa-search {

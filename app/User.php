@@ -2,13 +2,16 @@
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Session;
-
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 /**
  * Class User
  * @package App
  */
-class User extends Model {
-
+class User extends Model implements AuthenticatableContract, CanResetPasswordContract {
+    use Authenticatable, CanResetPassword;
 	/**
 	 * The database table used by the model.
 	 *
@@ -21,12 +24,11 @@ class User extends Model {
 	 *
 	 * @var array
 	 */
-	protected $fillable = ['name', 'email', 'lastlogin', 'facebook_id', 'facebook_token', 'auth_token', 'auth_expire'];
+	protected $fillable = ['name', 'password', 'email', 'lastlogin', 'facebook_id', 'facebook_token', 'auth_token', 'auth_expire'];
 
 
-    protected $hidden = ['facebook_token', 'lastlogin'];
-
-    /**
+    protected $hidden = ['password', 'remember_token', 'facebook_token', 'lastlogin'];
+     /**
      * Get user by facebook id
      *
      * @param $fbid - facebook id
@@ -79,100 +81,5 @@ class User extends Model {
         ]);
     }
 
-    //----------------------------------------------------------
 
-    /**
-     * Get user from seesion
-     *
-     * @return mixed
-     */
-    public static function user()
-    {
-        return Session::get('user');
-    }
-
-
-    /**
-     * Check logined or not
-     *
-     * @return bool
-     */
-    public static function check()
-    {
-        $_user = self::user();
-
-        if($_user != null) {
-
-            $expire = Session::get('expire');
-            $curtime = time();
-
-            if( $curtime - $expire > 5 * 60 * 60) {
-
-                self::logout();
-            } else {
-                Session::put('expire', time());
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-
-    /**
-     * Check user not logged
-     * @return bool
-     */
-    public static function guest()
-    {
-        return !self::check();
-    }
-
-    /**
-     * Logout from system
-     */
-    public static function logout()
-    {
-        Session::flush();
-    }
-
-    /**
-     * Login to system
-     *
-     * @param $fbuser - Facebook user obj
-     * @param $token - Facebook token
-     * @return User|mixed
-     */
-    public static function login($fbuser, $fbtoken)
-    {
-
-        $user = self::getByFacebook($fbuser->id);
-
-        if($user == null)
-            $user = self::addByFacebook($fbuser, $fbtoken);
-
-        self::updateLastlogin($user->id);
-
-        self::storeUserToSession($user);
-
-        return $user;
-    }
-
-
-    /**
-     * Store User data to session
-     * @param $user
-     * @param bool $isflash
-     */
-    public static function storeUserToSession($user, $isflash = false)
-    {
-        if(!$isflash) {
-            Session::put('expire', time());
-            Session::put('user', $user);
-        } else {
-            Session::flash('user', $user);
-        }
-
-        Session::save();
-    }
 }
