@@ -1,0 +1,334 @@
+@charset "utf8";
+
+html, body {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  font-family: Ubuntu, 'Noto Sans', sans-serif, 'cwTeXHei';
+}
+a {
+  color: black;
+  text-decoration: none;
+}
+a:hover {
+  color: #3399FF;
+  
+}
+button {
+  cursor: pointer;
+}
+img {
+  height: inherit;
+}
+.tips {
+  color: grey;
+}
+/**************************  header ~ footer **************************/
+header {
+  width: 100%;
+  height: 80px;
+  line-height: 80px;
+  background-color: #231a31;
+  color: white;
+}
+.header-title {
+  display: inline-block;
+  height: inherit;
+  line-height: inherit;
+  margin-left: 10px;
+  font-size: 2rem;
+}
+.header-title a {
+  color: white;
+}
+.header-title a:hover {
+  color: white;
+}
+.header-icon {
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  height: inherit;
+  line-height: inherit;
+}
+.header-icon img {
+  width: auto;
+  height: 80%;
+  padding: 10px;
+}
+
+.body-wrap {
+  min-height: 100%;
+  margin-bottom: -80px;
+}
+.body-wrap:after {
+  display: block;
+  content: "";
+}
+footer, .body-wrap:after {
+  height: 80px;
+}
+footer {
+  width: 100%;
+  line-height: 80px;
+  background-color: #8ab2ff;
+  text-align: center;
+}
+footer img {
+  margin-right: 50px;
+  width: auto;
+  height: 80%;
+}
+.footer-wrapper {
+  height: 60px;
+  padding-top: 10px;
+}
+.footer-logo-bar {
+  display: inline-block;
+  height: inherit;
+  line-height: inherit;
+}
+.footer-right-section {
+  display: inline-block;
+  float: right;
+  margin-right: 10px;
+  height: inherit;
+  line-height: inherit;
+}
+/**************************  index  **************************/
+.content-wrap {
+  background-color: white;
+}
+.flex-wrap {
+  display: flex;
+  display: -ms-flexbox; /* IE 10 */
+  display: -webkit-flex; /* Safari */
+}
+.content-container {
+  text-align: left;
+  padding: 30px;
+}
+.search-container {
+  padding: 20px;
+  width: 30%;
+  float: left;
+  background-color: #e42f45;
+}
+.class-type-section {
+  padding-right: 20px;
+  font-size: 1.5rem;
+}
+.class-type-section ol {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+.class-type-section ol li {
+  margin-bottom: 10px;
+}
+.class-type-section a.active {
+  color: #3399FF;
+}
+.subject-tree-section {
+  background-color: white;
+/*
+  float: left;
+*/
+}
+.subject-tree {
+  padding: 10px;
+  border: 1px solid black;
+}
+.list-content-panel {
+  background-color: white;
+  width: 60%;
+  float: right;
+  padding: 20px;
+  min-height: 850px;
+}
+
+/**************************  list-content  **************************/
+.list-filter-section {
+  text-align: right;
+}
+.item-section {
+  height: 300px;
+  font-family: 'Noto Sans', sans-serif, 'cwTeXHei';
+}
+.item-section-rel {
+  height: 100px;
+  font-family: 'Noto Sans', sans-serif, 'cwTeXHei';
+}
+.item-field-group {
+  float: left;
+  display: inline-block;
+  width: 70%;
+}
+.item-label {
+  display: inline-block;
+  width: 150px;
+}
+.item-rel-type {
+  font-style: italic;
+}
+.item-rel-people {
+  color: #9966FF;
+}
+.item-more:hover {
+  color: #00BBFF;
+}
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; 
+  padding-bottom: 20px;
+}
+.item-image {
+  float: right;
+  display: inline-block;
+  width: 25%;
+  height: inherit;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+.pagination-section {
+  text-align: center;
+}
+.pagination {
+  list-style-type: none;
+}
+.pagination li {
+  display: inline-block;
+  padding-right: 15px;
+  font-size: 1.5rem;
+}
+.active-page {
+  color: #3399FF;
+  font-weight: bold;
+}
+/**************************  resource.php  **************************/
+.field-content-panel {
+  width: 60%;
+  float: left;
+  font-family: 'Noto Sans', sans-serif, 'cwTeXHei';
+  padding: 20px;
+}
+.field-title {
+  width: 80%;
+  height: 50px;
+  font-size: 2rem;
+  font-weight: bolder;
+  padding-top: 20px;
+  padding-bottom: 40px;
+}
+.field-title-icon {
+  float: right;
+  height: inherit;
+  margin-right: 20px;
+}
+.field-section {
+  height: 60px;
+  line-height: 60px;
+  padding-bottom: 20px;
+}
+.field-label {
+  float: left;
+  display: inline-block;
+  width: 160px;
+  height: inherit;
+  line-height: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.field-relation-label {
+  font-style: italic;
+}
+.field-value {
+  display: inline-block;
+  margin-left: 20px;
+  width: 60%;
+  height: inherit;
+  line-height: inherit;
+}
+.field-scroll-value {
+  overflow: auto;
+  border: 1px solid #999;
+  line-height: 30px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.resource-side-panel {
+  width: 35%;
+  float: right;
+}
+.resource-image-section {
+  height: 300px;
+  padding-top: 50px;
+}
+.resource-image {
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+.back-result {
+  text-align: center;
+}
+.lodlive-section {
+  padding: 10px;
+}
+.lodlive-iframe {
+  width: 100%;
+  height: 800px;
+}
+.click-plus {
+  float: right;
+  font-size: 2rem;
+}
+/**************************  google map  **************************/
+.gmap-wrapper {
+  width: 90%;
+  margin: 20px auto 0 auto;
+  border: 2px solid #333;
+}
+.gmap-container {
+  height: 500px;
+
+}
+.gmap-info-section {
+  padding: 10px;
+  border-top: 2px solid #333;
+}
+.gmap-info {
+  display: inline-block;
+  margin-right: 50px;
+}
+.gmap-info-color-brick {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-left: 5px;
+  border-radius: 10px;
+}
+/**************************  award dialog  **************************/
+.dialog-label {
+  display: inline-block;
+}
+.dialog-value {
+  display: inline-block;
+}
+.dialog-value a:hover {
+  color: #3399FF;
+}
+/**************************  map click info-window  **************************/
+.map-info-section {
+  margin-bottom: 30px;
+}
+.map-info-label {
+  font-weight: bold;
+}
+.map-info-content {
+}

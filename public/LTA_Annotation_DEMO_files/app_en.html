@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<!-- saved from url=(0077)http://data.asdc.tw/LodLive/app_en.html?http://data.asdc.tw/lod/Person/PR0001 -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="XHTML+RDFa 1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemalocation="http://www.w3.org/1999/xhtml http://www.w3.org/MarkUp/SCHEMA/xhtml-rdfa-2.xsd" lang="it" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:foaf="http://xmlns.com/foaf/0.1/" class=""><head profile="http://www.w3.org/1999/xhtml/vocab"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title property="dc:title">LodLive - browsing the Web of Data</title>
+		<link rel="shortcut icon" href="http://data.asdc.tw/LodLive/favicon.png">
+		<link rel="icon" type="image/png" href="http://data.asdc.tw/LodLive/favicon.png">
+		<link rel="image_src" href="http://lodlive.it/img/logoLodLive.jpg">
+		<meta property="og:image" content="http://lodlive.it/img/logoLodLive.jpg">
+
+		<link property="dc:creator" href="http://purl.org/net/foaf:Person/diego-valerio-camarda">
+		<link property="dc:creator" href="http://purl.org/net/foaf:Person/silvia-mazzini">
+		<link property="dc:creator" href="http://purl.org/net/foaf:Person/alessandro-antonuccio">
+		<link property="dc:subject" href="http://dbpedia.org/resource/Semantic_Web">
+		<link property="dc:subject" href="http://dbpedia.org/page/Linked_Data">
+		<link property="dc:subject" href="http://dbpedia.org/resource/SPARQL">
+
+		<link property="cc:licence" href="http://www.opensource.org/licenses/mit-license.php">
+
+		<meta property="og:title" content="LodLive - browsing the Web of Data">
+		<meta property="og:description" content="LodLive è un progetto sperimentale nato per divulgare la filosofia dei linked open data e per creare uno strumento in grado di associare le potenzialità di un browser RDF all&#39;efficacia della rappresentazione a grafo proponendosi come primo navigatore di risorse RDF basato unicamente su endpoint SPARQL.">
+
+		<meta property="dcterms:created" content="2012-04-25T13:00:00">
+		
+
+		<script src="jquery.min.js"></script><style type="text/css"></style>
+		<script>
+			window.jQuery || document.write('<script src="js/jquery-2.0.3.min.js"><\/script>')
+		</script>
+
+		<script type="text/javascript">
+			//~ var _gaq = _gaq || [];
+			//~ _gaq.push(['_setAccount', 'UA-1940652-20']);
+			//~ _gaq.push(['_setDomainName', 'lodlive.it']);
+			//~ _gaq.push(['_trackPageview']);
+
+			//~ (function() {
+				//~ var ga = document.createElement('script');
+				//~ ga.type = 'text/javascript';
+				//~ ga.async = true;
+				//~ ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+				//~ var s = document.getElementsByTagName('script')[0];
+				//~ s.parentNode.insertBefore(ga, s);
+			//~ })();
+		</script>
+
+		<script type="text/javascript">
+			WebFontConfig = {
+				google : {
+					families : ['Open+Sans:400italic,700italic,800italic,300italic,600italic,400,300,600,800,700:latin']
+				}
+			};
+			//~ (function() {
+				//~ var wf = document.createElement('script');
+				//~ wf.src = ('https:' == document.location.protocol ? 'https' : 'http') + '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+				//~ wf.type = 'text/javascript';
+				//~ wf.async = 'true';
+				//~ var s = document.getElementsByTagName('script')[0];
+				//~ s.parentNode.insertBefore(wf, s);
+			//~ })();
+		</script>
+		<script type="text/javascript" src="jquery-ui-1.9.2.min.js"></script>
+
+		<link rel="stylesheet" href="jquery.fancybox.css" type="text/css" media="all">
+		<link rel="stylesheet" href="lodlive.core.css" type="text/css" media="all">
+		<link rel="stylesheet" href="lodlive.profile.css" type="text/css" media="all">
+		<link rel="stylesheet" href="lodlive.app.css" type="text/css" media="all">
+
+		<script type="text/javascript" src="jquery.fancybox.pack.js"></script>
+		<script type="text/javascript" src="jquery.slimScroll.min.js"></script>
+		<script type="text/javascript" src="jquery.json-2.3.min.js"></script>
+		<script type="text/javascript" src="jquery.jsonp-2.4.0.min.js"></script>
+		<script type="text/javascript" src="jquery.jstorage.js"></script>
+		<script type="text/javascript" src="jquery.jcanvas.js"></script>
+		<script type="text/javascript" src="jquery.doTimeout.js"></script>
+		<script type="text/javascript" src="js(1)"></script><script src="main(2).js"></script>
+		<script type="text/javascript" src="jquery.gmap3.js"></script>
+		<script type="text/javascript" src="jquery.ThreeDots.min.js"></script>
+
+		<script type="text/javascript" src="lodlive.profile.js"></script>
+		<script type="text/javascript" src="lodlive.core.js"></script>
+		<script type="text/javascript" src="lodlive.lang.js"></script>
+		<script type="text/javascript" src="lodlive.utils.js"></script>
+		<script type="text/javascript" src="lodlive.custom-lines.js"></script>
+		<script type="text/javascript" src="lodlive.app.js"></script>
+		<script type="text/javascript">
+			$.jStorage.set('selectedLanguage', 'en')
+		</script>
+
+	<style type="text/css">.fancybox-margin{margin-right:0px;}</style><script type="text/javascript" charset="UTF-8" src="common(1).js"></script><script type="text/javascript" charset="UTF-8" src="util(1).js"></script><script type="text/javascript" charset="UTF-8" src="stats(1).js"></script></head>
+	<body>
+    <div class="lodlive-container">
+    <div id="aSpace"><div id="lodlogo" class="sprite"></div><div class="boxWrapper ui-draggable box8" id="363b4d57c6115e09ab2fed9d809b6d33" rel="http://data.asdc.tw/lod/Person/PR0001" data-endpoint="http://data.asdc.tw/LTA/sparql" style="left: 1467.5px; top: 1467.5px; z-index: 1;"><div class="box sprite"><div class="boxTitle" threedots="Chen Cheng-po 
+陳澄波 
+" style="margin-top: 51px; height: 31px;"><span class="ellipsis_text">Chen Cheng-po 
+陳澄波 
+</span></div></div><div class="page page1"><div class="pager pageNext sprite" data-page="page2" style="top:3.966991411008941px;left:3.9669914110089266px"></div><div class="relatedBox sprite 4476b9bbf02dc299756dea653f732a26" rel="http://data.asdc.tw/lod/Place/PL0031" data-title="http://schema.org/birthPlace | http://schema.org/deathPlace 
+ http://data.asdc.tw/lod/Place/PL0031" style="top:76.41142838268905px;left:129.44443697168012px" data-circlepos="1" data-circleparts="24" data-circleid="363b4d57c6115e09ab2fed9d809b6d33" data-property="http://schema.org/birthPlace | http://schema.org/deathPlace" relmd5="4476b9bbf02dc299756dea653f732a26"></div><div class="relatedBox sprite 28988e4c53eb532bafbbabb594b4327a" rel="http://data.asdc.tw/lod/Place/PL0010" data-title="http://schema.org/homeLocation | http://schema.org/nationality 
+ http://data.asdc.tw/lod/Place/PL0010" style="top:94.5px;left:121.9519052838329px" data-circlepos="2" data-circleparts="24" data-circleid="363b4d57c6115e09ab2fed9d809b6d33" data-property="http://schema.org/homeLocation | http://schema.org/nationality" relmd5="28988e4c53eb532bafbbabb594b4327a"></div><div class="groupedRelatedBox sprite" rel="a45c4088bfdbd6bc570e567babc0e5ba" data-title="http://schema.org/homeLocation 
+ 2 connected resources" style="top:110.03300858899107px;left:110.03300858899107px"></div><div class="relatedBox sprite c768e241120b8feae9a1ee5bf85b40ed" rel="http://data.asdc.tw/lod/Place/PL0034" data-title="http://schema.org/nationality 
+ http://data.asdc.tw/lod/Place/PL0034" style="top:121.9519052838329px;left:94.5px" data-circlepos="4" data-circleparts="24" data-circleid="363b4d57c6115e09ab2fed9d809b6d33" data-property="http://schema.org/nationality" relmd5="c768e241120b8feae9a1ee5bf85b40ed"></div><div class="groupedRelatedBox sprite" rel="bb771ccec0ccf2a715e32dfe375616dd" data-title="http://schema.org/worksFor 
+ 5 connected resources" style="top:129.44443697168012px;left:76.41142838268905px"></div><div class="relatedBox sprite ca9a269cb5786e66a5caac1ab4b10471" rel="http://data.asdc.tw/lod/Organization/OR0011" data-title="http://schema.org/worksFor | http://vocab.getty.edu/ontology#ulan2828_student_at 
+ http://data.asdc.tw/lod/Organization/OR0011" style="top:132px;left:57px" data-circlepos="6" data-circleparts="24" data-circleid="363b4d57c6115e09ab2fed9d809b6d33" data-property="http://schema.org/worksFor | http://vocab.getty.edu/ontology#ulan2828_student_at" relmd5="ca9a269cb5786e66a5caac1ab4b10471"></div><div class="groupedRelatedBox sprite" rel="baf91858f477b86da1b59f57ac60639a" data-title="http://vocab.getty.edu/ontology#ulan1313_partner_in 
+ 7 connected resources" style="top:129.44443697168012px;left:37.58857161731093px"></div><div class="groupedRelatedBox sprite" rel="f9fb2d96fcd3a37d9a38b4aa6d3fc3a8" data-title="http://vocab.getty.edu/ontology#ulan1511_child_of 
+ 2 connected resources" style="top:121.9519052838329px;left:19.500000000000014px"></div><div class="groupedRelatedBox sprite" rel="ce082882020e30378e88c1c9e335f136" data-title="http://vocab.getty.edu/ontology#ulan1512_parent_of 
+ 5 connected resources" style="top:110.03300858899107px;left:3.966991411008941px"></div><div class="relatedBox sprite 82dc32a64a60c35eb984aaddff6957e4" rel="http://data.asdc.tw/lod/Person/PR0204" data-title="http://vocab.getty.edu/ontology#ulan1541_spouse_of 
+ http://data.asdc.tw/lod/Person/PR0204" style="top:94.5px;left:-7.9519052838329px" data-circlepos="10" data-circleparts="24" data-circleid="363b4d57c6115e09ab2fed9d809b6d33" data-property="http://vocab.getty.edu/ontology#ulan1541_spouse_of" relmd5="82dc32a64a60c35eb984aaddff6957e4"></div><div class="relatedBox sprite 266ef4c919d6ba22b8ec88dbf65cf597" rel="http://data.asdc.tw/lod/Person/PR0011" data-title="http://vocab.getty.edu/ontology#ulan1550_relative_by_marriage 
+ http://data.asdc.tw/lod/Person/PR0011" style="top:76.41142838268908px;left:-15.444436971680119px" data-circlepos="11" data-circleparts="24" data-circleid="363b4d57c6115e09ab2fed9d809b6d33" data-property="http://vocab.getty.edu/ontology#ulan1550_relative_by_marriage" relmd5="266ef4c919d6ba22b8ec88dbf65cf597"></div><div class="groupedRelatedBox sprite" rel="62682e7f86742360783c817b5c2af56d" data-title="http://vocab.getty.edu/ontology#ulan2550_friend_of 
+ 2 connected resources" style="top:57.000000000000014px;left:-18px"></div><div class="groupedRelatedBox sprite" rel="dca1ad103211a0ee6edef66a320cea4f" data-title="http://vocab.getty.edu/ontology#ulan2828_student_at 
+ 3 connected resources" style="top:37.588571617310976px;left:-15.444436971680133px"></div><div class="groupedRelatedBox sprite isType" rel="c74e2b735dd8dc85ad0ee3510c33925f" data-title="http://www.w3.org/1999/02/22-rdf-syntax-ns#type 
+ 2 connected resources" style="top:19.499999999999993px;left:-7.9519052838329px"></div></div><div class="page page2" style="display:none"><div class="pager pagePrev sprite" data-page="page1" style="top:57px;left:132px"></div><div class="groupedRelatedBox sprite" rel="7e72e214b08c0478192cb924f8fdd396" data-title="http://www.w3.org/2000/01/rdf-schema#seeAlso 
+ 6 connected resources" style="top:76.41142838268905px;left:129.44443697168012px"></div><div class="groupedRelatedBox sprite inverse" rel="231ed4942aab9f54bfd0a1d98e8409dd-i" data-title="http://purl.org/NET/cidoc-crm/core#P11_had_participant 
+ 37 connected resources" style="top:94.5px;left:121.9519052838329px"></div><div class="groupedRelatedBox sprite inverse" rel="2bd49ab38d821aa36f0d188427278066-i" data-title="http://schema.org/creator 
+ 63 connected resources" style="top:110.03300858899107px;left:110.03300858899107px"></div></div><div class="actionBox contents" rel="contents">&nbsp;</div><div class="actionBox tools" rel="tools">&nbsp;</div></div><div id="msg"></div></div></div>
+	
+
+    <script type="text/javascript" src="jquery.panzoom.min.js"></script>
+    <script type="text/javascript">
+    $(function() {
+      var curXPos = 0, curYPos = 0, curDown = false;
+      $('#aSpace').mousedown(function(m){ 
+        if ( m.which == 3 ) {
+          curDown = true;
+          curYPos = m.pageY;
+          curXPos = m.pageX;
+        }
+      });
+      $('#aSpace').mouseup(function(){
+        curDown = false;
+      });
+      $('#aSpace').mousemove(function(m) {
+        if (curDown === true) {
+          console.log("mousemove");
+          $(window).scrollTop($(window).scrollTop() + (curYPos - m.pageY));
+          $(window).scrollLeft($(window).scrollLeft() + (curXPos - m.pageX));
+        }
+      });
+      $('#aSpace').bind("contextmenu",function(){
+        return false;
+      });
+      //~ var $panzoom = $('.lodlive-container').panzoom({disablePan:true});
+      //~ $panzoom.parent().on('mousewheel.focal', function( e ) {
+        //~ e.preventDefault();
+        //~ var delta = e.delta || e.originalEvent.wheelDelta;
+        //~ var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
+        //~ $panzoom.panzoom('zoom', zoomOut, {
+          //~ increment: 0.1,
+          //~ animate: false,
+          //~ focal: e
+        //~ });
+      //~ });
+    });
+    </script>
+<div id="stats"><iframe src="stats.html" style="display:none"></iframe></div></body></html>
