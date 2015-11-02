@@ -2,6 +2,7 @@
 
 use App\Annotation;
 use App\AnnotationView;
+use App\AuthTable;
 use App\Http\Requests;
 use App\Like;
 use App\TagUse;
@@ -11,7 +12,7 @@ use App\User;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use OAuth\Common\Exception\Exception;
-
+use Thomaswelton\LaravelGravatar\Facades\Gravatar;
 
 
 class AnnotationController extends Controller
@@ -188,8 +189,23 @@ class AnnotationController extends Controller
 
     public function check()
     {
+
+        $user = Session::get('user');
         return [
-            'user' => $user = Session::get('user'),
+            'user' => [
+                'id' => $user->id,
+                'email' => $user->email,
+                'gravatar' => Gravatar::src($user->email)
+            ]
+        ];
+    }
+
+    public function logout() {
+        $domain = Request::input('domain');
+        $token = Request::input('anno_token');
+        AuthTable::remove($domain, $token);
+        return [
+            'response' => true
         ];
     }
 

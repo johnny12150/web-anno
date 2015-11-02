@@ -37,10 +37,10 @@ class Authenticate
                 return redirect()->guest('auth/login');
             }
         }
-        $callback_url = $request->input('callback_url');
+        $callbackUrl = $request->input('callback_url');
 
-        if ($this->auth->check() && $callback_url == null ) {
-            return redirect('/home');
+        if ($this->auth->check() && $callbackUrl != '' ) {
+            return redirect($callbackUrl);
         }
         return $next($request);
     }

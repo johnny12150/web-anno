@@ -82,6 +82,9 @@
   top: 50px;
   margin-right: 0px;
   z-index: 50;
+  -webkit-box-shadow: -2px 0px 6px 0px rgba(50, 50, 50, 0.78);
+  -moz-box-shadow:    -2px 0px 6px 0px rgba(50, 50, 50, 0.78);
+  box-shadow:         -2px 0px 6px 0px rgba(50, 50, 50, 0.78);
 
   .btn-appear {
     width: 25px;
@@ -93,6 +96,21 @@
     background-color: #FFFFFF;
     left: -10px;
     top: 130px;
+    -webkit-box-shadow: -5px 0px 9px -2px rgba(50, 50, 50, 0.51);
+    -moz-box-shadow:    -5px 0px 9px -2px rgba(50, 50, 50, 0.51);
+    box-shadow:         -5px 0px 9px -2px rgba(50, 50, 50, 0.51);
+  }
+
+  .anno-login {
+    span {
+      font-size: 15px;
+      vertical-align: super;
+      margin-left: 5px;
+    }
+    .gravatar{
+      border-radius: 50%;
+      width: 30px;
+    }
   }
 
   .anno-search {
@@ -101,13 +119,17 @@
 
   .anno-users {
     color: #545454;
+    ul {
+      max-height: 245px;
+      overflow-y: scroll;
+    }
   }
 
   .anno-tags {
     margin-top: 10px;
 
     ul {
-      max-height: 300px;
+      max-height: 250px;
       overflow-y: scroll;
     }
   }

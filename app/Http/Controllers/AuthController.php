@@ -62,16 +62,23 @@ class AuthController extends Controller
     function getLogin()
     {
 
+        Auth::logout();
+
+        $hasCallback = (Request::input('callback_url') != ''
+            && Request::input('uri') != ''
+            && Request::input('domain') != '');
+
+
+        $registerCallbackUrl = url('auth/register?'.http_build_query([
+                'callback_url' => Request::input('callback_url') ,
+                'uri' => Request::input('uri') ,
+                'domain' => Request::input('domain')]));
+
         return view('auth.login', [
             'callback_url' => Request::input('callback_url') ,
             'uri' => Request::input('uri') ,
             'domain' => Request::input('domain') ,
-            'register_url' =>  Request::input('callback_url') != ''
-                && Request::input('uri') != ''
-                && Request::input('domain') != ''  ? url('auth/register?'.http_build_query([
-                'callback_url' => Request::input('callback_url') ,
-                'uri' => Request::input('uri') ,
-                'domain' => Request::input('domain')]))
+            'register_url' =>  $hasCallback  ? $registerCallbackUrl
             : url('/auth/register')
         ]);
     }
@@ -79,9 +86,25 @@ class AuthController extends Controller
     function postLogin()
     {
 
-        $callback_url = Request::input('callback_url');
+        $callbackUrl = Request::input('callback_url');
         $uri = Request::input('uri');
         $domain = Request::input('domain');
+
+        $hasCallback = ($callbackUrl != ''
+            && $uri != ''
+            && $domain != '');
+        $registerCallbackUrl = url('auth/register?'.http_build_query([
+                'callback_url' => Request::input('callback_url') ,
+                'uri' => Request::input('uri') ,
+                'domain' => Request::input('domain')]));
+        $callbackData = [
+            'callback_url' => Request::input('callback_url') ,
+            'uri' => Request::input('uri') ,
+            'domain' => Request::input('domain') ,
+            'register_url' =>  $hasCallback  ? $registerCallbackUrl
+                : url('/auth/register')
+        ];
+
 
         $rules = array(
             'email' => 'required|email|max:255', // make sure the email is an actual email
@@ -90,21 +113,12 @@ class AuthController extends Controller
 
         $validator = Validator::make(Input::all(), $rules);
 
-
         // if the validator fails, redirect back to the form
         if ($validator->fails())
         {
+            $inputs = array_merge($callbackData, Input::except('password'));
 
-            $inputs = Input::except('password');
-            $inputs ['register_url'] = ( Request::input('callback_url') != ''
-                && Request::input('uri') != ''
-                && Request::input('domain') != '' )
-                ? url('auth/register?'.http_build_query([
-                        'callback_url' => Request::input('callback_url') ,
-                        'uri' => Request::input('uri') ,
-                        'domain' => Request::input('domain')])) : url('/auth/register');
-            return redirect('auth/login')
-                ->withInputs($inputs)
+            return view('auth.login', $inputs)
                 ->withErrors($validator);
         }
         else
@@ -117,11 +131,9 @@ class AuthController extends Controller
             );
             if (Auth::attempt($userdata))
             {
-                if( $callback_url != null
-                    && $uri != null
-                    && $domain != null ) {
+                if( $hasCallback ) {
 
-                    $callback_url = urldecode($callback_url);
+                    $callback_url = urldecode($callbackUrl);
                     $uri = urldecode($uri);
                     $domain = urldecode($domain);
 
@@ -138,8 +150,6 @@ class AuthController extends Controller
                     //back to this external site
                     return redirect($callback_url);
                 } else {
-
-
                     return redirect('/');
                 }
             }
@@ -149,13 +159,8 @@ class AuthController extends Controller
                 $errors = new MessageBag(['password' => ['Account and/or password invalid.']]); //
                 // validation not successful, send back to form
                 $inputs = Input::except('password');
-                $inputs ['register_url'] = ( Request::input('callback_url') != ''
-                    && Request::input('uri') != ''
-                    && Request::input('domain') != '' )
-                    ? url('auth/register?'.http_build_query([
-                            'callback_url' => Request::input('callback_url') ,
-                            'uri' => Request::input('uri') ,
-                            'domain' => Request::input('domain')])) : url('/auth/register');
+                $inputs []= $callbackData;
+
                 return view('auth.login', $inputs)
                     ->withErrors($errors);
             }
@@ -178,25 +183,33 @@ class AuthController extends Controller
      */
     public function postRegister()
     {
-        $callback_url = Request::input('callback_url');
+        $callbackUrl = Request::input('callback_url');
         $uri = Request::input('uri');
         $domain = Request::input('domain');
+        $hasCallback = ! ($callbackUrl != ''
+            && $uri != ''
+            && $domain != '');
+        $callbackData = [
+            'callback_url' => Request::input('callback_url') ,
+            'uri' => Request::input('uri') ,
+            'domain' => Request::input('domain') ,
+        ];
 
 
         $validator = $this->validator(Request::all());
         if ($validator->fails()) {
-            return view('auth.register', Input::except('password'))
-                ->withErrors($validator) // send back all errors to the login form
-                ->withInput(Input::except('password')); // send back the input (not the password) so that we can repopulate the form
+            $inputs = $callbackData;
+            $inputs []=Input::except('password');
+
+            return view('auth.register', $inputs)
+                ->withErrors($validator);
         }
 
         Auth::login($this->create(Request::all()));
 
-        if( $callback_url != null
-            && $uri != null
-            && $domain != null ) {
+        if( $hasCallback ) {
 
-            $callback_url = urldecode($callback_url);
+            $callback_url = urldecode($callbackUrl);
             $uri = urldecode($uri);
             $domain = urldecode($domain);
 
@@ -300,7 +313,7 @@ class AuthController extends Controller
 
     function getLogout() {
         Auth::logout();
-        return redirect('/home');
+        return redirect('/');
     }
 
 }

@@ -2,6 +2,7 @@
 
 use App\User;
 use Auth;
+use Illuminate\Http\Response;
 
 class HomeController extends Controller {
 

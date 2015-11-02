@@ -76,7 +76,6 @@ function Keyword(element, settings) {
                             }();
 
                             $(this).addClass('hl-keywords').data('annotation',obj);
-                            console.log(this);
                             keyword_index++;
                         });
                 }

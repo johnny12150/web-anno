@@ -17,16 +17,22 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
     this.domain = location.host;
     this.callback_url = location.href.split('#')[0];
+
+
     this.data = [];
+    this.showing = [];
+    this.maptoid= {};
+
     this.is_authed = false;
-    this.search = [];
     this.ui = null;
     //確認是否登入的網址
     this.postlikeUrl = 'http://' + this.server + '/api/likes';
     this.authCheckurl = 'http://' + this.server + '/api/check';
     this.loginUrl = 'http://' + this.server + '/auth/login?callback_url='
     + encodeURIComponent(_this.callback_url)  + '&uri=' + _this.uri + '&domain=' + _this.domain ;
+    this.logoutUrl = 'http://' + this.server + '/api/logout';
 
+    this.showUI = true;
 
 
     //登入Anntation的 Madal UI
@@ -49,32 +55,6 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             });
     };
 
-    this.checkAuth = function() {
-
-        if(!this.is_authed) {
-            $.ajax({
-                crossDomain : true,
-                async : false,
-                dataType: 'json',
-                data: {
-                    'anno_token': _this.anno_token,
-                    'domain' : _this.domain
-                },
-                url: _this.authCheckurl,
-
-                statusCode: {
-                    200 : function() {
-                        _this.is_authed = true;
-                        $('.anno-login').html('');
-                    },
-                    401: function () {
-                        $('.anno-login').html('login');
-                        $('#openAuthUI').addClass('show');
-                    }
-                }
-            });
-        }
-    };
 
 
     this.insertPanelUI = function() {
@@ -109,72 +89,14 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 '<div class="btn-appear">' +
                 '</div>' +
             '</div>');
-        /*var ui = $('<div>').addClass('anno-panel')
-            .append(
-            $('<div>').addClass('anno-login').append(
-                $('<p><strong>').text('在此網頁標記的人')).append(
-                $('<ul>'))
-            )
-            .append(
-            $('<div>').addClass('anno-search').append(
-                $('<p><strong>').text('搜尋標記內容')).append(
-                $('<form>').attr('action','#').attr('id','form-search').append(
-                    $('<button>').attr('id','anno-search-submit').attr('type','submit').append(
-                        $('<i>').addClass('fa').addClass('fa-search').addClass('fa-2x'))).append(
-                    $('<input>').attr('id','anno-search-input').attr('type','text')))
-            ).append(
-                $('<div>').addClass('anno-users').append(
-                    $('<p><strong>').text('在此網頁標記的人')).append(
-                    $('<ul>'))
-            ).append(
-                $('<div>').addClass('anno-tags').append(
-                    $('<p><strong>').text('標籤')).append(
-                    $('<ul>'))
-            ).append($('<hr>')
-            ).append(
-                $('<div>').addClass('anno-search-list').append(
-                        $('<ul>'))
-            ).append($('<div>').addClass('btn-appear'));
-        $('body').append(ui);*/
-        _this.ui = $('.anno-panel');
-        /*
-         <div class="anno-panel">
-            <div class="anno-search">
-                <p><strong>搜尋標記內容</strong></p>
-                <form action="#" id="form-search">
-                    <button id="anno-search-submit" type="submit">
-                        <i class="fa fa-search fa-2x"></i></button>
-                    <input id="anno-search-input" type="text" />
-                </form>
-            </div>
-            <div class="anno-users">
-                <p><strong>在此網頁標記的人</strong></p>
-                <ul></ul>
-            </div>
-            <div class="anno-tags">
-                <p><strong>標籤</strong></p>
-                <ul></ul>
-            </div>
-            <hr/>
-            <div class="anno-search-list">
-                <ul>
-                    <!-- <li >
-                    <img src="gravatar.jpg" class="gravatar" />
-                    <div class="anno-quote">
-                        Annotation
-                    </div>
-                    </li> -->
-                </ul>
-            </div>
-            <div class="btn-appear">
-            </div>
-         </div>
-        * */
 
+        _this.ui = $('.anno-panel');
+
+        //綁定搜尋按鈕事件
         $('#anno-search-submit').click(function(e) {
             e.preventDefault();
+            //從Store插件找到搜尋的網址
             var url_search = _this.annotator.plugins.Store.options.urls.search;
-
             var data = _this.annotator.plugins.Store.options.loadFromSearch;
             data.search = _this.ui.find('#anno-search-input').val();
             $.ajax({
@@ -183,47 +105,134 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 },
                 url: url_search,
                 data: data,
+                dataType: 'json',
                 success: function(data) {
                     _this.data = [];
                     $('.annotator-hl').not('.hl-keywords').removeClass('annotator-hl');
                     $('.anno-tags ul li').remove();
                     $('.anno-users ul li').remove();
                     _this.annotator.loadAnnotations(data.rows);
-                },
-                dataType: 'json'
+                }
             });
         });
 
+        //綁定所有按讚事件
         $(document).on( 'click', '.anno-like',function(e) {
+            e.preventDefault();
             var target = $(e.target);
+            //標記ID
             var aid = target.attr('data-id');
             $.post(_this.postlikeUrl, {
                 aid : aid,
                 uri : _this.uri,
                 anno_token : _this.anno_token,
-                'like' : '1'
+                domain : _this.domain,
+                like : '1'
             }).success(function(annotation) {
                 target.parent().find('.annotator-likes-total').text(annotation.likes);
-            }).error(function(e) {
+                if(_this.maptoid[annotation.id] != null) {
+                    var highlights = _this.maptoid[annotation.id];
+                    for(var i = 0 ; i < highlights.length; i++) {
+                        $(highlights[i]).data('annotation').likes = annotation.likes;
+                    }
+                }
+            });
 
-            })
-            e.preventDefault();
         }).on( 'click', '.anno-dislike',function(e) {
+            e.preventDefault();
             var target = $(e.target);
             var aid = target.attr('data-id');
             $.post(_this.postlikeUrl, {
                 aid : aid,
                 uri : _this.uri,
                 anno_token : _this.anno_token,
-                'like' : '-1'
+                domain : _this.domain,
+                like : '-1'
             }).success(function(annotation) {
                 target.parent().find('.annotator-likes-total').text(annotation.likes);
-            }).error(function(e) {
+                if(_this.maptoid[annotation.id] != null) {
+                    var highlights = _this.maptoid[annotation.id];
+                    for(var i = 0 ; i < highlights.length; i++) {
+                        $(highlights[i]).data('annotation').likes = annotation.likes;
+                    }
+                }
+            });
 
-            })
-            e.preventDefault();
-        }).on('mouseover');
+        });
+
+
+        _this.ui.bind('mouseover', function(e){
+            if(!_this.showUI) {
+                _this.ui.stop().animate({
+                    'right': '0'
+                }, 500, 'linear');
+                _this.showUI = true;
+            }
+        }).bind('mouseleave',  function(e){
+            if(_this.showUI) {
+                _this.ui.delay(2).stop().animate({
+                    'right': '-230px'
+                }, 1000, 'linear');
+                _this.showUI = false;
+            }
+        });
     };
+
+
+    //檢查登入狀態函數
+    this.checkLoginState = function(showUI) {
+
+        if(!this.is_authed) {
+            $.ajax({
+                crossDomain : true,
+                async : false,
+                dataType: 'json',
+                data: {
+                    'anno_token': _this.anno_token,
+                    'domain' : _this.domain
+                },
+                url: _this.authCheckurl,
+                success : function(data) {
+                    $('.anno-login').html('<img class="gravatar" src="'+ data.user.gravatar+'"/><span>'+ data.user.email +'</span><span><a href="#" id="btn-anno-logout">登出</a></span>');
+                    $('#btn-anno-logout').click(function(e){
+                        e.preventDefault();
+                        $.ajax({
+                            method: 'POST',
+                            cookies: true,
+                            async: false,
+                            data: {
+                                'anno_token': _this.anno_token,
+                                'domain' : _this.domain
+                            },
+                            url : _this.logoutUrl,
+                            success: function(data) {
+
+                            }
+                        });
+                        setCookie('anno_token', '');
+                        setCookie('user_id', '');
+                        _this.is_authed = false;
+                        this.anno_token = '';
+
+                        _this.checkLoginState(false);
+                        return false;
+                    });
+                },
+                statusCode: {
+                    200 : function() {
+                        _this.is_authed = true;
+
+                    },
+                    401: function () {
+                        $('.anno-login').html('<span><a href="' + _this.loginUrl +'">登入</a></span>');
+                        if(showUI != false)
+                            $('#openAuthUI').addClass('show');
+                    }
+                }
+            });
+        }
+    };
+
 
     this.refreshHighLights = function() {
 
@@ -235,6 +244,8 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         var checkboxs = $('.anno-tags ul li input[type=checkbox],.anno-users ul li input[type=checkbox]');
 
         var tags_count = $('.anno-tags ul li input[type=checkbox]').length;
+
+
 
         for(i = 0 ; i < checkboxs.length; i++)
         {
@@ -252,8 +263,9 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             }
         }
 
+
         //顯示用的資料，完整的資料存在_this.data
-        var new_tmp_data = [];
+        _this.showing = [];
 
         //開始搜尋
         for(i = 0 ; i < _this.data.length; i++)
@@ -270,12 +282,12 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                     for (var j = 0; j < tags.length; j++) {
                         var tag = tags[j];
                         if (filter_tags.indexOf(tag) != -1) {
-                            new_tmp_data.push(_this.data[i]);
+                            _this.showing.push(_this.data[i]);
                             break;
                         }
                     }
                 } else {
-                    new_tmp_data.push(_this.data[i]);
+                    _this.showing.push(_this.data[i]);
                 }
             }
 
@@ -283,7 +295,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
         $('.annotator-hl').not('.hl-keywords').removeClass('annotator-hl');
 
-        _this.annotator.loadAnnotations(new_tmp_data);
+        _this.annotator.loadAnnotations(_this.showing);
 
     };
 
@@ -308,6 +320,8 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         // get user gravatar url
         if( user != null)
             gravatar_url = user.gravatar;
+
+
 
         // check user is added to userlist
         if( _this.ui.find('#anno-user-'+ user_id ).length == 0) {
@@ -364,7 +378,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         return '';
     };
 
-    this.updateStarsViewer = function(field, annotation) {
+    this.updateLikeViewer = function(field, annotation) {
         if(annotation.likes != undefined ){
             $(field)
                 .addClass('annotator-mark')
@@ -382,10 +396,11 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
     return {
         pluginInit: function () {
             _this.annotator = this.annotator;
-            _this.checkAuth();
             _this.insertPanelUI();
             _this.insertAuthUI();
+            _this.checkLoginState(false);
             this.annotator.subscribe("annotationsLoaded", function (annotations) {
+
                     if( _this.data.length == 0 )
                         _this.data = annotations;
                     for(var i = 0 ; i < annotations.length; i++) {
@@ -394,11 +409,14 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                             _this.data.push(annotations[i]);
                         _this.addReference(annotations[i]);
 
-                        // display only one annotation if target_anno is bigger than zero
+                        //建立 id以及背標記元素的map
+                        if( annotations[i].highlights != null) {
+                            for (var j = 0; j < annotations[i].highlights.length; j++)
+                                _this.maptoid[annotations[i].id] = annotations[i].highlights;
+                        }
+                        // 當要顯示特定標記時
                         if(_this.target_anno != 0) {
-
                             if (annotations[i].id.toString() != _this.target_anno && annotations[i].highlights != null) {
-
                                 for(var j = 0 ; j < annotations[i].highlights.length; j++) {
                                     $(annotations[i].highlights[j]).not('.hl-keywords').removeClass('annotator-hl');
                                 }
@@ -407,15 +425,15 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
                     }
             }).subscribe("annotationCreated", function (annotation) {
-                _this.checkAuth();
+                _this.checkLoginState();
                 if(_this.data.indexOf(annotation) == -1)
                     _this.data.push(annotation);
                 _this.addReference(annotation);
             }).subscribe("annotationUpdated", function (annotation) {
-                _this.checkAuth();
+                _this.checkLoginState();
                 _this.addReference(annotation);
             }).subscribe("annotationDeleted", function (annotation) {
-                _this.checkAuth();
+                _this.checkLoginState();
                 //console.log(_this.data.length);
                 var index = $.inArray(annotation, _this.data);
                 if( ~index )
@@ -428,7 +446,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             });
 
             this.annotator.viewer.addField({
-                load: _this.updateStarsViewer
+                load: _this.updateLikeViewer
             });
 
 

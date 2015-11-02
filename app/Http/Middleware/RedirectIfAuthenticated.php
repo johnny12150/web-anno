@@ -32,9 +32,9 @@ class RedirectIfAuthenticated
      */
     public function handle($request, Closure $next)
     {
-        $callback_url = $request->input('callback_url');
+        $callback_uri = $request->input('callback_url');
 
-        if ($this->auth->check() && $callback_url == null ) {
+        if ($this->auth->check() && $callback_uri == null ) {
             return redirect('/home');
         }
         return $next($request);

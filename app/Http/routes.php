@@ -15,8 +15,6 @@ use Illuminate\Support\Facades\Response;
 
 Route::get('/', function() { return redirect('/manage');});
 
-Route::get('home', 'HomeController@index');
-
 Route::get('testing', function() {
     return view('testing');
 });
@@ -50,7 +48,7 @@ Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
         Route::get('annotations/{id}', 'AnnotationController@add');
         Route::delete('annotations/{id}', 'AnnotationController@delete');
         Route::get('check', 'AnnotationController@check');
-
+        Route::post('logout', 'AnnotationController@logout');
 
     });
 
