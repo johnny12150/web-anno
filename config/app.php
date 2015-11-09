@@ -148,6 +148,8 @@ return [
         'Thomaswelton\LaravelGravatar\LaravelGravatarServiceProvider',
 
         'Greggilbert\Recaptcha\RecaptchaServiceProvider',
+
+        'Laravel\Socialite\SocialiteServiceProvider',
 	],
 
 	/*
@@ -196,6 +198,7 @@ return [
 		'View'      => 'Illuminate\Support\Facades\View',
         'Gravatar' => 'Thomaswelton\LaravelGravatar\Facades\Gravatar',
         'Recaptcha' => 'Greggilbert\Recaptcha\Facades\Recaptcha',
+        'Socialite' => 'Laravel\Socialite\Facades\Socialite',
 	],
 
 ];

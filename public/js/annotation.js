@@ -38,8 +38,10 @@ function getHashParam(name) {
 
 var annotation = function(e) {
 
-    this.server = '140.109.143.48';
+    this.server_host = '140.109.143.48';
     this.element = e;
+    this.annotator = null;
+    this.host = location.host;
     var _annotation = this;
 
 
@@ -50,9 +52,6 @@ var annotation = function(e) {
             return;
         }
         _annotation.uri = setting.uri
-        //---------------------------------------------------------------
-
-
 
         // get Token from hash
         var anno_token = getHashParam('anno_token');
@@ -84,12 +83,8 @@ var annotation = function(e) {
             setCookie('user_id', user_id, 30);
         }
 
-        var keyword = new Keyword(_annotation.element, {});
-
         // init annotator
-        var content = $(_annotation.element).annotator();
-
-
+        this.annotator = $(_annotation.element).annotator();
 
         // set permission options
         var permissionsOptions = {};
@@ -107,28 +102,28 @@ var annotation = function(e) {
             }
         };
 
-        content
+        this.annotator
             .annotator('addPlugin', 'ImageAnnotation', {
-                server : _annotation.server
+                server : this.server_host
             })
             .annotator('addPlugin', 'ViewPanel', {
-                user_id: _annotation.user_id ,
                 target_anno : target_anno,
                 anno_token : anno_token,
-                uri: _annotation.uri,
-                server : _annotation.server
+                uri: this.uri,
+                server : this.server_host,
+                domain : this.host
         }).annotator('addPlugin', 'Store', {
             prefix: '',
             urls: {
-                create:  'http://' + _annotation.server + '/api/annotations/',
-                read:    'http://' + _annotation.server + '/api/annotations/:id/',
-                update:  'http://' + _annotation.server + '/api/annotations/:id/',
-                destroy: 'http://' + _annotation.server + '/api/annotations/:id/',
-                search:  'http://' + _annotation.server + '/api/search/'
+                create:  'http://' + this.server_host + '/api/annotations/',
+                read:    'http://' + this.server_host + '/api/annotations/:id/',
+                update:  'http://' + this.server_host + '/api/annotations/:id/',
+                destroy: 'http://' + this.server_host + '/api/annotations/:id/',
+                search:  'http://' + this.server_host + '/api/search/'
             },
             annotationData: {
-                uri: _annotation.uri,
-                domain : location.host,
+                uri: this.uri,
+                domain : this.host,
                 anno_token : anno_token,
                 likes: 0
             },
@@ -136,17 +131,15 @@ var annotation = function(e) {
                 limit: 0,
                 all_fields: 1,
                 uri: uri,
-                domain : location.host,
+                domain : this.host,
                 anno_token : anno_token
             }
         })
             .annotator('addPlugin','RichText',optionsRichText)
             .annotator('addPlugin', 'Tags')
-            .annotator('addPlugin', 'Permissions', permissionsOptions)
-            ;
+            .annotator('addPlugin', 'Permissions', permissionsOptions);
 
-
-    }
+    };
 
     return this;
-}
+};

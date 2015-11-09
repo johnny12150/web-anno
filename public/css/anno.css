@@ -130,7 +130,7 @@
 #form-search input {
   height: 32px;
   vertical-align: middle;
-  width: 160px;
+  width: 185px;
   font-size: 20px;
   background-color: #e0e0e0;
   margin-right: 2px;
@@ -139,6 +139,7 @@
   #form-search input:hover {
     outline: 1px solid #89a4f5; }
 #form-search #anno-search-submit {
+  vertical-align: top;
   border: none;
   background-color: transparent;
   margin-right: 0;

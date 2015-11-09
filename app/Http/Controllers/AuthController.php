@@ -159,7 +159,7 @@ class AuthController extends Controller
                 $errors = new MessageBag(['password' => ['Account and/or password invalid.']]); //
                 // validation not successful, send back to form
                 $inputs = Input::except('password');
-                $inputs []= $callbackData;
+                $inputs = array_merge($inputs,$callbackData);
 
                 return view('auth.login', $inputs)
                     ->withErrors($errors);
@@ -199,7 +199,7 @@ class AuthController extends Controller
         $validator = $this->validator(Request::all());
         if ($validator->fails()) {
             $inputs = $callbackData;
-            $inputs []=Input::except('password');
+            $inputs = array_merge($inputs, Input::except('password'));
 
             return view('auth.register', $inputs)
                 ->withErrors($validator);
