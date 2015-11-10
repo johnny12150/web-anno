@@ -39,15 +39,18 @@ class AnnotationController extends Controller
     public function add()
     {
 
-
         $user = Session::get('user');
 
         $permissions = Request::input('permissions');
         $is_public = count($permissions['read']) == 0;
         $tags = Request::input('tags');
+        $uri = Request::input('uri');
 
         $isImage = Request::input('type') == 'image';
         $image_src = Request::input('src');
+        $type = Request::input('type');
+        $quote = Request::input('quote');
+        $text = Request::input('text');
         $ranges_start = '';
         $ranges_end = '';
         $ranges_startOffset = '';
@@ -66,22 +69,21 @@ class AnnotationController extends Controller
 
         $x = ($isImage && isset(Request::input('position')['x'])) ?  Request::input('position')['x'] : 0;
         $y = ($isImage && isset(Request::input('position')['y'])) ?  Request::input('position')['y'] : 0;
-        $src = ($isImage && Request::input('src') != '') ? Request::input('src') : '';
+
         /* 新增標記 */
         $anno = Annotation::add([
             'creator_id' => $user->id,
-            'text' => Request::input('text'),
-            'quote' => Request::input('quote'),
-            'uri' => Request::input('uri'),
+            'text' => $text,
+            'quote' => $quote,
+            'uri' => $uri,
             'ranges_start' =>  $ranges_start,
             'ranges_end' => $ranges_end,
-            'type' => $isImage ? Request::input('type') : 'text',
-            'src' => $isImage ? Request::input('src') : null,
+            'type' => $isImage ? $type : 'text',
+            'src' => $isImage ? $image_src : null,
             'position' => $isImage ? [
                 'x' => $x,
                 'y' => $y
             ] : null,
-            'src' => $isImage ? $src : null,
             'ranges_startOffset' => $ranges_startOffset,
             'ranges_endOffset' => $ranges_endOffset,
             'is_public' => $is_public,

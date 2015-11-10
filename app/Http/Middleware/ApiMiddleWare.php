@@ -29,7 +29,7 @@ class ApiMiddleWare {
             $request->session()->flash('user', $user);
 		    return $next($request);
         }
-        App::abort(401, 'Not authenticated');
+        return response()->view('errors.401.api', [], 401);
 	}
 
 }
