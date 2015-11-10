@@ -19,6 +19,7 @@ class CreateAnnotations extends Migration {
             $table->text('text')->default('');
             $table->text('quote')->default('');
             $table->text('uri')->default('');
+            $table->text('link')->default('');
             $table->string('type')->default('text');
             $table->integer('x')->default(0);
             $table->integer('y')->default(0);

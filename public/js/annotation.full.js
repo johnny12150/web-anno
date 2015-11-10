@@ -4749,7 +4749,6 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
     this.showUI = true;
     this.user = null;
 
-
     //登入Anntation的 Modal UI
     this.insertAuthUI = function() {
         $('body').append('<div id="openAuthUI" class="authDialog">'
@@ -4885,15 +4884,11 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                     'domain' : _this.domain
                 },
                 url : _this.logoutUrl,
-                success: function(data) {
-
-                }
             });
             setCookie('anno_token', '');
             setCookie('user_id', '');
             _this.is_authed = false;
-            this.anno_token = '';
-
+            _this.anno_token = '';
             _this.checkLoginState(false);
             return false;
         });
@@ -4932,14 +4927,26 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 url: this.authCheckurl,
                 success : function(data) {
                     _this.user = data.user;
-                    $('.anno-login').html('<img class="gravatar" src="'+ data.user.gravatar+'"/><span>'+ data.user.email +'</span><span><a href="#" id="btn-anno-logout">登出</a></span>');
+                    $('.anno-login').html(
+                        '<img class="gravatar" src="'+ data.user.gravatar+'"/>' +
+                        '<div>' +
+                            '<span>'+ data.user.email +'</span>' +
+                        '</div>' +
+                        '<div>' +
+                        '<span>' +
+                            '<a href="#" id="btn-anno-logout">登出</a>' +
+                        '</span>' +
+                        '<span>' +
+                            '<a href="http://' + _this.server + '">管理標記</a>' +
+                        '</span>' +
+                        '</div>');
                 },
                 statusCode: {
                     200 : function() {
                         _this.is_authed = true;
                     },
                     401: function () {
-                        $('.anno-login').html('<span><a href="' + _this.loginUrl +'">登入</a></span>');
+                        $('.anno-login').html('<div><span><a href="' + _this.loginUrl +'">登入</a></span></div>');
                         if(showUI != false)
                             $('#openAuthUI').addClass('show');
                     }
@@ -4962,8 +4969,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
 
 
-        for(i = 0 ; i < checkboxs.length; i++)
-        {
+        for(i = 0 ; i < checkboxs.length; i++) {
             if(checkboxs[i].checked) {
                 //種類
                 var cls = $(checkboxs[i]).attr('data-search').split('-')[0];
@@ -5034,9 +5040,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
         // get user gravatar url
         if( user != null )
-            gravatar_url = user.gravatar;
-
-
+            gravatar_url = _this.user.gravatar;
 
         // check user is added to userlist
         if( this.ui.find('#anno-user-'+ user_id ).length == 0) {
@@ -5375,7 +5379,8 @@ var annotation = function(e) {
                 uri: this.uri,
                 domain : this.host,
                 anno_token : anno_token,
-                likes: 0
+                likes: 0,
+                link : location.href.split('#')[0]
             },
             loadFromSearch: {
                 limit: 0,

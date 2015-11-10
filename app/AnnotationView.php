@@ -63,6 +63,7 @@ class AnnotationView extends Model
             'text' => $row->text,
             'quote' => $row->quote,
             'uri' => $row->uri,
+            'link' => $row->link,
             'ranges' => [
                 [
                     'start' => $row->ranges_start,

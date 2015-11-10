@@ -76,13 +76,23 @@
     left: -10px;
     top: 130px;
     box-shadow: -5px 0px 9px -2px rgba(50, 50, 50, 0.51); }
-  .anno-panel .anno-login span {
-    font-size: 15px;
-    vertical-align: super;
-    margin-left: 5px; }
-  .anno-panel .anno-login .gravatar {
-    border-radius: 50%;
-    width: 30px; }
+  .anno-panel .anno-login {
+    max-width: 180px; }
+    .anno-panel .anno-login img {
+      display: inline-block;
+      max-width: 40px; }
+    .anno-panel .anno-login div:first-of-type {
+      max-width: 70px;
+      display: inline-block;
+      overflow: visible;
+      height: 30px;
+      vertical-align: super; }
+    .anno-panel .anno-login div span {
+      font-size: 15px;
+      margin-left: 5px; }
+    .anno-panel .anno-login .gravatar {
+      border-radius: 50%;
+      width: 30px; }
   .anno-panel .anno-search {
     margin-bottom: 8px; }
   .anno-panel .anno-users {

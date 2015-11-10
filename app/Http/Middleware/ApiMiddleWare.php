@@ -29,7 +29,7 @@ class ApiMiddleWare {
             $request->session()->flash('user', $user);
 		    return $next($request);
         }
-        return response()->view('errors.401.api', [], 401);
+        return response()->view('errors.api.401', [], 401);
 	}
 
 }

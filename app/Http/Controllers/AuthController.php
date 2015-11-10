@@ -186,7 +186,7 @@ class AuthController extends Controller
         $callbackUrl = Request::input('callback_url');
         $uri = Request::input('uri');
         $domain = Request::input('domain');
-        $hasCallback = ! ($callbackUrl != ''
+        $hasCallback =  ($callbackUrl != ''
             && $uri != ''
             && $domain != '');
         $callbackData = [
@@ -228,7 +228,7 @@ class AuthController extends Controller
             return redirect($callback_url);
         } else {
 
-            return redirect($this->redirectPath());
+            return redirect('/');
         }
 
 

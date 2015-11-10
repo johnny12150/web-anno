@@ -45,6 +45,7 @@ class AnnotationController extends Controller
         $is_public = count($permissions['read']) == 0;
         $tags = Request::input('tags');
         $uri = Request::input('uri');
+        $link = Request::input('link');
 
         $isImage = Request::input('type') == 'image';
         $image_src = Request::input('src');
@@ -76,6 +77,7 @@ class AnnotationController extends Controller
             'text' => $text,
             'quote' => $quote,
             'uri' => $uri,
+            'link' => $link,
             'ranges_start' =>  $ranges_start,
             'ranges_end' => $ranges_end,
             'type' => $isImage ? $type : 'text',

@@ -125,7 +125,8 @@ var annotation = function(e) {
                 uri: this.uri,
                 domain : this.host,
                 anno_token : anno_token,
-                likes: 0
+                likes: 0,
+                link : location.href.split('#')[0]
             },
             loadFromSearch: {
                 limit: 0,

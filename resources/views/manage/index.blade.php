@@ -71,7 +71,7 @@
                             <i class="fa fa-share-alt" style="color: dodgerblue"></i>
                             <span>分享</span>
                         </a>-->
-                        <a href="{{ $anno['uri'] . '#anno_id=' .$anno['id'] }}">
+                        <a href="{{ $anno['link'] . '#anno_id=' .$anno['id'] }}">
                             <i class="fa fa-reply" style="color: dodgerblue"></i>
                             <span>瀏覽此標記</span>
                         </a>

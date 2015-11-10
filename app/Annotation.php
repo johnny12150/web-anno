@@ -217,6 +217,7 @@ class Annotation extends Model {
             $new_anno->text = $data['text'];
             $new_anno->quote = $data['quote'];
             $new_anno->uri = $data['uri'];
+            $new_anno->link = $data['link'];
             $new_anno->is_public  = $data['is_public'];
             $new_anno->ranges_start = $data['ranges_start'];
             $new_anno->ranges_end = $data['ranges_end'];
@@ -357,6 +358,7 @@ class Annotation extends Model {
             'text' => $anno->text,
             'quote' => $anno->quote,
             'uri' => $anno->uri,
+            'link' => $anno->link,
             'ranges' => [
                 [
                     'start' => $anno->ranges_start,

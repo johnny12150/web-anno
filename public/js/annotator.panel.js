@@ -220,14 +220,26 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 url: this.authCheckurl,
                 success : function(data) {
                     _this.user = data.user;
-                    $('.anno-login').html('<img class="gravatar" src="'+ data.user.gravatar+'"/><span>'+ data.user.email +'</span><span><a href="#" id="btn-anno-logout">登出</a></span>');
+                    $('.anno-login').html(
+                        '<img class="gravatar" src="'+ data.user.gravatar+'"/>' +
+                        '<div>' +
+                            '<span>'+ data.user.email +'</span>' +
+                        '</div>' +
+                        '<div>' +
+                        '<span>' +
+                            '<a href="#" id="btn-anno-logout">登出</a>' +
+                        '</span>' +
+                        '<span>' +
+                            '<a href="http://' + _this.server + '">管理標記</a>' +
+                        '</span>' +
+                        '</div>');
                 },
                 statusCode: {
                     200 : function() {
                         _this.is_authed = true;
                     },
                     401: function () {
-                        $('.anno-login').html('<span><a href="' + _this.loginUrl +'">登入</a></span>');
+                        $('.anno-login').html('<div><span><a href="' + _this.loginUrl +'">登入</a></span></div>');
                         if(showUI != false)
                             $('#openAuthUI').addClass('show');
                     }
