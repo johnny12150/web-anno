@@ -331,9 +331,11 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
         var user = annotation.user;
 
+        if ( user.gravatar == null)
+            user = _this.user;
+
         // get user gravatar url
-        if( user != null )
-            gravatar_url = _this.user.gravatar;
+        gravatar_url = _this.user.gravatar;
 
         // check user is added to userlist
         if( _this.ui.find('#anno-user-'+ user_id ).length == 0) {
@@ -407,7 +409,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
             _this.insertPanelUI();
             _this.insertAuthUI();
-            _this.checkLoginState(false, true);
+            _this.checkLoginState(false);
             _this.annotator
                 .subscribe("annotationsLoaded", function (annotations) {
                     if( _this.data.length == 0 )
