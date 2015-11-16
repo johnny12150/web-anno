@@ -95,7 +95,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 '</div>' +
             '</div>');
 
-        this.ui = $('.anno-panel');
+        _this.ui = $('.anno-panel');
 
         //綁定搜尋按鈕事件
         $('#anno-search-submit').click(function(e) {
@@ -282,26 +282,26 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         _this.showing = [];
 
         //開始搜尋
-        for(i = 0 ; i < this.data.length; i++)
+        for(i = 0 ; i < _this.data.length; i++)
         {
-            var user = this.data[i].user;
+            var user = _this.data[i].user;
 
-            this.data[i].highlights = [];
+            _this.data[i].highlights = [];
 
             // 確認建立標記的使用者
             if (filter_users.indexOf(user.id.toString()) != -1) {
                 //如果tag清單上沒有全部勾選 則確認標記的tag
                 if(filter_tags.length != tags_count) {
-                    var tags = this.data[i].tags;
+                    var tags = _this.data[i].tags;
                     for (var j = 0; j < tags.length; j++) {
                         var tag = tags[j];
                         if (filter_tags.indexOf(tag) != -1) {
-                            this.showing.push(_this.data[i]);
+                            _this.showing.push(_this.data[i]);
                             break;
                         }
                     }
                 } else {
-                    this.showing.push(_this.data[i]);
+                    _this.showing.push(_this.data[i]);
                 }
             }
 
