@@ -5191,7 +5191,7 @@ function Keyword(element, settings) {
     this.init = function() {
         $.ajax(_this.keywordUrl , {
             method: 'POST',
-            async: false,
+    
             crossDomain: true,
             dataType: 'json',
             data :{
