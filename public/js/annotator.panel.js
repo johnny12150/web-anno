@@ -335,7 +335,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             user = _this.user;
 
         // get user gravatar url
-        gravatar_url = _this.user.gravatar;
+        gravatar_url = user.gravatar;
 
         // check user is added to userlist
         if( _this.ui.find('#anno-user-'+ user_id ).length == 0) {
