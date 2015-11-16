@@ -4913,12 +4913,12 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
 
     //檢查登入狀態函數
-    this.checkLoginState = function(showUI) {
+    this.checkLoginState = function(showUI, async) {
 
         if(!this.is_authed) {
             $.ajax({
                 crossDomain : true,
-                async : false,
+                async : async === true ? true : false,
                 dataType: 'json',
                 data: {
                     'anno_token': this.anno_token,
@@ -5016,7 +5016,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
         $('.annotator-hl').not('.hl-keywords').removeClass('annotator-hl');
 
-        this.annotator.loadAnnotations(_this.showing);
+        _this.annotator.loadAnnotations(_this.showing);
 
     };
 
@@ -5043,9 +5043,9 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             gravatar_url = _this.user.gravatar;
 
         // check user is added to userlist
-        if( this.ui.find('#anno-user-'+ user_id ).length == 0) {
+        if( _this.ui.find('#anno-user-'+ user_id ).length == 0) {
             //add user list item and bind to user list
-            this.ui.find('.anno-users ul')
+            _this.ui.find('.anno-users ul')
                 .append('<li id="anno-user-' + user_id + '">' +
                             '<input type="checkbox" checked data-search="user-' + user_id + '"/>' +
                             '<img class="gravatar" src="'+ gravatar_url +'" alt=""/>' +
@@ -5114,7 +5114,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
             _this.insertPanelUI();
             _this.insertAuthUI();
-            _this.checkLoginState(false);
+            _this.checkLoginState(false, true);
             _this.annotator
                 .subscribe("annotationsLoaded", function (annotations) {
                     if( _this.data.length == 0 )
