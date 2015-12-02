@@ -17,7 +17,7 @@ var paths = {
 }
 
 elixir(function(mix) {
-    mix.sass(["style.scss","anno.scss"], 'public/css', {includePaths: [paths.bootstrap + 'stylesheets/']})
+    mix.sass(["style.scss","annotation.scss"], 'public/css', {includePaths: [paths.bootstrap + 'stylesheets/']})
         .copy(paths.bootstrap + 'fonts/bootstrap/**', 'public/fonts')
         .scripts(['./public/js/gettext.js',
             './public/js/annotator-full.js',

@@ -38,7 +38,7 @@ function getHashParam(name) {
 
 var annotation = function(e) {
 
-    this.server_host = '140.109.143.48';
+    this.server_host = 'annotation.ipicbox.tw';
     this.element = e;
     this.annotator = null;
     this.host = location.host;
@@ -130,7 +130,6 @@ var annotation = function(e) {
             },
             loadFromSearch: {
                 limit: 0,
-                all_fields: 1,
                 uri: uri,
                 domain : this.host,
                 anno_token : anno_token

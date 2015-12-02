@@ -164,11 +164,11 @@
 
             var rect =$('#anno-' + id)[0].getBoundingClientRect();
             tinyMCE.editors[0].setContent($('#anno-' + id + ' .anno-text').html());
-            $('#editorDiv').css('position', 'absolute');
-            $('#editorDiv').css('left', e.pageX);
-            $('#editorDiv').css('top', e.pageY - rect.height / 2);
             $('#editor_anno_id').val(id);
-            $('#editorDiv').show();
+            $('#editorDiv').css('position', 'absolute')
+                    .css('left', e.pageX)
+                    .css('top', e.pageY - rect.height / 2)
+                    .show();
 
         });
 
@@ -190,8 +190,8 @@
                     success: function (data, textStatus) {
 
                         if (data.result) {
-                            $('#anno-' + id).remove();
                             newAlert('success', '刪除成功');
+                            location.reload();
                         } else {
                             newAlert('danger', '刪除失敗');
                         }

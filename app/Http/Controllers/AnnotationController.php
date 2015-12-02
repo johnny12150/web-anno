@@ -39,25 +39,23 @@ class AnnotationController extends Controller
     public function add()
     {
 
-        $user = Session::get('user');
 
-        $permissions = Request::input('permissions');
-        $is_public = count($permissions['read']) == 0;
-        $tags = Request::input('tags');
+        $text = Request::input('text');
+        $quote = Request::input('quote');
         $uri = Request::input('uri');
+        $domain = Request::input('domain');
         $link = Request::input('link');
-
         $isImage = Request::input('type') == 'image';
         $image_src = Request::input('src');
         $type = Request::input('type');
-        $quote = Request::input('quote');
-        $text = Request::input('text');
+        $tags = Request::input('tags');
+
         $ranges_start = '';
         $ranges_end = '';
         $ranges_startOffset = '';
         $ranges_endOffset = '';
-        $x = 0;
-        $y = 0;
+
+
 
         if(isset(Request::input('ranges')[0]['start']))
             $ranges_start = Request::input('ranges')[0]['start'];
@@ -71,12 +69,18 @@ class AnnotationController extends Controller
         $x = ($isImage && isset(Request::input('position')['x'])) ?  Request::input('position')['x'] : 0;
         $y = ($isImage && isset(Request::input('position')['y'])) ?  Request::input('position')['y'] : 0;
 
+        $permissions = Request::input('permissions');
+        $is_public = count($permissions['read']) == 0;
+
+        $user = Session::get('user');
+
         /* 新增標記 */
         $anno = Annotation::add([
             'creator_id' => $user->id,
             'text' => $text,
             'quote' => $quote,
             'uri' => $uri,
+            'domain' => $domain,
             'link' => $link,
             'ranges_start' =>  $ranges_start,
             'ranges_end' => $ranges_end,
@@ -98,27 +102,45 @@ class AnnotationController extends Controller
 
     public function update($id)
     {
-        $user = Session::get('user');
-        //權限
-        $permissions = Request::input('permissions');
+
         //標籤
         $tags = Request::input('tags');
-        //是否公開
+        $text = Request::input('text');
+        $quote = Request::input('quote');
+        $uri = Request::input('uri');
+        $ranges_start = '';
+        $ranges_end = '';
+        $ranges_startOffset = '';
+        $ranges_endOffset = '';
+
+        if(isset(Request::input('ranges')[0]['start']))
+            $ranges_start = Request::input('ranges')[0]['start'];
+        if(isset(Request::input('ranges')[0]['end']))
+            $ranges_end = Request::input('ranges')[0]['end'];
+        if(isset(Request::input('ranges')[0]['startOffset']))
+            $ranges_startOffset = Request::input('ranges')[0]['startOffset'];
+        if(isset(Request::input('ranges')[0]['endOffset']))
+            $ranges_endOffset = Request::input('ranges')[0]['endOffset'];
+
+        $permissions = Request::input('permissions');
         $is_public = count($permissions['read']) == 0;
+
+        $user = Session::get('user');
         /* 編輯標記 */
         $result = Annotation::edit($user->id, $id, [
             'creator_id' => $user->id,
-            'text' => Request::input('text'),
-            'quote' => Request::input('quote'),
-            'uri' => Request::input('uri'),
-            'ranges_start' => Request::input('ranges')[0]['start'],
-            'ranges_end' => Request::input('ranges')[0]['end'],
-            'ranges_startOffset' => Request::input('ranges')[0]['startOffset'],
-            'ranges_endOffset' => Request::input('ranges')[0]['endOffset'],
+            'text' => $text,
+            'quote' => $quote,
+            'uri' => $uri,
+            'ranges_start' => $ranges_start,
+            'ranges_end' => $ranges_end,
+            'ranges_startOffset' => $ranges_startOffset,
+            'ranges_endOffset' => $ranges_endOffset,
             'permissions' => Request::input('permission')[0]['read'],
             'is_public' => $is_public,
             'tags' => $tags
         ]);
+
 
         // 儲存失敗則回傳Http 500
         if (!$result)
@@ -149,46 +171,70 @@ class AnnotationController extends Controller
     }
 
 
+    /**
+     * @return array
+     */
     public function search()
     {
+
+        $domain = Request::input('domain');
+        $token = Request::input('anno_token');
+        $domain = urldecode($domain);
+        if(AuthTable::check($domain, $token))
+        {
+            $user = User::get(AuthTable::getByDomainToken($domain, $token)->uid);
+            Session::flash('user', $user);
+        }
+
+
         // limit 沒設定的話目前預設暫定 999 個標記
-        $limit = Request::input('limit') == '' ? 999 : intval(Request::input('limit')) == 0 ? 999 : intval(Request::input('limit'));
+        $limit = Request::input('limit') == '' ? -1 :
+            intval(Request::input('limit')) == 0 ? -1 : intval(Request::input('limit'));
         // 搜尋的 uri （必要）
         $uri = Request::input('uri');
         // 搜尋的 user id
-        $user_id = Request::input('user');
+        $user_id = intval(Request::input('user'));
+
+        if( $user_id == 0 && isset($user))
+        {
+            $user_id = $user->id;
+        }
         // 搜尋的標記內容
         $searchText = Request::input('search');
 
+        $offset = intval(Request::input('offset'));
 
-        $annos = AnnotationView::search([
+
+        $annotations = AnnotationView::search([
             'uri' => $uri,
-            'creator_id' => $user_id,
             'quote' => $searchText,
-            'text' => $searchText
-        ], $limit, 0);
+            'text' => $searchText,
+            'public' => [
+                'is_public' => true,
+                'creator_id' => $user_id
+            ]
+        ], $limit, $offset);
 
         $result = [
-            'total' => count($annos),
-            'rows' => $annos
+            'total' => count($annotations),
+            'rows' => $annotations
         ];
 
         return $result;
     }
 
-    public function like()
+    public function like($id)
     {
-        $user = Session::get('user');
-        $aid =  Request::input('aid');
-        $user_id = $user->id;
         $like = Request::input('like');
-        $like = intval($like);
 
+        $like = intval($like);
         if ($like > 1 | $like < -1)
             $like = 0;
 
-        Like::setLike($user_id, $aid, $like);
-        return self::get($aid);
+        $user = Session::get('user');
+        $user_id = $user->id;
+        Like::setLike($user_id, $id, $like);
+        return self::get($id);
     }
 
     public function check()
@@ -198,11 +244,13 @@ class AnnotationController extends Controller
         return [
             'user' => [
                 'id' => $user->id,
+                'name' => $user->name,
                 'email' => $user->email,
                 'gravatar' => Gravatar::src($user->email)
             ]
         ];
     }
+
 
     public function logout() {
         $domain = Request::input('domain');

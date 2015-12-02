@@ -105,9 +105,6 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             var data = _this.annotator.plugins.Store.options.loadFromSearch;
             data.search = _this.ui.find('#anno-search-input').val();
             $.ajax({
-                xhrFields: {
-                    withCredentials: true
-                },
                 url: url_search,
                 data: data,
                 dataType: 'json',
@@ -127,9 +124,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             var target = $(e.target);
             //標記ID
             var aid = target.attr('data-id');
-            $.post(_this.postlikeUrl, {
-                aid : aid,
-                uri : _this.uri,
+            $.post(_this.postlikeUrl + "/" + aid, {
                 anno_token : _this.anno_token,
                 domain : _this.domain,
                 like : '1'
@@ -147,9 +142,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             e.preventDefault();
             var target = $(e.target);
             var aid = target.attr('data-id');
-            $.post(_this.postlikeUrl, {
-                aid : aid,
-                uri : _this.uri,
+            $.post(_this.postlikeUrl + "/" + aid, {
                 anno_token : _this.anno_token,
                 domain : _this.domain,
                 like : '-1'
@@ -230,7 +223,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                             '<a href="#" id="btn-anno-logout">登出</a>' +
                         '</span>' +
                         '<span>' +
-                            '<a href="http://' + _this.server + '">管理標記</a>' +
+                            '<a target="_blank" href="http://' + _this.server + '">管理標記</a>' +
                         '</span>' +
                         '</div>');
                 },
@@ -344,7 +337,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 .append('<li id="anno-user-' + user_id + '">' +
                             '<input type="checkbox" checked data-search="user-' + user_id + '"/>' +
                             '<img class="gravatar" src="'+ gravatar_url +'" alt=""/>' +
-                            '<span>user_' + user_id + '</span>' +
+                            '<span>' + user.name +'</span>' +
                         '</li>');
             $('#anno-user-' + user_id)
                 .find('input[type=checkbox]')
@@ -354,27 +347,21 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         //add tag to tag list
         var tags = annotation.tags;
 
-        if( Array.isArray(tags)) {
-            tags.forEach(function(tagName, index, tagsAry) {
-                if(tagName !== '') {
-                    var tagId = 'anno-tag-' + tagName;
-                    if(!_this.ui.find('#' + tagId).length) {
-                        _this.ui.find('.anno-tags ul')
-                            .append($('<li>').attr('id', tagId)
-                                .append($('<input>').attr('type', 'checkbox')
-                                    .attr('checked', '')
-                                    .attr('data-search', 'tag-' + tagName))
-                                .append($('<span>').text(tagName)));
-                        $('#' + tagId).find('input[type=checkbox]')
-                            .click(_this.refreshHighLights);
-                    }
+        if( Array.isArray(tags)) tags.forEach(function (tagName, index, tagsAry) {
+            if (tagName !== '') {
+                var tagId = 'anno-tag-' + tagName;
+                if (!_this.ui.find('#' + tagId).length) {
+                    _this.ui.find('.anno-tags ul')
+                        .append($('<li>').attr('id', tagId)
+                            .append($('<input>').attr('type', 'checkbox')
+                                .attr('checked', '')
+                                .attr('data-search', 'tag-' + tagName))
+                            .append($('<span>').text(tagName)));
+                    $('#' + tagId).find('input[type=checkbox]')
+                        .click(_this.refreshHighLights);
                 }
-            });
-        }
-
-
-
-
+            }
+        });
     };
 
     // add user filed to Annotation View
@@ -384,7 +371,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 .addClass('annotator-user')
                 .html($('<strong>').text('建立者: ')
                     .append($('<span>')
-                        .text('user_' + annotation.user.id.toString())));
+                        .text(annotation.user.name.toString())));
         }
         return '';
     };
@@ -430,6 +417,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                                     $(highlight).not('.hl-keywords').removeClass('annotator-hl');
                                 });
                             }
+
                         }
                     });
 

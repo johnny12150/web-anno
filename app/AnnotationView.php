@@ -24,7 +24,6 @@ class AnnotationView extends Model
      * @param string $orderBy
      * @param string $sort
      * @return bool result of validation
-     * @internal param the $data data that will be verified
      */
 
     public static function search($conditions , $limit, $offset, $orderBy = 'likes', $sort='desc')
@@ -35,16 +34,33 @@ class AnnotationView extends Model
             $query = $query->where('id', $conditions['id']);
         if( isset($conditions['uri']) && $conditions['uri'] != '')
             $query = $query->where('uri', $conditions['uri']);
+        if( isset($conditions['domain']) && $conditions['domain'] != '')
+            $query = $query->where('domain', $conditions['domain']);
         if( isset($conditions['creator_id']) && $conditions['creator_id'] != '')
             $query = $query->where('creator_id', $conditions['creator_id']);
         if( isset($conditions['text']) && $conditions['text'] != '')
             $query = $query->where('text', 'like', '%'.$conditions['text'].'%');
+        if( isset($conditions['public']) && is_array($conditions['public']))
+        {
+            if( isset($conditions['public']['is_public']) && is_bool($conditions['public']['is_public']))
+            {
+                if( isset($conditions['public']['creator_id']) && $conditions['public']['creator_id'] !== '')
+                {
+                    $is_public = $conditions['public']['is_public'];
+                    $creator_id = intval($conditions['public']['creator_id']);
+                    $query = $query->whereRaw('is_public = ? or creator_id = ?', [ $is_public, $creator_id]);
+                }
+            }
+        }
         //if( isset($conditions['quote']) && $conditions['quote'] != '')
         //    $query = $query->where('quote', 'like', '%'.$conditions['quote'].'%');
         if( isset($conditions['tag']) && $conditions['tag'] != '')
             $query = $query->whereRaw('tags = "'.$conditions['tag'].'" OR tags LIKE "% ,'.$conditions['tag'].'%"'.' OR tags LIKE "%'.$conditions['tag'].' ,%"');
 
-        $annos = $query->skip($offset)->take($limit)->orderBy($orderBy, $sort)->get();
+        if($limit == -1)
+            $annos = $query->orderBy($orderBy, $sort)->get();
+        else
+            $annos = $query->skip($offset)->take($limit)->orderBy($orderBy, $sort)->get();
 
         $ret = [];
         foreach($annos as $anno) {
@@ -63,6 +79,7 @@ class AnnotationView extends Model
             'text' => $row->text,
             'quote' => $row->quote,
             'uri' => $row->uri,
+            'domain' => $row->domain,
             'link' => $row->link,
             'ranges' => [
                 [
@@ -88,6 +105,7 @@ class AnnotationView extends Model
             'src' => $row->src,
             'user' => [
                 'id' => $creator->id ,
+                'name' => $creator->name,
                 'gravatar' => Gravatar::src($creator->email)
             ]
         ];

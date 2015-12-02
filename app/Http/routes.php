@@ -27,6 +27,7 @@ Route::delete('article/del', 'ArticleController@delete');
 /* Annotation API routing */
 Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
 {
+    /* Route Options */
     Route::options('search', function () {});
     Route::options('annotations', function () {});
     Route::options('user', function () {});
@@ -36,27 +37,33 @@ Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
     Route::options('check', function () {});
     Route::options('annotations', function () {});
     Route::options('annotations/{id}', function () {});
+
     Route::get('/', 'AnnotationController@index');
     Route::get('user', function() {});
     Route::get('annotations', 'AnnotationController@index');
     Route::get('search', 'AnnotationController@search');
 
     Route::group(['middleware' => ['crossdomain', 'api_auth'] ], function() {
-        Route::post('likes', 'AnnotationController@like');
+        Route::post('likes/{id}', 'AnnotationController@like');
         Route::post('annotations', 'AnnotationController@add');
         Route::put('annotations/{id}', 'AnnotationController@update');
         Route::get('annotations/{id}', 'AnnotationController@add');
         Route::delete('annotations/{id}', 'AnnotationController@delete');
         Route::get('check', 'AnnotationController@check');
         Route::post('logout', 'AnnotationController@logout');
-
     });
 
-
+    Route::any('{all}', function($uri)
+    {
+        return [
+            'response' => 'error'
+        ];
+    })->where('all', '.*');
 });
 
 Route::group(['prefix' => '/manage', 'middleware' => 'auth'], function() {
     Route::get('/', 'ManageController@index');
+    Route::get('/page/{id}', 'ManageController@index');
     Route::post('/', 'ManageController@index');
     Route::post('delete', 'ManageController@delete');
     Route::post('edit', 'ManageController@edit');

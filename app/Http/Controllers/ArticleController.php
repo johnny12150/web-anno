@@ -43,12 +43,13 @@ class ArticleController extends Controller {
         ];
 	}
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
+    /**
+     * Display the specified resource.
+     *
+     * @param $aid
+     * @return \Illuminate\View\View
+     * @internal param int $id
+     */
 	public function show($aid)
 	{
         $article = Article::get($aid);

@@ -30,7 +30,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-md-4 control-label">姓名</label>
+                            <label class="col-md-4 control-label">暱稱</label>
                             <div class="col-md-6">
                                 <input type="text" class="form-control" name="name" value="{{ old('name') }}">
                             </div>

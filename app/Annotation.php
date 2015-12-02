@@ -32,6 +32,7 @@ class Annotation extends Model {
                 'text' => ['required'],
                 'quote' => ['required'],
                 'uri' => ['required'],
+                'domain' => ['required'],
                 'ranges_start' => ['required'],
                 'ranges_end' => ['required'],
                 'ranges_startOffset' => ['required', 'numeric'],
@@ -152,49 +153,6 @@ class Annotation extends Model {
         return self::format($anno);
     }
 
-    /**
-     * Search Annotation by condition( uri , creator_id , text , quote )
-     * @param Array $cond
-     * @param int $limit
-     * @param int $offset
-     * @param string $orderBy
-     * @param string $order
-     * @return array Array of formatted Annotations
-     */
-    public static function search($cond, $limit = 1, $offset = 0, $orderBy = 'id', $order = 'asc')
-    {
-        $query = null;
-
-        if(isset($cond['uri'])) {
-            $query = self::where('uri', $cond['uri']);
-        }
-
-        if(isset($cond['creator_id'])) {
-            if($query == null)
-                $query = self::where('creator_id', $cond['creator_id']);
-            else
-                $query->where('creator_id', $cond['creator_id']);
-        }
-
-        if(!isset($cond['text']))
-            $cond['text'] = '';
-        if(!isset($cond['quote']))
-            $cond['quote'] = '';
-
-        if( $query != null )
-        {
-            $query->whereRaw(' ( text LIKE ? OR quote LIKE ? ) ', array('%'.$cond['text'].'%','%'.$cond['quote'].'%'));
-            $query->orderBy($orderBy, $order);
-
-            $annos = $query->skip($offset)->take($limit)->get();
-            $ret = [];
-            foreach($annos as $anno) {
-                $ret[] = self::format($anno);
-            }
-            return $ret;
-        } else return [];
-    }
-
     public static function getCountByUser($uid)
     {
         return self::where('creator_id', $uid)->count();
@@ -217,6 +175,7 @@ class Annotation extends Model {
             $new_anno->text = $data['text'];
             $new_anno->quote = $data['quote'];
             $new_anno->uri = $data['uri'];
+            $new_anno->domain = $data['domain'];
             $new_anno->link = $data['link'];
             $new_anno->is_public  = $data['is_public'];
             $new_anno->ranges_start = $data['ranges_start'];
@@ -252,7 +211,6 @@ class Annotation extends Model {
             return $check;
         }
     }
-
 
     /**
      * @param $uid
@@ -298,7 +256,7 @@ class Annotation extends Model {
                 $anno =  self::whereRaw('id = ? and creator_id = ?',array($id, $uid))->update(array(
                     'text' => $data['text'],
                     'quote' => $data['quote'],
-                    'uri' => $data['uri'],
+                    'domain' => $data['domain'],
                     'ranges_start' => $data['ranges_start'],
                     'ranges_end' => $data['ranges_end'],
                     'ranges_startOffset' => $data['ranges_startOffset'],
