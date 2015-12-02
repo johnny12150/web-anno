@@ -394,6 +394,19 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         return '';
     };
 
+    this.updatePublicViewer = function(field, annotation) {
+
+
+        if(annotation.created_at != null ) {
+            $(field)
+                .addClass('annotator-public')
+                .html($('<strong>').text('公開: ')
+                    .append($('<span>')
+                        .text(annotation.)));
+        }
+        return '';
+    };
+
     this.updateLikeViewer = function(field, annotation) {
         if(annotation.likes != undefined ){
             $(field)

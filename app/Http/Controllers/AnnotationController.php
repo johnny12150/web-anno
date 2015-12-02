@@ -108,6 +108,7 @@ class AnnotationController extends Controller
         $text = Request::input('text');
         $quote = Request::input('quote');
         $uri = Request::input('uri');
+        $domain = Request::input('domain');
         $ranges_start = '';
         $ranges_end = '';
         $ranges_startOffset = '';
@@ -131,12 +132,12 @@ class AnnotationController extends Controller
             'creator_id' => $user->id,
             'text' => $text,
             'quote' => $quote,
+            'domain' => $domain,
             'uri' => $uri,
             'ranges_start' => $ranges_start,
             'ranges_end' => $ranges_end,
             'ranges_startOffset' => $ranges_startOffset,
             'ranges_endOffset' => $ranges_endOffset,
-            'permissions' => Request::input('permission')[0]['read'],
             'is_public' => $is_public,
             'tags' => $tags
         ]);

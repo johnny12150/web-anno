@@ -261,6 +261,7 @@ class Annotation extends Model {
                     'ranges_end' => $data['ranges_end'],
                     'ranges_startOffset' => $data['ranges_startOffset'],
                     'ranges_endOffset' => $data['ranges_endOffset'],
+                    'is_public' => $data['is_public']
                 ));
 
                 $tags = $data['tags'];
