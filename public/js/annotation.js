@@ -38,7 +38,7 @@ function getHashParam(name) {
 
 var annotation = function(e) {
 
-    this.server_host = 'annotation.ipicbox.tw';
+    this.server_host = '127.0.0.1';
     this.element = e;
     this.annotator = null;
     this.host = location.host;

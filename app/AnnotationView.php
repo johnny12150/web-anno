@@ -15,7 +15,7 @@ class AnnotationView extends Model
      *
      * @var string
      */
-    protected $table = 'annotation_view';
+    protected $table = 'annotations_view';
 
     /**
      * @param $conditions
@@ -69,6 +69,12 @@ class AnnotationView extends Model
         return $ret;
     }
 
+    private static function getById($id)
+    {
+        $annotation = self::where('id', $id)->get();
+        return $annotation != null ?self::format($annotation) : [];
+    }
+
 
     private static function format($row)
     {
@@ -103,6 +109,7 @@ class AnnotationView extends Model
             ],
             'likes' => $row->likes == null ? 0 : $row->likes,
             'src' => $row->src,
+            'created_at' => $row->created_at,
             'user' => [
                 'id' => $creator->id ,
                 'name' => $creator->name,

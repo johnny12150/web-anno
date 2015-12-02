@@ -97,7 +97,7 @@ class AnnotationController extends Controller
         ]);
 
         //回傳該標記
-        return $anno;
+        return self::get($anno['id']);
     }
 
     public function update($id)

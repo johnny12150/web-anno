@@ -319,8 +319,8 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             user_id = _this.user.id;
 
         // not authed
-        if(user_id == null || user_id == 0 )
-            return;
+        if( annotation.id == 0 || annotation.id == null)
+            annotation.user = _this.user;
 
         var user = annotation.user;
 
@@ -329,6 +329,8 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
         // get user gravatar url
         gravatar_url = user.gravatar;
+
+
 
         // check user is added to userlist
         if( _this.ui.find('#anno-user-'+ user_id ).length == 0) {
@@ -366,12 +368,28 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
     // add user filed to Annotation View
     this.updateCreatorViewer = function(field, annotation) {
-        if(annotation.user.id != 0 ) {
+        var user = annotation.user;
+        console.log(user);
+        if(user == null)
+            user = _this.user;
+        if(user.name != null ) {
             $(field)
                 .addClass('annotator-user')
                 .html($('<strong>').text('建立者: ')
                     .append($('<span>')
-                        .text(annotation.user.name.toString())));
+                        .text(user.name)));
+        }
+        return '';
+    };
+
+    this.updateDateViewer = function(field, annotation) {
+
+        if(annotation.created_at != null ) {
+            $(field)
+                .addClass('annotator-date')
+                .html($('<strong>').text('建立時間: ')
+                    .append($('<span>')
+                        .text(annotation.created_at)));
         }
         return '';
     };
@@ -442,6 +460,10 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
             _this.annotator.viewer.addField({
                 load: _this.updateLikeViewer
+            });
+
+            _this.annotator.viewer.addField({
+                load: _this.updateDateViewer
             });
         }
     }
