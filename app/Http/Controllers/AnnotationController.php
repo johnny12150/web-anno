@@ -216,6 +216,8 @@ class AnnotationController extends Controller
             ]
         ], $limit, $offset);
 
+        $annotations = AnnotationView::sortByUserTop($annotations, $user_id);
+
         $result = [
             'total' => count($annotations),
             'rows' => $annotations

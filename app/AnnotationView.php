@@ -17,14 +17,6 @@ class AnnotationView extends Model
      */
     protected $table = 'annotations_view';
 
-    /**
-     * @param $conditions
-     * @param $limit
-     * @param $offset
-     * @param string $orderBy
-     * @param string $sort
-     * @return bool result of validation
-     */
 
     public static function search($conditions , $limit, $offset, $orderBy = 'likes', $sort='desc')
     {
@@ -68,12 +60,24 @@ class AnnotationView extends Model
         }
         return $ret;
     }
-
+    public static function sortByUserTop(Array $annos, $user_id)
+    {
+        $user_annos = [];
+        $other_annos = [];
+        foreach($annos as $key => $value) {
+            if( intval($value['user']['id']) === intval($user_id))
+                $user_annos []= $value;
+            else
+                $other_annos []= $value;
+        }
+        return array_merge($user_annos, $other_annos);
+    }
     private static function getById($id)
     {
         $annotation = self::where('id', $id)->get();
         return $annotation != null ?self::format($annotation) : [];
     }
+
 
 
     private static function format($row)
