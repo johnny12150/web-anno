@@ -17,16 +17,34 @@ var paths = {
 }
 
 elixir(function(mix) {
-    mix.sass(["style.scss","annotation.scss"], 'public/css', {includePaths: [paths.bootstrap + 'stylesheets/']})
+    mix.sass(
+        [
+            "style.scss"
+        ],
+        'public/css/style.css',
+        {
+            includePaths:
+                [
+                    paths.bootstrap + 'stylesheets/'
+                ]
+        })
+        .sass([
+            "annotation.scss"
+        ],
+        "public/css/annotation.css")
         .copy(paths.bootstrap + 'fonts/bootstrap/**', 'public/fonts')
-        .scripts(['./public/js/gettext.js',
-            './public/js/annotator-full.js',
-            './public/js/richText-annotator.min.js',
-            './public/js/annotator.img.js',
-            './public/js/annotator.panel.js',
-            './public/js/annotator.keywords.js',
-            './public/js/annotation.js'],
-        'public/js/annotation.full.js', './');
+        .scripts(
+        [
+            'gettext.js',
+            'annotator-full.js',
+            'richText-annotator.min.js',
+            'annotator.img.js',
+            'annotator.panel.js',
+            'annotator.keywords.js',
+            'annotation.js'
+        ],
+        'public/js/annotation.full.js',
+        'resources/assets/js');
 });
 
 

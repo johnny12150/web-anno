@@ -4798,11 +4798,37 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                     '<ul>' +
                     '</ul>' +
                 '</div>' +
+                '<div class="anno-viewall">' +
+                    '<button class="btn-viewall" id="btn-viewall">顯示全部</button>' +
+                '</div>' +
                 '<div class="btn-appear">' +
                 '</div>' +
             '</div>');
 
         _this.ui = $('.anno-panel');
+
+        if(_this.target_anno == 0) {
+            $('.anno-viewall').hide();
+        } else {
+            $('.anno-search').hide();
+            $('.anno-users').hide();
+            $('.anno-tags').hide();
+            $('.anno-search-list').hide();
+        }
+
+        $('#btn-viewall').click(function(e){
+            _this.target_anno = 0;
+            $('.annotator-hl').not('.hl-keywords').removeClass('annotator-hl');
+            $('.anno-tags ul li').remove();
+            $('.anno-users ul li').remove();
+            _this.annotator.loadAnnotations(_this.data);
+            $('.anno-search').fadeIn();
+            $('.anno-users').fadeIn();
+            $('.anno-tags').fadeIn();
+            $('.anno-search-list').fadeIn();
+            $('.anno-viewall').hide();
+
+        });
 
         //綁定搜尋按鈕事件
         $('#anno-search-submit').click(function(e) {
@@ -4961,7 +4987,6 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         var tags_count = $('.anno-tags ul li input[type=checkbox]').length;
 
 
-
         for(i = 0 ; i < checkboxs.length; i++) {
             if(checkboxs[i].checked) {
                 //種類
@@ -5100,6 +5125,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         }
         return '';
     };
+
 
     this.updateLikeViewer = function(field, annotation) {
         if(annotation.likes != undefined ){
