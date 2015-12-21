@@ -5785,8 +5785,10 @@ button.close {
   .anno-list-item .anno-item-bottom {
     padding-top: 15px; }
     .anno-list-item .anno-item-bottom .anno-text {
+      margin-top: 5px;
       border-left: 4px solid yellow; }
     .anno-list-item .anno-item-bottom .anno-quote {
+      margin-top: 5px;
       border-left: 4px solid purple; }
     .anno-list-item .anno-item-bottom > a {
       text-decoration: none;
@@ -5807,6 +5809,9 @@ button.close {
       margin-bottom: 15px;
       word-wrap: break-word; }
     .anno-list-item .anno-item-bottom .anno-tags {
+      padding-top: 7px;
+      padding-bottom: 10px; }
+    .anno-list-item .anno-item-bottom .anno-public {
       padding-top: 7px;
       padding-bottom: 10px; }
 
@@ -5833,7 +5838,6 @@ button.close {
 #anno-filter {
   position: relative;
   width: 900px;
-  height: 220px;
   background-color: #FFFFFF;
   border-radius: 5px;
   border: 1px solid #cccccc;

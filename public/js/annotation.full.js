@@ -5394,11 +5394,14 @@ var annotation = function(e) {
             }
         };
 
-        this.annotator
-            .annotator('addPlugin', 'ImageAnnotation', {
-                server : this.server_host
-            })
-            .annotator('addPlugin', 'ViewPanel', {
+        if(setting.imageAnnotation === true) {
+            console.log('ssss');
+            this.annotator
+                .annotator('addPlugin', 'ImageAnnotation', {
+                    server: this.server_host
+                });
+        }
+        this.annotator.annotator('addPlugin', 'ViewPanel', {
                 target_anno : target_anno,
                 anno_token : anno_token,
                 uri: this.uri,

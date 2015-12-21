@@ -64,7 +64,6 @@ Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
 Route::group(['prefix' => '/manage', 'middleware' => 'auth'], function() {
     Route::get('/', 'ManageController@index');
     Route::get('/page/{id}', 'ManageController@index');
-    Route::post('/', 'ManageController@index');
     Route::post('delete', 'ManageController@delete');
     Route::post('edit', 'ManageController@edit');
 });

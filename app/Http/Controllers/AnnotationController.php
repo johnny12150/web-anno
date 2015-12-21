@@ -211,7 +211,7 @@ class AnnotationController extends Controller
             'quote' => $searchText,
             'text' => $searchText,
             'public' => [
-                'is_public' => true,
+                'is_public' => 'all',
                 'creator_id' => $user_id
             ]
         ], $limit, $offset);

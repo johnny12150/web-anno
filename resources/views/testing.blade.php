@@ -210,7 +210,8 @@ Besides painting, Chen was also actively involved in Taiwanese art movements. Am
 
     var anno = annotation('.field-content-panel');
     anno.init({
-        uri : uri
+        uri : uri,
+        imageAnnotation : false
     });
 
 </script>

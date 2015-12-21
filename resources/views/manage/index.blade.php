@@ -7,7 +7,7 @@
 
         </div>
         <div id="anno-filter">
-            <form action="" class="form-horizontal" method="POST">
+            <form action="" class="form-horizontal" method="GET">
                 <div class="form-group">
                     <h4 class="col-sm-2">搜尋</h4>
                 </div>
@@ -25,6 +25,16 @@
                             @foreach($tags as $tag)
                                 <option value="{{ $tag }}" {{ $old['search_tag'] == $tag ? 'selected' :'' }}>{{$tag}}</option>
                             @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="search_public" class="col-sm-2 control-label">可見度</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" name="search_public" id="search_public">
+                            <option value="" {{ $old['search_public'] == '' ? 'selected' :'' }}>所有</option>
+                            <option value="1" {{ $old['search_public'] === '1' ? 'selected' :'' }}>公開</option>
+                            <option value="0" {{ $old['search_public'] === '0' ? 'selected' :'' }}>不公開</option>
                         </select>
                     </div>
                 </div>
@@ -49,11 +59,11 @@
                 @foreach( $annos as $index => $anno)
 
                     <div class="anno-item-bottom"  id="anno-{{ $anno['id'] }}">
-                        <p>標記：</p>
+                        <strong>標記：</strong>
                         <div class="anno-quote">
                             {{ $anno['quote'] }}
                         </div>
-                        <p>標記內容：</p>
+                        <strong>標記內容：</strong>
                         <div class="anno-text">
                             {!! $anno['text'] !!}
                         </div>
@@ -66,6 +76,12 @@
                         </div>
                         <div class="anno-likes">
 
+                        </div>
+                        <div class="anno-public">
+                            <div>
+                                <strong>可見度：</strong>
+                                <span>{{ count($anno['permissions']['read']) == 0 ? "公開" : "非公開" }}</span>
+                            </div>
                         </div>
                         <!--<a href="#">
                             <i class="fa fa-share-alt" style="color: dodgerblue"></i>
@@ -92,7 +108,7 @@
         <div class="anno-pages">
             @for($i = 1 ; $i < $pagesCount ;$i++)
                 @if($i != $page)
-                    <span><a href="/manage/page/{{ $i }}">{{ $i }}</a></span>
+                    <span><a href="/manage/page/{{ $i }}{{ "?search_text=".$old["search_text"]."&search_tag=".$old["search_tag"]."&search_public=".$old["search_public"] }}">{{ $i }}</a></span>
                 @else
                     <span>{{ $i }}</span>
                 @endif
