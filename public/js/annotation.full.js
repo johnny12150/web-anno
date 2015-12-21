@@ -4905,10 +4905,11 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 url : _this.logoutUrl,
             });
             setCookie('anno_token', '');
-            setCookie('user_id', '');
+            setCookie('user_id', 0);
             _this.is_authed = false;
             _this.anno_token = '';
             _this.checkLoginState(false);
+            location.reload();
             return false;
         });
 
@@ -5101,7 +5102,6 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
     // add user filed to Annotation View
     this.updateCreatorViewer = function(field, annotation) {
         var user = annotation.user;
-        console.log(user);
         if(user == null)
             user = _this.user;
         if(user.name != null ) {
@@ -5395,7 +5395,6 @@ var annotation = function(e) {
         };
 
         if(setting.imageAnnotation === true) {
-            console.log('ssss');
             this.annotator
                 .annotator('addPlugin', 'ImageAnnotation', {
                     server: this.server_host
@@ -5425,7 +5424,7 @@ var annotation = function(e) {
             },
             loadFromSearch: {
                 limit: 0,
-                uri: uri,
+                uri: _annotation.uri,
                 domain : this.host,
                 anno_token : anno_token
             }

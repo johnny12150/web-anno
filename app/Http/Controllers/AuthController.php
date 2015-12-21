@@ -145,7 +145,7 @@ class AuthController extends Controller
                     $hasQuery = strstr($callback_url, '?');
 
                     //add token to query string
-                    $callback_url .= '#user_id='. $user->id .'&anno_token='. $auth->auth_token;
+                    $callback_url .= '#anno_token='. $auth->auth_token;
 
                     //back to this external site
                     return redirect($callback_url);

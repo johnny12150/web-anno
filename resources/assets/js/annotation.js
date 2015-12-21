@@ -103,7 +103,6 @@ var annotation = function(e) {
         };
 
         if(setting.imageAnnotation === true) {
-            console.log('ssss');
             this.annotator
                 .annotator('addPlugin', 'ImageAnnotation', {
                     server: this.server_host
@@ -133,7 +132,7 @@ var annotation = function(e) {
             },
             loadFromSearch: {
                 limit: 0,
-                uri: uri,
+                uri: _annotation.uri,
                 domain : this.host,
                 anno_token : anno_token
             }
