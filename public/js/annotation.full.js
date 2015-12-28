@@ -4712,6 +4712,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
     // storing object scope
     var _this = this;
+    this.settings = settings;
     this.annotator = $(element).annotator().data('annotator');
     this.element = element;
     this.uri = settings.uri;
@@ -4946,6 +4947,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 },
                 url: this.authCheckurl,
                 success : function(data) {
+                    $(_this.element).data('annotator-user', data.user);
                     _this.user = data.user;
                     $('.anno-login').html(
                         '<img class="gravatar" src="'+ data.user.gravatar+'"/>' +
@@ -5149,6 +5151,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             _this.insertAuthUI();
             _this.checkLoginState(false);
             _this.annotator
+
                 .subscribe("annotationsLoaded", function (annotations) {
                     if( _this.data.length == 0 )
                         _this.data = annotations;
@@ -5330,7 +5333,7 @@ function getHashParam(name) {
 
 var annotation = function(e) {
 
-    this.server_host = '127.0.0.1';
+    this.server_host = '140.109.143.48';
     this.element = e;
     this.annotator = null;
     this.host = location.host;
@@ -5378,10 +5381,6 @@ var annotation = function(e) {
         // init annotator
         this.annotator = $(_annotation.element).annotator();
 
-        // set permission options
-        var permissionsOptions = {};
-        permissionsOptions['user'] = user_id;
-        permissionsOptions['showEditPermissionsCheckbox'] = false;
         // set richText editor options
         var optionsRichText = {
             tinymce:{
@@ -5400,13 +5399,13 @@ var annotation = function(e) {
                     server: this.server_host
                 });
         }
-        this.annotator.annotator('addPlugin', 'ViewPanel', {
-                target_anno : target_anno,
-                anno_token : anno_token,
-                uri: this.uri,
-                server : this.server_host,
-                domain : this.host
-        }).annotator('addPlugin', 'Store', {
+
+        // set permission options
+        var permissionsOptions = {};
+        permissionsOptions['showEditPermissionsCheckbox'] = false;
+
+        this.annotator
+            .annotator('addPlugin', 'Store', {
             prefix: '',
             urls: {
                 create:  'http://' + this.server_host + '/api/annotations/',
@@ -5431,7 +5430,19 @@ var annotation = function(e) {
         })
             .annotator('addPlugin','RichText',optionsRichText)
             .annotator('addPlugin', 'Tags')
-            .annotator('addPlugin', 'Permissions', permissionsOptions);
+            .annotator('addPlugin', 'ViewPanel', {
+                target_anno : target_anno,
+                anno_token : anno_token,
+                uri: this.uri,
+                server : this.server_host,
+                domain : this.host
+            });
+        var user = this.annotator.data('annotator-user');
+        this.annotator.annotator('addPlugin', 'Permissions', {
+                showEditPermissionsCheckbox: false,
+                user: user != null ? parseInt(user.id) : 0
+            });
+
 
     };
 

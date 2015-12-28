@@ -35,21 +35,23 @@ class AnnotationView extends Model
             $query = $query->where('text', 'like', '%'.$conditions['text'].'%');
         if( isset($conditions['public']) && is_array($conditions['public']))
         {
-            if( isset($conditions['public']['is_public']) && $conditions['public']['is_public'] != '')
+            if( isset($conditions['public']['is_public']) && $conditions['public']['is_public'] !== '')
             {
                 if( isset($conditions['public']['creator_id']) && $conditions['public']['creator_id'] !== '')
                 {
                     $is_public = $conditions['public']['is_public'];
                     $creator_id = intval($conditions['public']['creator_id']);
-                    if(is_bool($is_public))
-                        $query = $query->whereRaw('is_public = ?', [ $is_public]);
-                    else if ($is_public == 'all')
+                    if ( $creator_id == 0)
                         $query = $query->whereRaw('is_public = ? or creator_id = ?', [ $is_public, $creator_id]);
+                    else
+                        $query = $query->whereRaw('is_public = ? and creator_id = ?', [$is_public, $creator_id]);
+                } else {
+                    $is_public = $conditions['public']['is_public'];
+                    $query = $query->where('is_piblic', $is_public);
                 }
             }
         }
-        //if( isset($conditions['quote']) && $conditions['quote'] != '')
-        //    $query = $query->where('quote', 'like', '%'.$conditions['quote'].'%');
+
         if( isset($conditions['tag']) && $conditions['tag'] != '')
             $query = $query->whereRaw('tags = "'.$conditions['tag'].'" OR tags LIKE "% ,'.$conditions['tag'].'%"'.' OR tags LIKE "%'.$conditions['tag'].' ,%"');
 

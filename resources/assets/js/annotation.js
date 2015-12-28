@@ -38,7 +38,7 @@ function getHashParam(name) {
 
 var annotation = function(e) {
 
-    this.server_host = '127.0.0.1';
+    this.server_host = '140.109.143.48';
     this.element = e;
     this.annotator = null;
     this.host = location.host;
@@ -86,10 +86,6 @@ var annotation = function(e) {
         // init annotator
         this.annotator = $(_annotation.element).annotator();
 
-        // set permission options
-        var permissionsOptions = {};
-        permissionsOptions['user'] = user_id;
-        permissionsOptions['showEditPermissionsCheckbox'] = false;
         // set richText editor options
         var optionsRichText = {
             tinymce:{
@@ -108,13 +104,13 @@ var annotation = function(e) {
                     server: this.server_host
                 });
         }
-        this.annotator.annotator('addPlugin', 'ViewPanel', {
-                target_anno : target_anno,
-                anno_token : anno_token,
-                uri: this.uri,
-                server : this.server_host,
-                domain : this.host
-        }).annotator('addPlugin', 'Store', {
+
+        // set permission options
+        var permissionsOptions = {};
+        permissionsOptions['showEditPermissionsCheckbox'] = false;
+
+        this.annotator
+            .annotator('addPlugin', 'Store', {
             prefix: '',
             urls: {
                 create:  'http://' + this.server_host + '/api/annotations/',
@@ -124,8 +120,8 @@ var annotation = function(e) {
                 search:  'http://' + this.server_host + '/api/search/'
             },
             annotationData: {
-                uri: this.uri,
-                domain : this.host,
+                uri: _annotation.uri,
+                domain : _annotation.host,
                 anno_token : anno_token,
                 likes: 0,
                 link : location.href.split('#')[0]
@@ -133,13 +129,25 @@ var annotation = function(e) {
             loadFromSearch: {
                 limit: 0,
                 uri: _annotation.uri,
-                domain : this.host,
+                domain : _annotation.host,
                 anno_token : anno_token
             }
         })
             .annotator('addPlugin','RichText',optionsRichText)
             .annotator('addPlugin', 'Tags')
-            .annotator('addPlugin', 'Permissions', permissionsOptions);
+            .annotator('addPlugin', 'ViewPanel', {
+                target_anno : target_anno,
+                anno_token : anno_token,
+                uri: _annotation.uri,
+                server : _annotation.server_host,
+                domain : _annotation.host
+            });
+        var user = this.annotator.data('annotator-user');
+        this.annotator.annotator('addPlugin', 'Permissions', {
+                showEditPermissionsCheckbox: false,
+                user: user != null ? parseInt(user.id) : 0
+            });
+
 
     };
 

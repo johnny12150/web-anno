@@ -5811,6 +5811,16 @@ button.close {
     .anno-list-item .anno-item-bottom .anno-tags {
       padding-top: 7px;
       padding-bottom: 10px; }
+    .anno-list-item .anno-item-bottom .anno-likes {
+      padding-top: 7px;
+      padding-bottom: 10px; }
+      .anno-list-item .anno-item-bottom .anno-likes .fa {
+        color: #206ea1; }
+      .anno-list-item .anno-item-bottom .anno-likes span {
+        margin-left: 5px; }
+    .anno-list-item .anno-item-bottom .anno-createtime {
+      padding-top: 7px;
+      padding-bottom: 14px; }
     .anno-list-item .anno-item-bottom .anno-public {
       padding-top: 7px;
       padding-bottom: 10px; }

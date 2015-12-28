@@ -50,12 +50,6 @@
 
             @foreach( $annoData as $uri => $annos )
                 <div class="anno-list-item">
-                    <div class="anno-item-top">
-                        <p>
-                            <span>識別路徑：</span>
-                            <a href="#">{{ $uri }}</a>
-                        </p>
-                    </div>
                 @foreach( $annos as $index => $anno)
 
                     <div class="anno-item-bottom"  id="anno-{{ $anno['id'] }}">
@@ -74,19 +68,30 @@
                                 @endforeach
                             </div>
                         </div>
-                        <div class="anno-likes">
 
-                        </div>
+
                         <div class="anno-public">
                             <div>
                                 <strong>可見度：</strong>
                                 <span>{{ count($anno['permissions']['read']) == 0 ? "公開" : "非公開" }}</span>
                             </div>
                         </div>
-                        <!--<a href="#">
-                            <i class="fa fa-share-alt" style="color: dodgerblue"></i>
-                            <span>分享</span>
-                        </a>-->
+
+                        <div class="anno-likes">
+                            <div>
+                                <strong>評分：</strong>
+                                @if($anno['likes'] >= 0)
+                                    <span  class="fa fa-thumbs-up"><span>{{ $anno['likes'] }}</span></span>
+                                @else
+                                <span  class="fa fa-thumbs-down"><span>{{ $anno['likes'] }}</span></span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="anno-createtime">
+                            <div><strong>建立時間：</strong>
+                                {{ $anno['created_at'] }}
+                            </div>
+                        </div>
                         <a href="{{ $anno['link'] . '#anno_id=' .$anno['id'] }}">
                             <i class="fa fa-reply" style="color: dodgerblue"></i>
                             <span>瀏覽此標記</span>
@@ -99,6 +104,7 @@
                             <i class="fa fa-times " style="color: #ff0000"></i>
                             <span>刪除標記</span>
                         </a>
+
                     </div>
                         <hr/>
                     @endforeach

@@ -5,6 +5,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
     // storing object scope
     var _this = this;
+    this.settings = settings;
     this.annotator = $(element).annotator().data('annotator');
     this.element = element;
     this.uri = settings.uri;
@@ -239,6 +240,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 },
                 url: this.authCheckurl,
                 success : function(data) {
+                    $(_this.element).data('annotator-user', data.user);
                     _this.user = data.user;
                     $('.anno-login').html(
                         '<img class="gravatar" src="'+ data.user.gravatar+'"/>' +
@@ -442,6 +444,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             _this.insertAuthUI();
             _this.checkLoginState(false);
             _this.annotator
+
                 .subscribe("annotationsLoaded", function (annotations) {
                     if( _this.data.length == 0 )
                         _this.data = annotations;
