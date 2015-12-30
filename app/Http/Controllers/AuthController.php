@@ -55,6 +55,7 @@ class AuthController extends Controller
             'name' => 'required|max:255|min:2',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|confirmed|min:6',
+            'password_confirmation' => 'required|min:6'
             //'g-recaptcha-response' => 'required|recaptcha',
         ]);
     }
@@ -107,8 +108,8 @@ class AuthController extends Controller
 
 
         $rules = array(
-            'email' => 'required|email|max:255', // make sure the email is an actual email
-            'password' => 'required|min:6|max:255' // password can only be alphanumeric and has to be greater than 3 characters
+            'email' => 'required|email|max:255',
+            'password' => 'required|min:6|max:255'
         );
 
         $validator = Validator::make(Input::all(), $rules);
@@ -117,7 +118,6 @@ class AuthController extends Controller
         if ($validator->fails())
         {
             $inputs = array_merge($callbackData, Input::except('password'));
-
             return view('auth.login', $inputs)
                 ->withErrors($validator);
         }

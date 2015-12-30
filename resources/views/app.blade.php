@@ -8,7 +8,7 @@
 	<title>數位人文工具</title>
 
 	<link href="{{ asset('/css/style.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
     @yield('custom_css')
 
 	<!-- Fonts -->
@@ -20,7 +20,7 @@
 		<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
 		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 	<![endif]-->
-
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 </head>
 <body>
 	<nav class="navbar navbar-default navbar-custom">
