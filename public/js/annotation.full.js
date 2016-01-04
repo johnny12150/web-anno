@@ -4767,7 +4767,14 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             .on('click', '#anno-btn-close', function(e) {
                 $('#openAuthUI').removeClass('show');
                 return false;
+            })
+            .on('click', '.annotator-adder', function(e) {
+                if(!_this.is_authed) {
+                    $('#openAuthUI').addClass('show');
+                    $('.annotator-cancel').click();
+                }
             });
+
     };
 
     this.insertPanelUI = function() {
@@ -5415,8 +5422,8 @@ var annotation = function(e) {
                 search:  'http://' + this.server_host + '/api/search/'
             },
             annotationData: {
-                uri: this.uri,
-                domain : this.host,
+                uri: _annotation.uri,
+                domain : _annotation.host,
                 anno_token : anno_token,
                 likes: 0,
                 link : location.href.split('#')[0]
@@ -5424,7 +5431,7 @@ var annotation = function(e) {
             loadFromSearch: {
                 limit: 0,
                 uri: _annotation.uri,
-                domain : this.host,
+                domain : _annotation.host,
                 anno_token : anno_token
             }
         })
@@ -5433,9 +5440,9 @@ var annotation = function(e) {
             .annotator('addPlugin', 'ViewPanel', {
                 target_anno : target_anno,
                 anno_token : anno_token,
-                uri: this.uri,
-                server : this.server_host,
-                domain : this.host
+                uri: _annotation.uri,
+                server : _annotation.server_host,
+                domain : _annotation.host
             });
         var user = this.annotator.data('annotator-user');
         this.annotator.annotator('addPlugin', 'Permissions', {

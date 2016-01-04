@@ -60,7 +60,14 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             .on('click', '#anno-btn-close', function(e) {
                 $('#openAuthUI').removeClass('show');
                 return false;
+            })
+            .on('click', '.annotator-adder', function(e) {
+                if(!_this.is_authed) {
+                    $('#openAuthUI').addClass('show');
+                    $('.annotator-cancel').click();
+                }
             });
+
     };
 
     this.insertPanelUI = function() {

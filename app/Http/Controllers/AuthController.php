@@ -218,9 +218,6 @@ class AuthController extends Controller
             // generate a auth token for this external site
             $auth = AuthTable::add($domain, $user->id);
 
-            //check callback query string exist
-            $hasQuery = strstr($callback_url, '?');
-
             //add token to query string
             $callback_url .= '#user_id='. $user->id .'&anno_token='. $auth->auth_token;
 

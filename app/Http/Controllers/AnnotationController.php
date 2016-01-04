@@ -205,7 +205,6 @@ class AnnotationController extends Controller
 
         $offset = intval(Request::input('offset'));
 
-
         $annotations = AnnotationView::search([
             'uri' => $uri,
             'quote' => $searchText,
