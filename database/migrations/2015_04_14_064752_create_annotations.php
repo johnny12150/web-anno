@@ -18,9 +18,9 @@ class CreateAnnotations extends Migration {
             $table->integer('creator_id')->unsigned();
             $table->text('text')->default('');
             $table->text('quote')->default('');
-            $table->text('domain')->default('');
-            $table->text('uri')->default('');
-            $table->text('link')->default('');
+            $table->string('domain')->default('');
+            $table->string('uri')->default('');
+            $table->string('link')->default('');
             $table->string('type')->default('text');
             $table->integer('x')->default(0);
             $table->integer('y')->default(0);

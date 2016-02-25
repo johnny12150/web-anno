@@ -76,4 +76,5 @@ Route::get('articles/{page}', 'ArticleController@index')->where('id', '[0-9]+');
 
 /* Auth login routing */
 Route::controller('auth', 'AuthController');
-;
+
+
