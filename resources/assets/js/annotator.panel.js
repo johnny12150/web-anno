@@ -79,14 +79,14 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 '<div class="anno-search">' +
                     '<p><strong>搜尋標記內容</strong></p>' +
                     '<form action="#" id="form-search">' +
-                        '<button id="anno-search-submit" type="submit">' +
-                            '<i class="fa fa-search fa-2x"></i>' +
-                        '</button>' +
                         '<input id="anno-search-input" type="text" />' +
+                            '<button id="anno-search-submit" type="submit">' +
+                                //'<i class="fa fa-search fa-2x"></i>' +
+                            '</button>' +
                     '</form>' +
                 '</div>' +
                 '<div class="anno-users">' +
-                    '<p><strong>在此網頁標記的人</strong></p>' +
+                    '<p><strong>在此網頁標籤的人</strong></p>' +
                     '<ul>' +
                     '</ul>' +
                 '</div>' +
@@ -102,8 +102,8 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 '<div class="anno-viewall">' +
                     '<button class="btn-viewall" id="btn-viewall">顯示全部</button>' +
                 '</div>' +
-                '<div class="btn-appear">' +
-                '</div>' +
+                //'<div class="btn-appear">' +
+                //'</div>' +
             '</div>');
 
         _this.ui = $('.anno-panel');
@@ -126,6 +126,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             $('.anno-search').fadeIn();
             $('.anno-users').fadeIn();
             $('.anno-tags').fadeIn();
+
             $('.anno-search-list').fadeIn();
             $('.anno-viewall').hide();
 
@@ -268,7 +269,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                         _this.is_authed = true;
                     },
                     401: function () {
-                        $('.anno-login').html('<div><span><a href="' + _this.loginUrl +'">登入</a></span></div>');
+                        $('.anno-login').html('<div><span><a href="' + _this.loginUrl +'">Sign In</a></span></div>');
                         if(showUI != false)
                             $('#openAuthUI').addClass('show');
                     }
