@@ -80,7 +80,7 @@ var annotation = function(e) {
             setCookie('anno_token', anno_token, 30);
             setCookie('user_id', user_id, 30);
         }
-
+        keywordInit(_annotation.element, { host: 'http://140.109.18.158/api/annotation.jsp'});
         // init annotator
         this.annotator = $(_annotation.element).annotator();
 
@@ -133,7 +133,6 @@ var annotation = function(e) {
         })
             .annotator('addPlugin','RichText',optionsRichText)
             .annotator('addPlugin', 'Tags')
-          //  .annotator('addPlugin', 'Keyword', {})
             .annotator('addPlugin', 'ViewPanel', {
                 target_anno : target_anno,
                 anno_token : anno_token,
@@ -146,6 +145,8 @@ var annotation = function(e) {
                 showEditPermissionsCheckbox: false,
                 user: user != null ? parseInt(user.id) : 0
             });
+        //.annotator('addPlugin', 'Keyword', {})
+
 
     };
 
