@@ -43,7 +43,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
     this.showUI = true;
     this.user = null;
 
-    //登入Anntation的 Modal UI
+    /*登入Anntation的 Modal UI*/
     this.insertAuthUI = function() {
         $('body').append('<div id="openAuthUI" class="authDialog">'
         + '     <div>'
@@ -69,7 +69,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             });
 
     };
-
+    /**/
     this.insertPanelUI = function() {
 
         $('body').append(
@@ -108,9 +108,12 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
         _this.ui = $('.anno-panel');
 
-        if(_this.target_anno == 0) {
+        if(_this.target_anno == 0) 
+        {
             $('.anno-viewall').hide();
-        } else {
+        } 
+        else 
+        {
             $('.anno-search').hide();
             $('.anno-users').hide();
             $('.anno-tags').hide();
@@ -226,7 +229,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         }).bind('mouseleave',  function(e){
             if(_this.showUI) {
                 _this.ui.stop().animate({
-                    'right': '-260px'
+                    'right': '-270px'
                 }, 1000, 'linear');
                 _this.showUI = false;
             }
