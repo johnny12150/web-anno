@@ -43,7 +43,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
     this.showUI = true;
     this.user = null;
 
-    //登入Anntation的 Modal UI
+    /*登入Anntation的 Modal UI*/
     this.insertAuthUI = function() {
         $('body').append('<div id="openAuthUI" class="authDialog">'
         + '     <div>'
@@ -69,7 +69,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             });
 
     };
-
+    /**/
     this.insertPanelUI = function() {
 
         $('body').append(
@@ -79,14 +79,14 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 '<div class="anno-search">' +
                     '<p><strong>搜尋標記內容</strong></p>' +
                     '<form action="#" id="form-search">' +
-                        '<button id="anno-search-submit" type="submit">' +
-                            '<i class="fa fa-search fa-2x"></i>' +
-                        '</button>' +
                         '<input id="anno-search-input" type="text" />' +
+                            '<button id="anno-search-submit" type="submit">' +
+                                //'<i class="fa fa-search fa-2x"></i>' +
+                            '</button>' +
                     '</form>' +
                 '</div>' +
                 '<div class="anno-users">' +
-                    '<p><strong>在此網頁標記的人</strong></p>' +
+                    '<p><strong>在此網頁標籤的人</strong></p>' +
                     '<ul>' +
                     '</ul>' +
                 '</div>' +
@@ -102,15 +102,18 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 '<div class="anno-viewall">' +
                     '<button class="btn-viewall" id="btn-viewall">顯示全部</button>' +
                 '</div>' +
-                '<div class="btn-appear">' +
-                '</div>' +
+                //'<div class="btn-appear">' +
+                //'</div>' +
             '</div>');
 
         _this.ui = $('.anno-panel');
 
-        if(_this.target_anno == 0) {
+        if(_this.target_anno == 0) 
+        {
             $('.anno-viewall').hide();
-        } else {
+        } 
+        else 
+        {
             $('.anno-search').hide();
             $('.anno-users').hide();
             $('.anno-tags').hide();
@@ -126,6 +129,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             $('.anno-search').fadeIn();
             $('.anno-users').fadeIn();
             $('.anno-tags').fadeIn();
+
             $('.anno-search-list').fadeIn();
             $('.anno-viewall').hide();
 
@@ -225,7 +229,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         }).bind('mouseleave',  function(e){
             if(_this.showUI) {
                 _this.ui.stop().animate({
-                    'right': '-260px'
+                    'right': '-270px'
                 }, 1000, 'linear');
                 _this.showUI = false;
             }
@@ -268,7 +272,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                         _this.is_authed = true;
                     },
                     401: function () {
-                        $('.anno-login').html('<div><span><a href="' + _this.loginUrl +'">登入</a></span></div>');
+                        $('.anno-login').html('<div><span><a href="' + _this.loginUrl +'">Sign In</a></span></div>');
                         if(showUI != false)
                             $('#openAuthUI').addClass('show');
                     }
