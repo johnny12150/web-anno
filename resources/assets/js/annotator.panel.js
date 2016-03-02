@@ -207,7 +207,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                     'anno_token': _this.anno_token,
                     'domain' : _this.domain
                 },
-                url : _this.logoutUrl,
+                url : _this.logoutUrl
             });
             setCookie('anno_token', '');
             setCookie('user_id', 0);
@@ -243,7 +243,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         if(!this.is_authed) {
             $.ajax({
                 crossDomain : true,
-                async : async === true ? true : false,
+                async: async === true,
                 dataType: 'json',
                 data: {
                     'anno_token': this.anno_token,

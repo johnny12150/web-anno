@@ -21,7 +21,6 @@ class CreateUsersTable extends Migration {
             $table->rememberToken();
             $table->string('facebook_id')->default('0');
             $table->string('facebook_token');
-            $table->timestamp('lastlogin');
 			$table->timestamps();
 		});
 	}

@@ -156,7 +156,7 @@ class AuthController extends Controller
             else
             {
 
-                $errors = new MessageBag(['password' => ['Account and/or password invalid.']]); //
+                $errors = new MessageBag(['password' => ['帳號或密碼錯誤']]); //
                 // validation not successful, send back to form
                 $inputs = Input::except('password');
                 $inputs = array_merge($inputs,$callbackData);
@@ -210,7 +210,6 @@ class AuthController extends Controller
         if( $hasCallback ) {
 
             $callback_url = urldecode($callbackUrl);
-            $uri = urldecode($uri);
             $domain = urldecode($domain);
 
 
@@ -224,7 +223,6 @@ class AuthController extends Controller
             //back to this external site
             return redirect($callback_url);
         } else {
-
             return redirect('/');
         }
 

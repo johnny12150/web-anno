@@ -4,7 +4,7 @@
 /**
  * Created by flyx on 7/22/15.
  */
-function Keyword(element, settings) {
+Annotator.Plugin.Keyword = function (element, settings) {
 
     var _this = this;
     var _element = element;
@@ -51,10 +51,14 @@ function Keyword(element, settings) {
                     $('.annotator-hl').filter('#keyword-' + row.id).each(function(index) {
 
                             var obj = new function() {
+
                                 return {
                                     "id": "keyword-" + keyword_index.toString(),  // unique id (added by backend)
                                     "text": row.description,                  // content of annotation
                                     "quote": row.description,    // the annotated text (added by frontend)
+                                    "uri": "",
+                                    "domain": "",
+                                    "link": "",
                                     "ranges": [                                // list of ranges covered by annotation (usually only one entry)
                                         {
                                             "start": "",           // (relative) XPath to start element
@@ -64,9 +68,18 @@ function Keyword(element, settings) {
                                         }
                                     ],
                                     "user": {
-                                        id: '0'
+                                        id: '0',
+                                        gravatar:'',
+                                        email: ''
                                     },                           // user id of annotation owner (can also be an object with an 'id' property)
+                                    "type": "text",
+                                    "position": {
+                                        "x": "0",
+                                        "y": "0"
+                                    },
                                     "tags": [],             // list of tags (from Tags plugin)
+                                    "likes": 0,
+                                    "src": "",
                                     "permissions": {                           //annotation permissions (from Permissions/AnnotateItPermissions plugin)
                                         "read": [],
                                         "update": [0],
@@ -83,5 +96,11 @@ function Keyword(element, settings) {
         });
 
     };
-    this.init();
+
+    return {
+        pluginInit: function () {
+            _this.init();
+        }
+    };
+
 };

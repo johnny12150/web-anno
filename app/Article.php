@@ -80,7 +80,7 @@ class Article extends Model {
         if(self::checkExist($uid, $aid)) {
             return self::whereRaw('id = ? and author_id = ?',array($aid, $uid))->delete();
         } else {
-            return 'Article does not exist.';
+            return false;
         }
     }
 

@@ -67,9 +67,7 @@ var annotation = function(e) {
             target_anno = 0;
 
         var old_anno_token = getCookie('anno_token');
-
         var old_user_id = getCookie('user_id');
-
 
         if( anno_token == '') {
             if (old_anno_token != "") {
@@ -135,6 +133,7 @@ var annotation = function(e) {
         })
             .annotator('addPlugin','RichText',optionsRichText)
             .annotator('addPlugin', 'Tags')
+          //  .annotator('addPlugin', 'Keyword', {})
             .annotator('addPlugin', 'ViewPanel', {
                 target_anno : target_anno,
                 anno_token : anno_token,
@@ -147,7 +146,6 @@ var annotation = function(e) {
                 showEditPermissionsCheckbox: false,
                 user: user != null ? parseInt(user.id) : 0
             });
-
 
     };
 

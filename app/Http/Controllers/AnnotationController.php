@@ -17,12 +17,6 @@ use Thomaswelton\LaravelGravatar\Facades\Gravatar;
 
 class AnnotationController extends Controller
 {
-
-
-    function __construct()
-    {
-
-    }
     /**
      * Get Annotation JS version.
      *
@@ -38,8 +32,6 @@ class AnnotationController extends Controller
 
     public function add()
     {
-
-
         $text = Request::input('text');
         $quote = Request::input('quote');
         $uri = Request::input('uri');
@@ -54,8 +46,6 @@ class AnnotationController extends Controller
         $ranges_end = '';
         $ranges_startOffset = '';
         $ranges_endOffset = '';
-
-
 
         if(isset(Request::input('ranges')[0]['start']))
             $ranges_start = Request::input('ranges')[0]['start'];
@@ -165,10 +155,14 @@ class AnnotationController extends Controller
     public function delete($id)
     {
         $user = Session::get('user');
-        //Delete Annotation
-        Annotation::del($user->id, $id);
-        //return 204 code
-        abort(204);
+        if($user != null) {
+            //Delete Annotation
+            Annotation::del($user->id, $id);
+            //return 204 code
+            abort(204);
+        } else {
+            abort(401);
+        }
     }
 
 
@@ -181,12 +175,6 @@ class AnnotationController extends Controller
         $domain = Request::input('domain');
         $token = Request::input('anno_token');
         $domain = urldecode($domain);
-        if(AuthTable::check($domain, $token))
-        {
-            $user = User::get(AuthTable::getByDomainToken($domain, $token)->uid);
-            Session::flash('user', $user);
-        }
-
 
         // limit 沒設定的話目前預設暫定 999 個標記
         $limit = Request::input('limit') == '' ? -1 :
@@ -196,10 +184,6 @@ class AnnotationController extends Controller
         // 搜尋的 user id
         $user_id = intval(Request::input('user'));
 
-        if( $user_id == 0 && isset($user))
-        {
-            $user_id = $user->id;
-        }
         // 搜尋的標記內容
         $searchText = Request::input('search');
 
@@ -228,7 +212,6 @@ class AnnotationController extends Controller
     public function like($id)
     {
         $like = Request::input('like');
-
         $like = intval($like);
         if ($like > 1 | $like < -1)
             $like = 0;
@@ -241,7 +224,6 @@ class AnnotationController extends Controller
 
     public function check()
     {
-
         $user = Session::get('user');
         return [
             'user' => [

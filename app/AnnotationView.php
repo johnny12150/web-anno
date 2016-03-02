@@ -21,6 +21,7 @@ class AnnotationView extends Model
     public static function search($conditions , $limit, $offset, $orderBy = 'likes', $sort='desc')
     {
 
+
         $query = DB::table('annotations_view');
 
         if( isset($conditions['id']) && $conditions['id'] != '')
@@ -42,9 +43,9 @@ class AnnotationView extends Model
                     $is_public = $conditions['public']['is_public'];
                     $creator_id = intval($conditions['public']['creator_id']);
                     if ( $creator_id == 0)
-                        $query = $query->whereRaw('is_public = ? or creator_id = ?', [ $is_public, $creator_id]);
+                        $query = $query->whereRaw('is_public = ?', [$is_public]);
                     else
-                        $query = $query->whereRaw('is_public = ? and creator_id = ?', [$is_public, $creator_id]);
+                        $query = $query->whereRaw('is_public = ? or creator_id = ?', [$is_public, $creator_id]);
                 } else {
                     $is_public = $conditions['public']['is_public'];
                     $query = $query->where('is_piblic', $is_public);
@@ -78,6 +79,7 @@ class AnnotationView extends Model
         }
         return array_merge($user_annos, $other_annos);
     }
+
     private static function getById($id)
     {
         $annotation = self::where('id', $id)->get();
