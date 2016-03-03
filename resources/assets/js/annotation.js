@@ -80,13 +80,19 @@ var annotation = function(e) {
             setCookie('anno_token', anno_token, 30);
             setCookie('user_id', user_id, 30);
         }
+
+        // Keywords init ********
         keywordInit(_annotation.element, { host: 'http://140.109.18.158/api/annotation.jsp'});
+
+
         // init annotator
         this.annotator = $(_annotation.element).annotator();
 
         // set richText editor options
+        
         var optionsRichText = {
             tinymce:{
+                language: 'zh_TW',
                 selector: "li.annotator-item textarea",
                 plugins: "media image insertdatetime link code",
                 menubar: false,
