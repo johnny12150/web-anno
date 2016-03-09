@@ -1,10 +1,12 @@
 {
   "private": true,
   "devDependencies": {
-    "laravel-elixir": "*",
-    "gulp": "*",
+    "gulp": "^3.9.1",
     "gulp-bower": "0.0.10",
+    "gulp-connect": "^3.1.0",
+    "gulp-livereload": "^3.8.1",
     "gulp-notify": "^2.2.0",
-    "gulp-ruby-sass": "^0.7.1"
+    "gulp-ruby-sass": "^0.7.1",
+    "laravel-elixir": "*"
   }
 }

@@ -86,7 +86,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                     '</form>' +
                 '</div>' +
                 '<div class="anno-users">' +
-                    '<p><strong>在此網頁標籤的人</strong></p>' +
+                    '<p><strong>在此網ddd頁標籤的人</strong></p>' +
                     '<ul>' +
                     '</ul>' +
                 '</div>' +
@@ -94,7 +94,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                     '<ul>' +
                     '</ul>' +
                 '</div>' +
-                '<hr/>' +
+                
                 '<div class="anno-search-list">' +
                     '<ul>' +
                     '</ul>' +
@@ -102,8 +102,9 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 '<div class="anno-viewall">' +
                     '<button class="btn-viewall" id="btn-viewall">顯示全部</button>' +
                 '</div>' +
-                //'<div class="btn-appear">' +
-                //'</div>' +
+                '<div class="btn-appear">' +
+                    '<i class="fa fa-list-ul fa-2x"></i>' +
+                '</div>' +
             '</div>');
 
         _this.ui = $('.anno-panel');
@@ -118,8 +119,9 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             $('.anno-users').hide();
             $('.anno-tags').hide();
             $('.anno-search-list').hide();
+            $('.btn-appear').hide();
         }
-
+        /*The action After we click the view all button */
         $('#btn-viewall').click(function(e){
             _this.target_anno = 0;
             $('.annotator-hl').not('.hl-keywords').removeClass('annotator-hl');
@@ -129,7 +131,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             $('.anno-search').fadeIn();
             $('.anno-users').fadeIn();
             $('.anno-tags').fadeIn();
-
+            $('.btn-appear').fadeIn();
             $('.anno-search-list').fadeIn();
             $('.anno-viewall').hide();
 
@@ -137,7 +139,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
         //綁定搜尋按鈕事件
         $('#anno-search-submit').click(function(e) {
-            e.preventDefault();
+            e.preventDefault(); //prevent from getting empty input 
             //從Store插件找到搜尋的網址
             var url_search = _this.annotator.plugins.Store.options.urls.search;
             var data = _this.annotator.plugins.Store.options.loadFromSearch;
@@ -226,10 +228,22 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 }, 500, 'linear');
                 _this.showUI = true;
             }
-        }).bind('mouseleave',  function(e){
+        });//10:15
+        /*.bind('click',  function(e){
             if(_this.showUI) {
                 _this.ui.stop().animate({
-                    'right': '-270px'
+                    'right': '-2
+                    70px'
+                }, 1000, 'linear');
+                _this.showUI = false;
+            }
+        });*/
+       
+        $('.btn-appear').bind('click',function(e)
+        {
+            if(_this.showUI) {
+                _this.ui.stop().animate({
+                    'right': '-285px'
                 }, 1000, 'linear');
                 _this.showUI = false;
             }
@@ -332,7 +346,8 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                             break;
                         }
                     }
-                } else {
+                } 
+                else {
                     _this.showing.push(_this.data[i]);
                 }
             }
@@ -493,7 +508,8 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 if( ~index )
                     _this.data.splice(index, 1);
             });
-
+            
+            /*annotation 註記擴充功能*/
             _this.annotator.viewer.addField({
                 load: _this.updateCreatorViewer
             });

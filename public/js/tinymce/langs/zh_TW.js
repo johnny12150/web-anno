@@ -215,5 +215,6 @@ tinymce.addI18n('zh_TW',{
 "Tools": "\u5de5\u5177",
 "View": "\u6aa2\u8996",
 "Table": "\u8868\u683c",
-"Format": "\u683c\u5f0f"
+"Format": "\u683c\u5f0f",
+"Inert a public rubric of the webside https://gteavirtual.org/rubric " : "\u683c\u5f0f"
 });

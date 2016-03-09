@@ -157,4 +157,4 @@ var annotation = function(e) {
     };
 
     return this;
-};
+}//;
