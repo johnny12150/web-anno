@@ -96,4 +96,5 @@ var keywordInit = function (element, settings) {
     //    }
     //};
     this.init();
+	//test
 };
