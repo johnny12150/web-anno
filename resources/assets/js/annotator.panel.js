@@ -86,7 +86,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                     '</form>' +
                 '</div>' +
                 '<div class="anno-users">' +
-                    '<p><strong>在此網頁標籤的人</strong></p>' +
+                    '<p><strong>在此網頁標籤的人test</strong></p>' +
                     '<ul>' +
                     '</ul>' +
                 '</div>' +
