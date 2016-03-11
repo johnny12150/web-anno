@@ -86,7 +86,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                     '</form>' +
                 '</div>' +
                 '<div class="anno-users">' +
-                    '<p><strong>在此網ddd頁標籤的人</strong></p>' +
+                    '<p><strong>在此網頁標籤的人</strong></p>' +
                     '<ul>' +
                     '</ul>' +
                 '</div>' +
@@ -103,7 +103,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                     '<button class="btn-viewall" id="btn-viewall">顯示全部</button>' +
                 '</div>' +
                 '<div class="btn-appear">' +
-                    '<i class="fa fa-list-ul fa-2x"></i>' +
+                    '<i class="fa fa-list fa-2x"></i>' +
                 '</div>' +
             '</div>');
 
