@@ -4,6 +4,7 @@
 use App\AnnotationView;
 use App\Annotation;
 use App\Tag;
+use App\TagUse;
 use App\User;
 use App\UrlInfo;
 use Illuminate\Support\Facades\Auth;
@@ -37,8 +38,8 @@ class ManageController extends Controller {
         $count = count($annos);
         $pagesCount = $count / 10 + 1;
         $titles = [];
-        $tags = Tag::getAllTags();
-
+        //$tags = Tag::getAllTags();
+		$tags = TagUse::fidTagNameforuser($user->id);
         $annoData = [];
 
         foreach($annos as $anno) {

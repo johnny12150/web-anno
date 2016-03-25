@@ -38,7 +38,7 @@ function getHashParam(name) {
 
 var annotation = function(e) {
 
-    this.server_host = 'annotation.ipicbox.tw';
+    this.server_host = '172.16.0.140:8022';
     this.element = e;
     this.annotator = null;
     this.host = location.host;
@@ -82,7 +82,7 @@ var annotation = function(e) {
         }
 
         // Keywords init ********
-        keywordInit(_annotation.element, { host: 'http://140.109.18.158/api/annotation.jsp'});
+        var keywords=keywordInit(_annotation.element, setting.keywords);
 
 
         // init annotator
@@ -144,8 +144,10 @@ var annotation = function(e) {
                 anno_token : anno_token,
                 uri: _annotation.uri,
                 server : _annotation.server_host,
-                domain : _annotation.host
+                domain : _annotation.host,
+				keywords : keywords
             });
+		this.annotator.loadannotation
         var user = this.annotator.data('annotator-user');
         this.annotator.annotator('addPlugin', 'Permissions', {
                 showEditPermissionsCheckbox: false,

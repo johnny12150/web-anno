@@ -9,6 +9,8 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
     this.annotator = $(element).annotator().data('annotator');
     this.element = element;
     this.uri = settings.uri;
+	this.keywords=settings.keywords;
+	this.hide_keywords="";
     // if uri not set , use web url in default
     if(this.uri == null)
         this.uri = location.href.split('#')[0];
@@ -43,7 +45,49 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
     this.showUI = true;
     this.user = null;
 
-    /*登入Anntation的 Modal UI*/
+	this.loadAnnotations=function(data){
+		_this.annotator.loadAnnotations(data);
+	}
+
+	this.initkeyword=function(){
+		_this.show_annontations();	
+	}
+
+	this.show_annontations=function(){
+		$('.annotator-hl').removeClass('annotator-hl');
+		for (x in _this.keywords )
+		{
+			$('.keyword-hl-'+_this.keywords[x].color).not('.anno-keywords ul li span.keyword-hl-'+_this.keywords[x].color).removeClass('keyword-hl-'+_this.keywords[x].color);
+			if (_this.hide_keywords.indexOf(','+x+',') == -1)
+			{
+				var tmp=JSON.parse(JSON.stringify(_this.keywords[x].anno));
+				_this.loadAnnotations(tmp);
+				$('.annotator-hl').not('[class*=keyword-hl]').addClass('keyword-hl-'+_this.keywords[x].color);
+			}
+		}
+		if (_this.showing.length==0)
+		{
+			_this.showing=_this.data;
+		}
+		var tmp=JSON.parse(JSON.stringify(_this.showing));
+		_this.loadAnnotations(tmp);
+	}
+
+	this.clickkeyword=function(){
+		var checkboxs = $('.anno-keywords ul li input[type=checkbox]');
+
+		_this.hide_keywords=",";
+        for(i = 0 ; i < checkboxs.length; i++) {
+            //id
+            var val = $(checkboxs[i]).attr('data-search').split('-')[1];    
+			if(!checkboxs[i].checked) {
+				_this.hide_keywords+=x+",";
+			}
+        }
+		_this.show_annontations();
+	}
+ 
+	/*登入Anntation的 Modal UI*/
     this.insertAuthUI = function() {
         $('body').append('<div id="openAuthUI" class="authDialog">'
         + '     <div>'
@@ -69,12 +113,34 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             });
 
     };
-    /**/
+
+	/*keyword UI*/
+	this.insertKeywordUI = function(){
+		for (x in _this.keywords )
+		{
+			_this.ui.find('.anno-keywords ul')
+                .append('<li id="anno-keyword-' + _this.keywords[x].id + '">' +
+                            '<input type="checkbox" checked data-search="keyword-' + _this.keywords[x].id + '"/>' +
+                            '<span class="keyword-hl-'+_this.keywords[x].color+'">' + _this.keywords[x].name +'</span>' +
+                        '</li>');
+			$('#anno-keyword-' + _this.keywords[x].id)
+                .find('input[type=checkbox]')
+                .click(_this.clickkeyword);
+		}
+		_this.initkeyword();
+	};
+
+    /*panel 主體*/
     this.insertPanelUI = function() {
 
         $('body').append(
             '<div class="anno-panel">' +
                 '<div class="anno-login">' +
+                '</div>' +
+				'<div class="anno-keywords">' +
+                    '<p><strong>匯入權威檔</strong></p>' +
+                    '<ul>' +
+                    '</ul>' +
                 '</div>' +
                 '<div class="anno-search">' +
                     '<p><strong>搜尋標記內容</strong></p>' +
@@ -124,10 +190,9 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         /*The action After we click the view all button */
         $('#btn-viewall').click(function(e){
             _this.target_anno = 0;
-            $('.annotator-hl').not('.hl-keywords').removeClass('annotator-hl');
             $('.anno-tags ul li').remove();
             $('.anno-users ul li').remove();
-            _this.annotator.loadAnnotations(_this.data);
+            _this.show_annotations();
             $('.anno-search').fadeIn();
             $('.anno-users').fadeIn();
             $('.anno-tags').fadeIn();
@@ -150,10 +215,10 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 dataType: 'json',
                 success: function(data) {
                     _this.data = [];
-                    $('.annotator-hl').not('.hl-keywords').removeClass('annotator-hl');
                     $('.anno-tags ul li').remove();
                     $('.anno-users ul li').remove();
-                    _this.annotator.loadAnnotations(data.rows);
+                    _this.showing=data.rows;
+					_this.show_annontations();
                 }
             });
         });
@@ -297,8 +362,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
 
     this.refreshHighLights = function() {
-
-        var filter_users = [];
+		var filter_users = [];
         var filter_tags = [];
         var i;
 
@@ -353,16 +417,12 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             }
 
         }
-
-        $('.annotator-hl').not('.hl-keywords').removeClass('annotator-hl');
-
-        _this.annotator.loadAnnotations(_this.showing);
+        _this.show_annontations();
 
     };
 
     this.addReference = function(annotation) {
-
-        var user_id;
+		var user_id;
         var gravatar_url = '#';
 
         // get user id from annotation
@@ -387,7 +447,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
 
         // check user is added to userlist
-        if( _this.ui.find('#anno-user-'+ user_id ).length == 0) {
+        if( _this.ui.find('#anno-user-'+ user_id ).length == 0 && annotation.id.indexOf('keyword')==-1) {
             //add user list item and bind to user list
             _this.ui.find('.anno-users ul')
                 .append('<li id="anno-user-' + user_id + '">' +
@@ -403,7 +463,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         //add tag to tag list
         var tags = annotation.tags;
 
-        if( Array.isArray(tags)) tags.forEach(function (tagName, index, tagsAry) {
+        if( Array.isArray(tags) && annotation.id.indexOf('keyword')==-1 ) tags.forEach(function (tagName, index, tagsAry) {
             if (tagName !== '') {
                 var tagId = 'anno-tag-' + tagName;
                 if (!_this.ui.find('#' + tagId).length) {
@@ -467,6 +527,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         pluginInit: function () {
 
             _this.insertPanelUI();
+			_this.insertKeywordUI();
             _this.insertAuthUI();
             _this.checkLoginState(false);
             _this.annotator
@@ -474,7 +535,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 .subscribe("annotationsLoaded", function (annotations) {
                     if( _this.data.length == 0 )
                         _this.data = annotations;
-                    annotations.forEach(function(annotation, index, annotations) {
+					annotations.forEach(function(annotation, index, annotations) {
                         var isInArray = $.inArray(_this.data, annotation);
                         if(~isInArray)
                             _this.data.push(annotation);
@@ -487,7 +548,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                         if(_this.target_anno != 0) {
                             if (annotation.id.toString() != _this.target_anno && annotation.highlights != null) {
                                 annotation.highlights.forEach(function(highlight, index, highlights){
-                                    $(highlight).not('.hl-keywords').removeClass('annotator-hl');
+                                    $(highlight).removeClass('annotator-hl');
                                 });
                             }
 

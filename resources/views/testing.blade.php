@@ -211,7 +211,21 @@ Besides painting, Chen was also actively involved in Taiwanese art movements. Am
     var anno = annotation('.field-content-panel');
     anno.init({
         uri : uri,
-        imageAnnotation : false
+        imageAnnotation : false,
+		keywords:[{
+				host: 'http://140.109.18.158/api/annotation.jsp',
+				data:{tagType:'00ff00'},
+				name: '本草綱目',
+				color: 'lime'},
+				{
+				host: 'http://140.109.18.158/api/annotation.jsp',
+				data:{tagType:'00ff00'},
+				name: '資源網',
+				color: 'red'},
+				{
+				host: 'http://140.109.18.158/api/annotation.jsp',
+				name: '資源網test',
+				color: 'blue'}]
     });
 
 </script>

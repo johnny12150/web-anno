@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
-
+use DB;
 class TagUse extends Model {
 
     protected $table = 'tags_use';
@@ -61,5 +61,15 @@ class TagUse extends Model {
     {
         return self::where('annotation_id', $anno_id)->delete();
     }
+
+	public static function fidTagNameforuser($user_id)
+	{
+		$tags_objs=DB::select('select name from tags where tags.id in (select tags_use.tag_id from annotations,tags_use where annotations.id=tags_use.annotation_id and annotations.creator_id = ?)',[$user_id]);
+		$tags=[];
+		foreach ($tags_objs as $tags_obj) {
+			 $tags[]=$tags_obj->name;
+		}
+		return $tags;
+	}
 
 }
