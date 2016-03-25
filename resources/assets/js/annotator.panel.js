@@ -81,7 +81,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             //id
             var val = $(checkboxs[i]).attr('data-search').split('-')[1];    
 			if(!checkboxs[i].checked) {
-				_this.hide_keywords+=x+",";
+				_this.hide_keywords+=i+",";
 			}
         }
 		_this.show_annontations();
