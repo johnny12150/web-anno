@@ -1,5 +1,5 @@
 <?php namespace App\Http\Controllers;
-
+ini_set("display_errors", "On");
 
 use App\AnnotationView;
 use App\Annotation;
@@ -44,9 +44,9 @@ class ManageController extends Controller {
         $pagesCount = intval($count / 10 + 1);
         $titles = [];
 
-        $tags = Tag::getAllTags();
-		//$tags = TagUse::fidTagNameforuser($user->id);
-
+        //$tags = Tag::getAllTags();
+		$tags = TagUse::fidTagNameforuser($user->id);
+     
         
 
         $annoData = [];
@@ -65,6 +65,7 @@ class ManageController extends Controller {
             'pagesCount' => $pagesCount,
             'count' => $count,
             'tags' => $tags,
+            
             'old' => [
                 'search_text' => Input::get('search_text'),
                 'search_tag' => Input::get('search_tag'),

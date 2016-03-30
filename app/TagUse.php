@@ -65,8 +65,6 @@ class TagUse extends Model {
     {
         return $this->belongsto('App\Annotation');
     }
-    public function getusertag($id){
-
 
 	public static function fidTagNameforuser($user_id)
 	{
