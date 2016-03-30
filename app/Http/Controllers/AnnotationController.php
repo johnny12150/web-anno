@@ -85,11 +85,10 @@ class AnnotationController extends Controller
             'is_public' => $is_public,
             'tags' => $tags
         ]);
-
         //回傳該標記
         return self::get($anno['id']);
     }
-
+    /*Update the annotator*/
     public function update($id)
     {
 
@@ -138,7 +137,7 @@ class AnnotationController extends Controller
             abort(500);
 
         //成功則返回該標記
-        return self::get($id);
+        return self::get($id); // self is static, can't replace with this .
 
     }
 
@@ -212,14 +211,14 @@ class AnnotationController extends Controller
     public function like($id)
     {
         $like = Request::input('like');
-        $like = intval($like);
+        $like = intval($like);  //將變數變為整數
         if ($like > 1 | $like < -1)
             $like = 0;
 
         $user = Session::get('user');
         $user_id = $user->id;
         Like::setLike($user_id, $id, $like);
-        return self::get($id);
+        return self::get($id);   //??????
     }
 
     public function check()
@@ -245,4 +244,30 @@ class AnnotationController extends Controller
         ];
     }
 
+    public function gethint()
+    {
+
+      
+        $name = Annotation::getName();
+        /*deal with data example:<p>abcds</p>*/
+        $namefix = str_replace(array('<p>','</p>'),"",$name);
+        $q = $_REQUEST["q"];
+        $hint = "";
+        // lookup all hints from array if $q is different from "" 
+        if ($q !== "") {
+            $q = strtolower($q);
+            $len=strlen($q);
+            foreach($namefix as $name) {
+                if (stristr($q, substr($name, 0, $len))) {
+                    if ($hint === "") {
+                        $hint = $name;
+                    } else {
+                        $hint .= ", $name";
+                    }
+                }
+            }
+        }
+        // Output "no suggestion" if no hint was found or output correct values 
+        echo $hint === "" ? "no suggestion" : $hint;
+    }
 }

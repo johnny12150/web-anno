@@ -41,6 +41,7 @@
 </header>
       <div class="content-wrap">
         <div class="field-content-panel">
+        <img src ="image/test1.jpg">
           <div class="field-title">Chen Cheng-po  <a class="field-title-icon" href="http://data.asdc.tw/lod/Person/PR0001#lodlive-section"><img src="./LTA_Annotation_DEMO_files/lodlive-anchor.png"></a>
 </div>
           <div class="field-section">

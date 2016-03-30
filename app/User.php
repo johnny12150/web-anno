@@ -80,6 +80,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
             'lastlogin' => 'CURRENT_TIMESTAMP',
         ]);
     }
-
+    public function Annotation()
+    {
+        return $this->hasmany('App\Annotation','creator_id');
+    }
 
 }

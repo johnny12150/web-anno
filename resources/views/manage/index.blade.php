@@ -11,11 +11,14 @@
                 <div class="form-group">
                     <h4 class="col-sm-2">搜尋</h4>
                 </div>
+
                 <div class="form-group">
                     <label for="search_text" class="col-sm-2 control-label">標記內容</label>
                     <div class="col-sm-10">
-                        <input type="text" name="search_text" class="form-control" id="search_text" value="{{ $old['search_text'] }}" placeholder="標記內容">
+                        <input type="text" name="search_text" class="form-control" id="search_text" value="{{ $old['search_text'] }}" placeholder="標記內容" onkeyup="showhint(this.value)">                        
                     </div>
+                    <label class="col-sm-2 control-label">Hint:</label>
+                    <div class="col-sm-10 control-text" ><p><span id="txtHint"></span></p></div>
                 </div>
                 <div class="form-group">
                     <label for="search_tag" class="col-sm-2 control-label">標籤</label>
@@ -59,7 +62,7 @@
                         </div>
                         <strong>標記內容：</strong>
                         <div class="anno-text">
-                            {!! $anno['text'] !!}
+                            {!! $anno['text'] !!} 
                         </div>
                         <div class="anno-tags">
                             <div><strong>標籤：</strong>
@@ -73,7 +76,7 @@
                         <div class="anno-public">
                             <div>
                                 <strong>可見度：</strong>
-                                <span>{{ count($anno['permissions']['read']) == 0 ? "公開" : "非公開" }}</span>
+                                <span>{{ count($anno['permissions']['read']) == 0 ? "公開" : "不公開" }}</span>
                             </div>
                         </div>
 
@@ -112,13 +115,14 @@
             @endforeach
         </div>
         <div class="anno-pages">
-            @for($i = 1 ; $i < $pagesCount ;$i++)
+            @for($i = 1 ; $i <= $pagesCount ;$i++)
                 @if($i != $page)
                     <span><a href="/manage/page/{{ $i }}{{ "?search_text=".$old["search_text"]."&search_tag=".$old["search_tag"]."&search_public=".$old["search_public"] }}">{{ $i }}</a></span>
                 @else
                     <span>{{ $i }}</span>
                 @endif
             @endfor
+                <span> 共{{ $pagesCount }}頁 </span>
         </div>
     </div>
     <div id="editorDiv" style="display: none;">
@@ -140,7 +144,22 @@
 @section('custom_script')
     <script src="{{ url('js/tinymce/tinymce.min.js') }}"></script>
     <script>
-
+        function showhint(str) {
+            if (str.length == 0) {
+                document.getElementById("txtHint").innerHTML = "";
+                return;
+            } else {
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function() {
+                    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                        document.getElementById("txtHint").innerHTML = xmlhttp.responseText;
+                    }
+                };
+                xmlhttp.open("GET", "/gethint?q=" + str, true);
+                xmlhttp.send();
+            }     
+        }
+   
         function postEdit() {
             var id = $('#editor_anno_id').val();
             var content = tinyMCE.activeEditor.getContent();

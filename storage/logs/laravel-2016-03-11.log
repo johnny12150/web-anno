@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [2016-03-11 07:00:11] local.ERROR: exception 'PDOException' with message 'SQLSTATE[28000] [1045] Access denied for user 'homestead'@'localhost' (using password: YES)' in /var/www/html/annotator/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:47
 Stack trace:
 #0 /var/www/html/annotator/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php(47): PDO->__construct('mysql:host=loca...', 'homestead', 'secret', Array)
@@ -565,5 +566,54 @@ Stack trace:
 Stack trace:
 #0 {main}  
 [2016-03-11 08:51:00] local.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 'Object of class stdClass could not be converted to string' in /var/www/html/annotator/app/Http/Controllers/ManageController.php:49
+=======
+[2016-03-11 01:45:35] local.ERROR: exception 'InvalidArgumentException' with message 'Command "tineker" is not defined.
+
+Did you mean this?
+    tinker' in /home/jonathan/Desktop/annotator/vendor/symfony/console/Symfony/Component/Console/Application.php:549
+Stack trace:
+#0 /home/jonathan/Desktop/annotator/vendor/symfony/console/Symfony/Component/Console/Application.php(192): Symfony\Component\Console\Application->find('tineker')
+#1 /home/jonathan/Desktop/annotator/vendor/symfony/console/Symfony/Component/Console/Application.php(126): Symfony\Component\Console\Application->doRun(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#2 /home/jonathan/Desktop/annotator/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(94): Symfony\Component\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#3 /home/jonathan/Desktop/annotator/artisan(36): Illuminate\Foundation\Console\Kernel->handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#4 {main}  
+[2016-03-11 02:08:55] local.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 'Call to undefined method stdClass::join()' in /home/jonathan/Desktop/annotator/vendor/psy/psysh/src/Psy/ExecutionLoop/Loop.php(76) : eval()'d code:1
+Stack trace:
+#0 {main}  
+[2016-03-11 02:40:45] local.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 'Call to undefined method stdClass::annotation()' in /home/jonathan/Desktop/annotator/vendor/psy/psysh/src/Psy/ExecutionLoop/Loop.php(76) : eval()'d code:1
+Stack trace:
+#0 {main}  
+[2016-03-11 02:40:55] local.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 'Call to undefined method stdClass::Annotation()' in /home/jonathan/Desktop/annotator/vendor/psy/psysh/src/Psy/ExecutionLoop/Loop.php(76) : eval()'d code:1
+Stack trace:
+#0 {main}  
+[2016-03-11 02:41:57] local.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 'Call to undefined method stdClass::nnotation()' in /home/jonathan/Desktop/annotator/vendor/psy/psysh/src/Psy/ExecutionLoop/Loop.php(76) : eval()'d code:1
+Stack trace:
+#0 {main}  
+[2016-03-11 02:42:10] local.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 'Call to undefined method stdClass::nnotation()' in /home/jonathan/Desktop/annotator/vendor/psy/psysh/src/Psy/ExecutionLoop/Loop.php(76) : eval()'d code:1
+Stack trace:
+#0 {main}  
+[2016-03-11 02:42:12] local.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 'Call to undefined method stdClass::nnotation()' in /home/jonathan/Desktop/annotator/vendor/psy/psysh/src/Psy/ExecutionLoop/Loop.php(76) : eval()'d code:1
+Stack trace:
+#0 {main}  
+[2016-03-11 03:01:40] local.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 'syntax error, unexpected '}'' in /home/jonathan/Desktop/annotator/app/TagUse.php:67
+Stack trace:
+#0 {main}  
+[2016-03-11 03:01:56] local.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 'syntax error, unexpected '}'' in /home/jonathan/Desktop/annotator/app/TagUse.php:67
+Stack trace:
+#0 {main}  
+[2016-03-11 03:37:38] local.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 'Cannot redeclare App\TagUse::$table' in /home/jonathan/Desktop/annotator/app/TagUse.php:9
+Stack trace:
+#0 {main}  
+[2016-03-11 08:44:17] local.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 'syntax error, unexpected ';'' in /home/jonathan/Desktop/annotator/app/Tag.php:68
+Stack trace:
+#0 {main}  
+[2016-03-11 08:46:38] local.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 'Class 'App\DB' not found' in /home/jonathan/Desktop/annotator/app/Tag.php:68
+Stack trace:
+#0 {main}  
+[2016-03-11 08:47:08] local.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 'Class 'App\DB' not found' in /home/jonathan/Desktop/annotator/app/Tag.php:68
+Stack trace:
+#0 {main}  
+[2016-03-11 08:47:27] local.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 'Call to undefined method Illuminate\Database\Eloquent\Collection::getusertag()' in /home/jonathan/Desktop/annotator/vendor/psy/psysh/src/Psy/ExecutionLoop/Loop.php(76) : eval()'d code:1
+>>>>>>> test1
 Stack trace:
 #0 {main}  

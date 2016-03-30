@@ -47,8 +47,14 @@ class Annotation extends Model {
             return true;
         }
     }
-
-
+        public function User()
+        {
+            return $this->belongsto('App\User','creator_id');
+        }
+        public function TagUse()
+        {
+            return $this->hasmany('App\TagUse','annotation_id');
+        }
     /**
      * Check Annotation exists
      * @param $uid User ID
@@ -203,7 +209,7 @@ class Annotation extends Model {
                     $tag = Tag::add($tagName);
                 TagUse::add($tag->id, $new_anno->id);
             }
-
+                    
             return self::format($new_anno);
         }
         else
@@ -345,5 +351,12 @@ class Annotation extends Model {
             ]
         ];
     }
-
+    public static function count()
+    {
+        return self::all()->count();
+    }
+    public static function getName()
+    {
+        return self::all()->lists('text');
+    }
 }

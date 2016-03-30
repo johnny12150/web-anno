@@ -60,7 +60,7 @@ Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
         ];
     })->where('all', '.*');
 });
-
+/**/
 Route::group(['prefix' => '/manage', 'middleware' => 'auth'], function() {
     Route::get('/', 'ManageController@index');
     Route::get('/page/{id}', 'ManageController@index');
@@ -68,7 +68,7 @@ Route::group(['prefix' => '/manage', 'middleware' => 'auth'], function() {
     Route::post('edit', 'ManageController@edit');
 });
 
-
+Route::get('gethint','AnnotationController@gethint');
 Route::get('gravatar/{email}', 'GravatarController@get');
 /* Test Article routing */
 Route::get('articles', 'ArticleController@index');

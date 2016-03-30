@@ -4,9 +4,17 @@
 Annotator.Plugin.ViewPanel = function (element, settings) {
 
     // storing object scope
+    /* settings:
+    target_anno : target_anno,
+    anno_token : anno_token,
+    uri: _annotation.uri,
+    server : _annotation.server_host,
+    domain : _annotation.host
+    */
     var _this = this;
     this.settings = settings;
     this.annotator = $(element).annotator().data('annotator');
+    console.log($(element).annotator());
     this.element = element;
     this.uri = settings.uri;
 	this.keywords=settings.keywords;
@@ -201,7 +209,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             $('.anno-viewall').hide();
 
         });
-
+  
         //綁定搜尋按鈕事件
         $('#anno-search-submit').click(function(e) {
             e.preventDefault(); //prevent from getting empty input 
@@ -225,10 +233,10 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
         //綁定所有按讚事件
         $(document).on( 'click', '.anno-like',function(e) {
-            e.preventDefault();
-            var target = $(e.target);
+            e.preventDefault(); //The preventDefault() method will prevent the link above from following the URL.
+            var target = $(e.target); //事件驅動的目標
             //標記ID
-            var aid = target.attr('data-id');
+            var aid = target.attr('data-id'); //取得like的ID
             $.post(_this.postlikeUrl + "/" + aid, {
                 anno_token : _this.anno_token,
                 domain : _this.domain,
@@ -239,6 +247,8 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                     var highlights = _this.maptoid[annotation.id];
                     highlights.forEach(function(highlight, index , ary) {
                         $(highlight).data('annotation').likes = annotation.likes;
+                      
+
                     });
                 }
             });
@@ -257,6 +267,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                     var highlights = _this.maptoid[annotation.id];
                     highlights.forEach(function(highlight, index , ary) {
                         $(highlight).data('annotation').likes = annotation.likes;
+
                     });
                 }
             });
@@ -319,16 +330,16 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
     //檢查登入狀態函數
     this.checkLoginState = function(showUI, async) {
 
-        if(!this.is_authed) {
+        if(!_this.is_authed) {
             $.ajax({
                 crossDomain : true,
                 async: async === true,
                 dataType: 'json',
+                url: _this.authCheckurl,
                 data: {
                     'anno_token': this.anno_token,
                     'domain' : this.domain
-                },
-                url: this.authCheckurl,
+                       },
                 success : function(data) {
                     $(_this.element).data('annotator-user', data.user);
                     _this.user = data.user;
@@ -396,21 +407,22 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         {
             var user = _this.data[i].user;
 
-            _this.data[i].highlights = [];
-
+            _this.data[i].highlights = []; 
+            
             // 確認建立標記的使用者
-            if (filter_users.indexOf(user.id.toString()) != -1) {
-                //如果tag清單上沒有全部勾選 則確認標記的tag
-                if(filter_tags.length != tags_count) {
-                    var tags = _this.data[i].tags;
-                    for (var j = 0; j < tags.length; j++) {
-                        var tag = tags[j];
-                        if (filter_tags.indexOf(tag) != -1) {
-                            _this.showing.push(_this.data[i]);
-                            break;
-                        }
+            if (filter_users.indexOf(user.id.toString()) != -1) { //The indexOf() method searches the array for the specified item, and returns its position.
+            //如果tag清單上沒有全部勾選 則確認標記的tag
+            if (filter_tags.length != tags_count) {
+                var tags = _this.data[i].tags;
+                for (var j = 0; j < tags.length; j++) {
+                    var tag = tags[j];
+                    if (filter_tags.indexOf(tag) != -1) {
+                        _this.showing.push(_this.data[i]);
+                        break;
                     }
-                } 
+                }
+            }
+
                 else {
                     _this.showing.push(_this.data[i]);
                 }
@@ -428,7 +440,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         // get user id from annotation
         if( annotation.user != null)
             user_id = annotation.user.id;
-
+            
         if( user_id == null )
             user_id = _this.user.id;
 
@@ -446,10 +458,12 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
 
 
+
         // check user is added to userlist
         if( _this.ui.find('#anno-user-'+ user_id ).length == 0 && annotation.id.indexOf('keyword')==-1) {
+
             //add user list item and bind to user list
-            _this.ui.find('.anno-users ul')
+            this.ui.find('.anno-users ul')
                 .append('<li id="anno-user-' + user_id + '">' +
                             '<input type="checkbox" checked data-search="user-' + user_id + '"/>' +
                             '<img class="gravatar" src="'+ gravatar_url +'" alt=""/>' +
@@ -463,7 +477,9 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         //add tag to tag list
         var tags = annotation.tags;
 
+
         if( Array.isArray(tags) && annotation.id.indexOf('keyword')==-1 ) tags.forEach(function (tagName, index, tagsAry) {
+
             if (tagName !== '') {
                 var tagId = 'anno-tag-' + tagName;
                 if (!_this.ui.find('#' + tagId).length) {
@@ -479,12 +495,12 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             }
         });
     };
-
+    
     // add user filed to Annotation View
     this.updateCreatorViewer = function(field, annotation) {
         var user = annotation.user;
         if(user == null)
-            user = _this.user;
+            user = _this.user;  //登入的使用者
         if(user.name != null ) {
             $(field)
                 .addClass('annotator-user')
@@ -532,6 +548,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             _this.checkLoginState(false);
             _this.annotator
 
+<<<<<<< HEAD
                 .subscribe("annotationsLoaded", function (annotations) {
                     if( _this.data.length == 0 )
                         _this.data = annotations;
@@ -555,9 +572,10 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                         }
                     });
 
+
             }).subscribe("annotationCreated", function (annotation) {
                 _this.checkLoginState();
-                if(_this.data.indexOf(annotation) == -1)
+                if(_this.data.indexOf(annotation) == -1)  
                     _this.data.push(annotation);
                 _this.addReference(annotation);
             }).subscribe("annotationUpdated", function (annotation) {
@@ -566,8 +584,8 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             }).subscribe("annotationDeleted", function (annotation) {
                 _this.checkLoginState();
                 var index = $.inArray(annotation, _this.data);
-                if( ~index )
-                    _this.data.splice(index, 1);
+                if( ~index ) // "~"  >>> not 
+                     _this.data.splice(index, 1);
             });
             
             /*annotation 註記擴充功能*/

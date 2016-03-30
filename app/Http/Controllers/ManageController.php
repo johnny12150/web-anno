@@ -21,7 +21,7 @@ class ManageController extends Controller {
         $uri = Input::get('search_uri');
         $searchPublic = Input::get('search_public');
         $user = Auth::user();
-
+        
 
         $annos = AnnotationView::search([
             'uri' => $uri,
@@ -34,12 +34,21 @@ class ManageController extends Controller {
                 'creator_id' => $user->id,
             ],
         ], 10, ($page-1)*10, 'uri');
-
-        $count = count($annos);
-        $pagesCount = $count / 10 + 1;
+        
+        if( empty($searchText) && empty($searchTag) )
+            $count = Annotation::count();
+        else 
+            $count = count($annos);
+       
+        
+        $pagesCount = intval($count / 10 + 1);
         $titles = [];
-        //$tags = Tag::getAllTags();
-		$tags = TagUse::fidTagNameforuser($user->id);
+
+        $tags = Tag::getAllTags();
+		//$tags = TagUse::fidTagNameforuser($user->id);
+
+        
+
         $annoData = [];
 
         foreach($annos as $anno) {
@@ -54,6 +63,7 @@ class ManageController extends Controller {
             'titles' => $titles,
             'page' => $page,
             'pagesCount' => $pagesCount,
+            'count' => $count,
             'tags' => $tags,
             'old' => [
                 'search_text' => Input::get('search_text'),

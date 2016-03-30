@@ -61,6 +61,12 @@ class TagUse extends Model {
     {
         return self::where('annotation_id', $anno_id)->delete();
     }
+    public function annotatioin()
+    {
+        return $this->belongsto('App\Annotation');
+    }
+    public function getusertag($id){
+
 
 	public static function fidTagNameforuser($user_id)
 	{

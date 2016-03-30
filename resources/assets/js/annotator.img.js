@@ -12,11 +12,11 @@ Annotator.Plugin.ImageAnnotation = function (element, settings) {
     this.inEdit = false;
 
     this.init = function() {
-        $('.annotator-wrapper')
+        $('.annotator-wrapper') //可使用Annotator的element範圍
             .append($('<div>').attr('id','img-anno-list'));
 
     };
-
+        /* 判斷選取的是否回字串*/
     this.getSelectionText = function(){
         var text = "";
         if (window.getSelection) {
@@ -31,9 +31,8 @@ Annotator.Plugin.ImageAnnotation = function (element, settings) {
         if( scope.getSelectionText() == '') {
             scope.target = e.currentTarget;
             var offset = $('.annotator-wrapper').offset();
-            var curX = e.pageX - offset.left;
+            var curX = e.pageX - offset.left;            
             var curY = e.pageY - offset.top + 25;
-
             var editor = $('.annotator-editor');
             if (editor.css('display') == 'none'
                 || editor.hasClass('annotator-hide')) {
@@ -44,7 +43,7 @@ Annotator.Plugin.ImageAnnotation = function (element, settings) {
                     .show();
 
             }
-
+            /*如果在編輯中，不會因為移動滑鼠改變座標軸*/
             if(!scope.inEdit) {
                 scope.target = e.currentTarget;
                 scope.x = e.pageX - $(scope.target).offset().left;
@@ -140,7 +139,8 @@ Annotator.Plugin.ImageAnnotation = function (element, settings) {
                             y: scope.y
                         };
                         if(annotation.type == 'image') {
-                            var origin = $(".annotator-wrapper img[src='"+annotation.src+"']").position();
+                            var origin = $(".annotator-wrapper img[src='"+ annotation.src + "']").position();
+                            console.log(origin);
                             var x = parseInt(origin.left) + parseInt(annotation.position.x);
                             var y = parseInt(origin.top) + parseInt(annotation.position.y);
                             $('#img-anno-list')
