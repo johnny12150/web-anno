@@ -548,7 +548,6 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             _this.checkLoginState(false);
             _this.annotator
 
-<<<<<<< HEAD
                 .subscribe("annotationsLoaded", function (annotations) {
                     if( _this.data.length == 0 )
                         _this.data = annotations;
