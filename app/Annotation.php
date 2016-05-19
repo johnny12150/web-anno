@@ -192,6 +192,8 @@ class Annotation extends Model {
             if($data['type'] == 'image') {
                 $new_anno->x = $data['position']['x'];
                 $new_anno->y = $data['position']['y'];
+                $new_anno->w = $data['position']['width'];
+                $new_anno->h = $data['position']['height'];
                 $new_anno->src = $data['src'];
             }
             $new_anno->save();
@@ -342,7 +344,9 @@ class Annotation extends Model {
             'type' => $anno->type,
             'position' => [
                 'x' => $anno->x,
-                'y' => $anno->y
+                'y' => $anno->y,
+                'width' => $anno->w,
+                'height' => $anno->h
             ],
             'src' => $anno->src,
             'user' => [

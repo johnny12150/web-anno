@@ -41,8 +41,9 @@
 </header>
       <div class="content-wrap">
         <div class="field-content-panel">
-        <img src ="image/test1.jpg">
-          <div class="field-title">Chen Cheng-po  <a class="field-title-icon" href="http://data.asdc.tw/lod/Person/PR0001#lodlive-section"><img src="./LTA_Annotation_DEMO_files/lodlive-anchor.png"></a>
+        <img src ="image/test1.jpg" width ="500" height = "500">
+         <img src ="image/test2.jpg" width ="500" height = "500">
+          <div class="field-title">Chen Cheng-po  <a class="field-title-icon" href="http://data.asdc.tw/lod/Person/PR0001#lodlive-section"></a>
 </div>
           <div class="field-section">
   <span class="field-label">Also known as</span>
@@ -212,7 +213,7 @@ Besides painting, Chen was also actively involved in Taiwanese art movements. Am
     var anno = annotation('.field-content-panel');
     anno.init({
         uri : uri,
-        imageAnnotation : false,
+        imageAnnotation : true,
 		keywords:[{
 				host: 'http://140.109.18.158/api/annotation.jsp',
 				data:{tagType:'00ff00'},

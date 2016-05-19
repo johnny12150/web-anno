@@ -14,7 +14,6 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
     var _this = this;
     this.settings = settings;
     this.annotator = $(element).annotator().data('annotator');
-    console.log($(element).annotator());
     this.element = element;
     this.uri = settings.uri;
 	this.keywords=settings.keywords;
@@ -58,17 +57,18 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 	}
 
 	this.initkeyword=function(){
-		_this.show_annontations();	
+		_this.show_annotations();	
 	}
+    
 
-	this.show_annontations=function(){
+	this.show_annotations=function(){
 		$('.annotator-hl').removeClass('annotator-hl');
 		for (x in _this.keywords )
 		{
 			$('.keyword-hl-'+_this.keywords[x].color).not('.anno-keywords ul li span.keyword-hl-'+_this.keywords[x].color).removeClass('keyword-hl-'+_this.keywords[x].color);
 			if (_this.hide_keywords.indexOf(','+x+',') == -1)
 			{
-				var tmp=JSON.parse(JSON.stringify(_this.keywords[x].anno));
+				var tmp = JSON.parse(JSON.stringify(_this.keywords[x].anno));
 				_this.loadAnnotations(tmp);
 				$('.annotator-hl').not('[class*=keyword-hl]').addClass('keyword-hl-'+_this.keywords[x].color);
 			}
@@ -92,7 +92,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 				_this.hide_keywords+=i+",";
 			}
         }
-		_this.show_annontations();
+		_this.show_annotations();
 	}
  
 	/*登入Anntation的 Modal UI*/
@@ -138,6 +138,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 		_this.initkeyword();
 	};
 
+    
     /*panel 主體*/
     this.insertPanelUI = function() {
 
@@ -226,7 +227,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                     $('.anno-tags ul li').remove();
                     $('.anno-users ul li').remove();
                     _this.showing=data.rows;
-					_this.show_annontations();
+					_this.show_annotations();
                 }
             });
         });
@@ -236,6 +237,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             e.preventDefault(); //The preventDefault() method will prevent the link above from following the URL.
             var target = $(e.target); //事件驅動的目標
             //標記ID
+
             var aid = target.attr('data-id'); //取得like的ID
             $.post(_this.postlikeUrl + "/" + aid, {
                 anno_token : _this.anno_token,
@@ -257,6 +259,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             e.preventDefault();
             var target = $(e.target);
             var aid = target.attr('data-id');
+
             $.post(_this.postlikeUrl + "/" + aid, {
                 anno_token : _this.anno_token,
                 domain : _this.domain,
@@ -273,10 +276,15 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             });
 
         });
+        
+        $(window).resize(function() {
+            _this.show_annotations();
+        });
 
         //登出事件
         $(document).on('click','#btn-anno-logout', function(e){
             e.preventDefault();
+        
             $.ajax({
                 method: 'POST',
                 cookies: true,
@@ -291,6 +299,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
             setCookie('user_id', 0);
             _this.is_authed = false;
             _this.anno_token = '';
+     
             _this.checkLoginState(false);
             location.reload();
             return false;
@@ -331,14 +340,15 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
     this.checkLoginState = function(showUI, async) {
 
         if(!_this.is_authed) {
+            console.log("checkLoginState",_this.anno_token);
             $.ajax({
                 crossDomain : true,
                 async: async === true,
                 dataType: 'json',
                 url: _this.authCheckurl,
                 data: {
-                    'anno_token': this.anno_token,
-                    'domain' : this.domain
+                    'anno_token': _this.anno_token,
+                    'domain' : _this.domain
                        },
                 success : function(data) {
                     $(_this.element).data('annotator-user', data.user);
@@ -423,13 +433,14 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 }
             }
 
-                else {
+            else {
                     _this.showing.push(_this.data[i]);
                 }
             }
 
         }
-        _this.show_annontations();
+      
+        _this.show_annotations();
 
     };
 
@@ -458,7 +469,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 
 
 
-
+        
         // check user is added to userlist
         if( _this.ui.find('#anno-user-'+ user_id ).length == 0 && annotation.id.indexOf('keyword')==-1) {
 
@@ -478,7 +489,7 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
         var tags = annotation.tags;
 
 
-        if( Array.isArray(tags) && annotation.id.indexOf('keyword')==-1 ) tags.forEach(function (tagName, index, tagsAry) {
+        if( Array.isArray(tags) && annotation.id.indexOf('keyword')== -1 ) tags.forEach(function (tagName, index, tagsAry) {
 
             if (tagName !== '') {
                 var tagId = 'anno-tag-' + tagName;
@@ -554,21 +565,26 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
 					annotations.forEach(function(annotation, index, annotations) {
                         var isInArray = $.inArray(_this.data, annotation);
                         if(~isInArray)
-                            _this.data.push(annotation);
+                         
+                        _this.data.push(annotation);
                         _this.addReference(annotation);
                         //建立 id以及被標記元素的map
                         if( annotation.highlights != null) {
                             _this.maptoid[annotation.id] = annotation.highlights;
                         }
                         // 當要顯示特定標記時，刪除其他標記的高亮
-                        if(_this.target_anno != 0) {
+                        if(_this.target_anno != 0   && annotation.id.toString() != _this.target_anno) {
                             if (annotation.id.toString() != _this.target_anno && annotation.highlights != null) {
                                 annotation.highlights.forEach(function(highlight, index, highlights){
                                     $(highlight).removeClass('annotator-hl');
+
+
                                 });
+
                             }
 
                         }
+                        
                     });
 
 
@@ -581,13 +597,15 @@ Annotator.Plugin.ViewPanel = function (element, settings) {
                 _this.checkLoginState();
                 _this.addReference(annotation);
             }).subscribe("annotationDeleted", function (annotation) {
+               
                 _this.checkLoginState();
+                console.log(annotation);
                 var index = $.inArray(annotation, _this.data);
                 if( ~index ) // "~"  >>> not 
                      _this.data.splice(index, 1);
             });
             
-            /*annotation 註記擴充功能*/
+            /*annotation 註記擴充功deleteAnnotation能*/
             _this.annotator.viewer.addField({
                 load: _this.updateCreatorViewer
             });

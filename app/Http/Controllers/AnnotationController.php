@@ -58,7 +58,8 @@ class AnnotationController extends Controller
 
         $x = ($isImage && isset(Request::input('position')['x'])) ?  Request::input('position')['x'] : 0;
         $y = ($isImage && isset(Request::input('position')['y'])) ?  Request::input('position')['y'] : 0;
-
+        $width = ($isImage && isset(Request::input('position')['width'])) ?  Request::input('position')['width'] : 0;
+        $height = ($isImage && isset(Request::input('position')['height'])) ?  Request::input('position')['height'] : 0;
         $permissions = Request::input('permissions');
         $is_public = count($permissions['read']) == 0;
 
@@ -78,7 +79,9 @@ class AnnotationController extends Controller
             'src' => $isImage ? $image_src : null,
             'position' => $isImage ? [
                 'x' => $x,
-                'y' => $y
+                'y' => $y,
+                'width'=>$width,
+                'height'=>$height
             ] : null,
             'ranges_startOffset' => $ranges_startOffset,
             'ranges_endOffset' => $ranges_endOffset,

@@ -1205,6 +1205,7 @@
 
     Annotator.prototype.startViewerHideTimer = function() {
       if (!this.viewerHideTimer) {
+
         return this.viewerHideTimer = setTimeout(this.viewer.hide, 250);
       }
     };
@@ -1259,6 +1260,7 @@
       annotations = $(event.target).parents('.annotator-hl').addBack().map(function() {
         return $(this).data("annotation");
       });
+      
       return this.showViewer($.makeArray(annotations), Util.mousePosition(event, this.wrapper[0]));
     };
 
@@ -2270,7 +2272,9 @@
     };
 
     Store.prototype.annotationDeleted = function(annotation) {
+      console.log(__indexOf.call(this.annotations, annotation));
       if (__indexOf.call(this.annotations, annotation) >= 0) {
+
         return this._apiRequest('destroy', annotation, ((function(_this) {
           return function() {
             return _this.unregisterAnnotation(annotation);

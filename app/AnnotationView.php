@@ -117,7 +117,9 @@ class AnnotationView extends Model
             'type' => $row->type,
             'position' => [
                 'x' => $row->x,
-                'y' => $row->y
+                'y' => $row->y,
+                'width' => $row->width,
+                'height' => $row->height
             ],
             'likes' => $row->likes == null ? 0 : $row->likes,
             'src' => $row->src,

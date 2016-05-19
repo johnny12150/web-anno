@@ -147,8 +147,8 @@ var annotation = function(e) {
                 limit: 0,
                 uri: _annotation.uri,
                 domain : _annotation.host, 
-
                 anno_token : anno_token
+
             }
         })
             .annotator('addPlugin','RichText',optionsRichText)

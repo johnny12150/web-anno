@@ -338,3 +338,10 @@ $alpha : ",0.3)";
         background: #{append(nth($colorRGB,$i),$alpha)};
     }
 }
+.annoitem-focus {
+    opacity: 1.0;
+}
+
+.annoitem-unfocus {
+    opacity: 0.4;
+}

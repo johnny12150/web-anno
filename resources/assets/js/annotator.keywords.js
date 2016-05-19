@@ -79,7 +79,9 @@ function keywordInit(element, settings) {
             }
         });
     }
+
     return keywords;
+
 };
 function getxpath(elem,relativeRoot) {
     var idx, path, tagName;
