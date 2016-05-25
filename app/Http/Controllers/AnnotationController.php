@@ -40,7 +40,7 @@ class AnnotationController extends Controller
         $isImage = Request::input('type') == 'image';
         $image_src = Request::input('src');
         $type = Request::input('type');
-        $tags = Request::input('tags');
+        $tags = Request::input('tags') ;
 
         $ranges_start = '';
         $ranges_end = '';

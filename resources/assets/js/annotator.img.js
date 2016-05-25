@@ -309,22 +309,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
 
                             now++;
                             annotation.id = String(now);
-                            /*$('#img-anno-list')
-                                .append($('<div>')
-                                    .attr('id', 'img-anno-' + now)
-                                    .addClass('annotator-hl').addClass('img-anno-item')
-                                    .css({
-                                        'position': 'absolute',
-                                        'z-index': '999',
-                                        'left': x + 8 + 'px',
-                                        'top': y + 8 + 'px',
-                                        'width': annotation.position.width - 16 + 'px',
-                                        'height': annotation.position.height - 16 + 'px'
-                                    }));
-
-                            $('#img-anno-' + parseInt(now))
-                                .data('annotation', annotation);
-                                */
+                      
                             scope.addImgAnnotation(annotation);
                             scope.target = null; 
                         }
@@ -350,22 +335,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                             var x = parseInt(annotation.position.x) + parseInt(origin[0].x) - parseInt(offset.left);
                             var y = parseInt(annotation.position.y) + parseInt(origin[0].y) - parseInt(offset.top);
                             now = annotation.id;
-                            console.log()
-                            /*$('#img-anno-list')
-                                .append($('<div>')
-                                    .attr('id', 'img-anno-' + annotation.id)
-                                    .addClass('img-anno-item')
-                                    .css({
-                                        'position': 'absolute',
-                                        'z-index': parseInt(annotation.likes) + 500 ,
-                                        'left': x + 8 + 'px',
-                                        'top': y + 8 + 'px',
-                                        'width': annotation.position.width - 16 + 'px',
-                                        'height': annotation.position.height - 16 + 'px'
-                                    }));
-                            $('#img-anno-' + annotation.id)
-                                .data('annotation', annotation);
-                            */
+                 
                             scope.addImgAnnotation(annotation);
 
                         }

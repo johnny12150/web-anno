@@ -2246,6 +2246,7 @@
     };
 
     Store.prototype.annotationCreated = function(annotation) {
+      console.log("in created");
       if (__indexOf.call(this.annotations, annotation) < 0) {
         this.registerAnnotation(annotation);
         return this._apiRequest('create', annotation, (function(_this) {
@@ -2253,6 +2254,7 @@
             if (data.id == null) {
               console.warn(Annotator._t("Warning: No ID returned from server for annotation "), annotation);
             }
+            console.log('out created');
             return _this.updateAnnotation(annotation, data);
           };
         })(this));
@@ -2272,9 +2274,17 @@
     };
 
     Store.prototype.annotationDeleted = function(annotation) {
-      console.log(__indexOf.call(this.annotations, annotation));
-      if (__indexOf.call(this.annotations, annotation) >= 0) {
-
+      var x ;
+      for ( var i in this.annotations )
+      {
+        if(this.annotations[i].id  == annotation.id)
+        {
+          x = i ;
+          break ; 
+        }
+      }
+      //if (__indexOf.call(this.annotations, annotation) >= 0) {
+        if ( x >= 0 ) {
         return this._apiRequest('destroy', annotation, ((function(_this) {
           return function() {
             return _this.unregisterAnnotation(annotation);

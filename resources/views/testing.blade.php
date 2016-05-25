@@ -3,13 +3,14 @@
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link type="text/css" rel="stylesheet" href="./LTA_Annotation_DEMO_files/css"><style type="text/css">.gm-style .gm-style-cc span,.gm-style .gm-style-cc a,.gm-style .gm-style-mtc div{font-size:10px}</style><style type="text/css">@media print {  .gm-style .gmnoprint, .gmnoprint {    display:none  }}@media screen {  .gm-style .gmnoscreen, .gmnoscreen {    display:none  }}</style><style type="text/css">.gm-style{font-family:Roboto,Arial,sans-serif;font-size:11px;font-weight:400;text-decoration:none}.gm-style img{max-width:none}</style>
     <title>Link Taiwan Artists</title>
     <meta charset="utf-8">
-
+    <link rel="stylesheet" href="{{ asset('css/easy-autocomplete.css') }}"/>
     <link rel="stylesheet" href="{{ asset('css/annotator.min.css') }}"/>
     <link rel="stylesheet" href="{{ asset('css/richText-annotator.min.css')}}">
     <link rel="stylesheet" href="{{ asset('css/annotation.css') }}"/>
     <link rel="gettext" type="application/x-po" href="{{ asset('locale/annotator.po') }}">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-
+  
+ 
     <!--<base href="http://data.asdc.tw/LTA/">--><base href=".">
     <!-- Begin of Google Fonts Standard 字體鑲入-->
     <link href="./LTA_Annotation_DEMO_files/css(1)" rel="stylesheet" type="text/css">
@@ -43,6 +44,7 @@
         <div class="field-content-panel">
         <img src ="image/test1.jpg" width ="500" height = "500">
          <img src ="image/test2.jpg" width ="500" height = "500">
+       
           <div class="field-title">Chen Cheng-po  <a class="field-title-icon" href="http://data.asdc.tw/lod/Person/PR0001#lodlive-section"></a>
 </div>
           <div class="field-section">
@@ -204,7 +206,7 @@ Besides painting, Chen was also actively involved in Taiwanese art movements. Am
 
 </body>
 <script src="{{ asset('js/tinymce/tinymce.min.js')}}"></script>
-
+<script src="code.jquery.com/jquery-1.11.2.min.js"></script>
 <script src="{{ asset('js/annotation.full.js')}}"></script>
 <script type="text/javascript">
 
@@ -229,6 +231,7 @@ Besides painting, Chen was also actively involved in Taiwanese art movements. Am
 				name: '資源網test',
 				color: 'blue'}]
     });
+
 
 </script>
 </html>
