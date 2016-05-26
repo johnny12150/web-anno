@@ -8,6 +8,7 @@ use Thomaswelton\LaravelGravatar\Facades\Gravatar;
  * Class AnnotationView
  * @package App
  */
+
 class AnnotationView extends Model
 {
     /**
@@ -17,7 +18,7 @@ class AnnotationView extends Model
      */
     protected $table = 'annotations_view';
 
-
+   
     public static function search($conditions , $limit, $offset, $orderBy = 'likes', $sort='desc')
     {
 
@@ -33,7 +34,16 @@ class AnnotationView extends Model
         if( isset($conditions['creator_id']) && $conditions['creator_id'] != '')
             $query = $query->where('creator_id', $conditions['creator_id']);
         if( isset($conditions['text']) && $conditions['text'] != '')
-            $query = $query->where('text', 'like', '%'.$conditions['text'].'%');
+        {
+         
+            $condata = explode(",", $conditions['text']);
+            $count = count($condata);
+            for($x = 0  ; $x < $count ; $x ++)
+            {
+                $query = $query->where('text' , 'like' , '%'.$condata[$x]. '%');  
+            }
+          //  $query = $query->where('text', 'like', '%'.$conditions['text'].'%');
+        }
         if( isset($conditions['public']) && is_array($conditions['public']))
         {
             if( isset($conditions['public']['is_public']) && $conditions['public']['is_public'] !== '')

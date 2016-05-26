@@ -63,12 +63,5 @@ class Tag extends Model {
         }
         return false;
     }
-     public function getusertag($id){
 
-        $results = DB::select( DB::raw("select tags.id from tags where tags.id in (select tags_use.tag_id from tags_use, annotations where tags_use.annotation_id=annotations.id and annotations.creator_id =  ? )"), array('user_id' => $id ));
-        
-        return  var_dump($results);
-        
-
-    }
 }
