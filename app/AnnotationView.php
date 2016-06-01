@@ -22,7 +22,7 @@ class AnnotationView extends Model
     public static function search($conditions , $limit, $offset, $orderBy = 'likes', $sort='desc')
     {
 
-
+       
         $query = DB::table('annotations_view');
 
         if( isset($conditions['id']) && $conditions['id'] != '')
@@ -33,17 +33,7 @@ class AnnotationView extends Model
             $query = $query->where('domain', $conditions['domain']);
         if( isset($conditions['creator_id']) && $conditions['creator_id'] != '')
             $query = $query->where('creator_id', $conditions['creator_id']);
-        if( isset($conditions['text']) && $conditions['text'] != '')
-        {
-         
-            $condata = explode(",", $conditions['text']);
-            $count = count($condata);
-            for($x = 0  ; $x < $count ; $x ++)
-            {
-                $query = $query->where('text' , 'like' , '%'.$condata[$x]. '%');  
-            }
-          //  $query = $query->where('text', 'like', '%'.$conditions['text'].'%');
-        }
+
         if( isset($conditions['public']) && is_array($conditions['public']))
         {
             if( isset($conditions['public']['is_public']) && $conditions['public']['is_public'] !== '')
@@ -63,8 +53,33 @@ class AnnotationView extends Model
             }
         }
 
-        if( isset($conditions['tag']) && $conditions['tag'] != '')
+       /*if( isset($conditions['tag']) && $conditions['tag'] != '')
             $query = $query->whereRaw('tags = "'.$conditions['tag'].'" OR tags LIKE "% ,'.$conditions['tag'].'%"'.' OR tags LIKE "%'.$conditions['tag'].' ,%"');
+    
+       */
+           
+        $query1 =$query;
+        if( isset($conditions['text']) && $conditions['text'] != '')
+        {
+         
+            $condata = explode(",", $conditions['text']);
+            $count = count($condata);
+            for($x = 0 ; $x < $count ; $x ++)
+            {
+                $query = $query->where('text' , 'like' , '%'.$condata[$x]. '%') ;
+
+            } 
+          /*    for($x = 0 ; $x < $count ; $x ++)
+            {
+                if($x == 0 )
+                $query2 = $query1->where('tags' , 'like' , '%'.$condata[$x]. '%') ;
+                else
+
+            } */
+        }
+        
+        
+        $query = $query1 ;
 
         if($limit == -1)
             $annos = $query->orderBy($orderBy, $sort)->get();

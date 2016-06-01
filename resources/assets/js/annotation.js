@@ -43,7 +43,7 @@ var annotation = function(e) {
     //this.server_host = '172.16.0.140:8022';
 
 
-    this.server_host = 'annotation.ipicbox.tw';    
+    this.server_host = server_host;    
 
     this.element = e;
     this.annotator = null;   
