@@ -1,5 +1,4 @@
 .idea
-/vendor
 /node_modules
 .env
 gulpfile.js
@@ -7,5 +6,7 @@ public/js/annotation.full.js
 public/js/annotation.full.js.map
 public/css/annotation.css
 public/css/annotation.css.map
-public/js/setting.js
+public/css/app.css
+public/css/app.css.map
+resources/assets/js/setting.js
 /storage/logs

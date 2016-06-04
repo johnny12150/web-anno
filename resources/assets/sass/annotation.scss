@@ -345,3 +345,23 @@ $alpha : ",0.3)";
 .annoitem-unfocus {
     opacity: 0.4;
 }
+.annotator-condition{
+    border : 1px solid #d6d6d6;
+    display: inline;
+    line-height: 28px;
+    margin: 2.5px;
+    border-radius: 3px;
+    font-size: 1.3rem;
+    padding: 2px;
+}
+.annotator-condition span{
+   font-size: 17px;
+   padding : 3px;
+}
+.annotator-condition a{
+   font-size: 17px;
+   padding : 3px;
+}
+.easy-autocomplete{
+  display: inline;
+}

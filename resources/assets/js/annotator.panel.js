@@ -31,7 +31,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
     this.allTags = [];
     // Storing entire data;
     this.data = [];
-    // Storing data that only showed;
+    // Storing data that only showed;`
     this.showing = [];
     // Mapping hights elements by id;
     this.maptoid = {};
@@ -143,12 +143,10 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             '<div class="anno-search">' +
             '<p><strong>增加搜尋條件</strong></p>' +
             '<form action="#" id="form-search">' +
-            '<div style="display:inline"><input id="anno-search-input" type="text" />' +
+            '<input id="anno-search-input" type="text" />' +
             '<button id="anno-search-submit" type="submit">' +
-            //'<i class="fa fa-search fa-2x"></i>' +
             '</button></div>' +
             '</form>' +
-            '</div>' +
 
             '<div class="anno-tags"><p><strong>條件</strong></p>' +
             '</div>' +
@@ -202,48 +200,39 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             //從Store插件找到搜尋的網址
             var url_search = _this.annotator.plugins.Store.options.urls.search;
             var data = _this.annotator.plugins.Store.options.loadFromSearch;
-            var condition = _this.ui.find('#anno-search-input').val()
+            var condition = _this.ui.find('#anno-search-input').val();
+         
             if (condition != "") {
                 _this.ui.find('.anno-tags')
-                    .append($('<div style="display:inline">').attr('id', condition)
+                    .append($('<div class="annotator-condition">').attr('id', condition)
                         .append($('<span>').text(condition + " "))
-                        .append('<button><i class="fa fa-times" aria-hidden="true"></i></button>'));
+                        .append('<a><i class="fa fa-times" aria-hidden="true"></i></a>'));
                 _this.condition += condition + ",";
-                }
-                $('.fa-times').click(function(e) {
-
-                    var id = e.target.parentElement.parentElement.id;
-
-                    console.log(_this.condition);
-                    _this.condition = _this.condition.replace(condition + ",", "");
-                    console.log(_this.condition);
+            }
 
 
-                    $(e.target.parentElement.parentElement).remove();
-                    $('#anno-search-input')[0].value = "";
-                    $('#anno-search-submit').click();
-                });
-
-                //data.search = _this.ui.find('#anno-search-input').val();
-                data.search = _this.condition;
-                $.ajax({
-                    url: url_search,
-                    data: data,
-                    dataType: 'json',
-                    success: function(data) {
-                        if (data.total == 0) {
-                            alert("查詢不到相關結果");
-                        }
-                        //_this.data = [];
-                        // $('.anno-tags ul li').remove();
-                        $('.anno-users ul li').remove();
-                        _this.conditionData = data.rows;
-                        _this.showing = data.rows;
-                        _this.show_annotations();
-
+            //data.search = _this.ui.find('#anno-search-input').val();
+            data.search = _this.condition;
+            $.ajax({
+                url: url_search,
+                data: data,
+                dataType: 'json',
+                success: function(data) {
+                    if (data.total == 0) {
+                        alert("查詢不到相關結果");
                     }
-                });
-            
+                    //_this.data = [];
+                    // $('.anno-tags ul li').remove();
+                    $('.anno-users ul li').remove();
+                    _this.conditionData = data.rows;
+                    _this.showing = data.rows;
+                    _this.show_annotations();
+
+                }
+            });
+
+
+
         });
 
 
@@ -268,6 +257,16 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         };
         _this.autocomplete();
 
+        $(document).on('click', '.fa-times', function(e) {
+            var id = e.target.parentElement.parentElement.id;
+            console.log(_this.condition, id );
+            _this.condition = _this.condition.replace(id + ",", "");
+            console.log("id:"+id,"condition:"+_this.condition);
+
+            $(e.target.parentElement.parentElement).remove();
+            $('#anno-search-input')[0].value = "";
+            $('#anno-search-submit').click();
+        });
         //綁定所有按讚事件
         $(document).on('click', '.anno-like', function(e) {
             e.preventDefault(); //The preventDefault() method will prevent the link above from following the URL.
