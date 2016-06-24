@@ -117,8 +117,8 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         for (x in _this.keywords) {
             _this.ui.find('.anno-keywords ul')
                 .append('<li id="anno-keyword-' + _this.keywords[x].id + '">' +
-                    '<input type="checkbox" checked data-search="keyword-' + _this.keywords[x].id + '"/>' +
-                    '<span class="keyword-hl-' + _this.keywords[x].color + '">' + _this.keywords[x].name + '</span>' +
+                    '<a><input type="checkbox" checked data-search="keyword-' + _this.keywords[x].id + '"/>' +
+                    '<span class="keyword-hl-' + _this.keywords[x].color + '">' + _this.keywords[x].name + '</span></a>' +
                     '</li>');
             $('#anno-keyword-' + _this.keywords[x].id)
                 .find('input[type=checkbox]')
@@ -131,43 +131,92 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
     /*panel 主體*/
     this.insertPanelUI = function() {
 
+        /* $('body').append(
+             '<div class="anno-panel">' +
+             '<div class="anno-login">' +
+             '</div>' +
+             '<div class="anno-keywords">' +
+             '<p><strong>匯入權威檔</strong></p>' +
+             '<ul>' +
+             '</ul>' +
+             '</div>' +
+             '<div class="anno-search">' +
+             '<p><strong>增加搜尋條件</strong></p>' +
+             '<form action="#" id="form-search">' +
+             '<input id="anno-search-input" type="text" />' +
+             '<button id="anno-search-submit" type="submit">' +
+             '</button></div>' +
+             '</form>' +
+
+             '<div class="anno-tags"><p><strong>條件</strong></p>' +
+             '</div>' +
+             '<div class="anno-users">' +
+             '<p><strong>在此網頁標籤的人</strong><input type="checkbox" name="all" id ="checkboxid"  checked" />全選/全不選</p>' +
+
+             '<ul>' +
+             '</ul>' +
+             '</div>' +
+             '<div class="anno-search-list">' +
+             '<ul>' +
+             '</ul>' +
+             '</div>' +
+             '<div class="anno-viewall">' +
+             '<button class="btn-viewall" id="btn-viewall">顯示全部</button>' +
+             '</div>' +
+             '<div class="btn-appear">' +
+             '<i class="fa fa-list fa-2x"></i>' +
+             '</div>' +
+             '</div>');*/
         $('body').append(
             '<div class="anno-panel">' +
-            '<div class="anno-login">' +
-            '</div>' +
-            '<div class="anno-keywords">' +
-            '<p><strong>匯入權威檔</strong></p>' +
-            '<ul>' +
-            '</ul>' +
-            '</div>' +
-            '<div class="anno-search">' +
+
+            '<div class="navbar-default sidebar" role="navigation">' +
+            '<div class="sidebar-nav navbar-collapse">' +
+            '<ul class="nav in" id="side-menu">' +
+            '<li class ="anno-login">' +
+            '<span></span>' +
+            '</li>' +
+            '<li class="anno-search">' +
             '<p><strong>增加搜尋條件</strong></p>' +
             '<form action="#" id="form-search">' +
             '<input id="anno-search-input" type="text" />' +
             '<button id="anno-search-submit" type="submit">' +
-            '</button></div>' +
+            '</button>' +
             '</form>' +
-
-            '<div class="anno-tags"><p><strong>條件</strong></p>' +
+            '</li>' +
+            '<li class="anno-con">' +
+            '<a><i class="fa fa-check-square" aria-hidden="true"></i> 條件列表<span class="fa arrow"></span></a>' +
+            '<ul class="nav nav-second-level collapse">' +
+            '<li><hr style="padding:0px;margin:0px;"></li>' +
+            '<li class="anno-conditions">' +
+            '</li>' +
+            '</ul>' +
+            '</li>' +
+            '<li class="anno-keywords">' +
+            '<a href="#">' + '<i class="fa fa-bar-chart-o fa-fw">' + '</i>匯入權威檔<span class="fa arrow">' + '</span>' + '</a>' +
+            '<ul class="nav nav-second-level collapse" aria-expanded="false" style="height: 0px;">' +
+            '</ul>' +
+            '</li>' +
+            '<li class="anno-users">' +
+            '<a><i class="fa fa-child" aria-hidden="true"></i> 在此網頁標籤的人<span class="fa arrow">' + '</span>' + '</a></a>' +
+            '<ul class="nav nav-second-level collapse">' +
+            '<p align="right"><input type="checkbox" name="all" id ="checkboxid"  checked" />全選/全不選</p>' +
+            '<li><hr style="padding:0px;margin:0px;"></li>' +
+            '</ul>' +
+            '</li>' +
+            '<div class ="anno-infos">' +
             '</div>' +
-            '<div class="anno-users">' +
-            '<p><strong>在此網頁標籤的人</strong><input type="checkbox" name="all" id ="checkboxid"  checked" />全選/全不選</p></p>' +
-
-            '<ul>' +
             '</ul>' +
             '</div>' +
-            '<div class="anno-search-list">' +
-            '<ul>' +
-            '</ul>' +
+
+            '<!-- /.sidebar-collapse -->' +
             '</div>' +
-            '<div class="anno-viewall">' +
-            '<button class="btn-viewall" id="btn-viewall">顯示全部</button>' +
+
             '</div>' +
             '<div class="btn-appear">' +
-            '<i class="fa fa-list fa-2x"></i>' +
-            '</div>' +
-            '</div>');
-
+            '<i class="fa fa-chevron-right " aria-hidden="true"></i>' +
+            '</div>'
+        );
         _this.ui = $('.anno-panel');
 
         if (_this.target_anno == 0) {
@@ -201,9 +250,9 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             var url_search = _this.annotator.plugins.Store.options.urls.search;
             var data = _this.annotator.plugins.Store.options.loadFromSearch;
             var condition = _this.ui.find('#anno-search-input').val();
-         
+
             if (condition != "") {
-                _this.ui.find('.anno-tags')
+                _this.ui.find('.anno-conditions')
                     .append($('<div class="annotator-condition">').attr('id', condition)
                         .append($('<span>').text(condition + " "))
                         .append('<a><i class="fa fa-times" aria-hidden="true"></i></a>'));
@@ -227,6 +276,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                     _this.conditionData = data.rows;
                     _this.showing = data.rows;
                     _this.show_annotations();
+
 
                 }
             });
@@ -259,9 +309,9 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 
         $(document).on('click', '.fa-times', function(e) {
             var id = e.target.parentElement.parentElement.id;
-            console.log(_this.condition, id );
+            console.log(_this.condition, id);
             _this.condition = _this.condition.replace(id + ",", "");
-            console.log("id:"+id,"condition:"+_this.condition);
+            console.log("id:" + id, "condition:" + _this.condition);
 
             $(e.target.parentElement.parentElement).remove();
             $('#anno-search-input')[0].value = "";
@@ -340,31 +390,25 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             return false;
         });
 
-
-        _this.ui.bind('mouseover', function(e) {
-            if (!_this.showUI) {
-                _this.ui.stop().animate({
-                    'right': '0'
-                }, 500, 'linear');
-                _this.showUI = true;
-            }
-        }); //10:15
-        /*.bind('click',  function(e){
-            if(_this.showUI) {
-                _this.ui.stop().animate({
-                    'right': '-2
-                    70px'
-                }, 1000, 'linear');
-                _this.showUI = false;
-            }
-        });*/
-
         $('.btn-appear').bind('click', function(e) {
             if (_this.showUI) {
                 _this.ui.stop().animate({
-                    'right': '-285px'
+                    'right': '-260px'
                 }, 1000, 'linear');
+                $(".btn-appear").stop().animate({
+                    'right': '0px'
+                }, 1000, 'linear');
+                 $(".btn-appear").html('<i class="fa fa-chevron-left " aria-hidden="true"></i>');
                 _this.showUI = false;
+            } else {
+                _this.ui.stop().animate({
+                  'right': '0px'
+                }, 1000, 'linear');
+                $(".btn-appear").stop().animate({
+                    'right': '260px'
+                }, 1000, 'linear');
+                $(".btn-appear").html('<i class="fa fa-chevron-right " aria-hidden="true"></i>');
+                _this.showUI = true;
             }
         });
 
@@ -399,12 +443,12 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 success: function(data) {
                     $(_this.element).data('annotator-user', data.user);
                     _this.user = data.user;
-                    $('.anno-login').html(
+                    $('.anno-login span').html(
                         '<img class="gravatar" src="' + data.user.gravatar + '"/>' +
                         '<div>' +
                         '<span>' + data.user.email + '</span>' +
                         '</div>' +
-                        '<div>' +
+                        '<div style="padding-left:20px";>' +
                         '<span>' +
                         '<a href="#" id="btn-anno-logout">登出</a>' +
                         '</span>' +
@@ -418,7 +462,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                         _this.is_authed = true;
                     },
                     401: function() {
-                        $('.anno-login').html('<div><span><a href="' + _this.loginUrl + '">Sign In</a></span></div>');
+                        $('.anno-login').html('<div><span><a href="' + _this.loginUrl + '"><i class="fa fa-user" aria-hidden="true"></i> 登入</a></span></div>');
                         if (showUI != false)
                             $('#openAuthUI').addClass('show');
                     }
@@ -522,9 +566,9 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             //add user list item and bind to user list
             this.ui.find('.anno-users ul')
                 .append('<li id="anno-user-' + user_id + '">' +
-                    '<input type="checkbox" checked data-search="user-' + user_id + '" name = "c"/>' +
+                    '<a><input type="checkbox" checked data-search="user-' + user_id + '" name = "c"/>' +
                     '<img class="gravatar" src="' + gravatar_url + '" alt=""/>' +
-                    '<span>' + user.name + '</span>' +
+                    '<span>' + user.name + '</span></a>' +
                     '</li>');
             $('#anno-user-' + user_id)
                 .find('input[type=checkbox]')
@@ -597,6 +641,25 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         return '';
     };
 
+    function RemoveHTML(strText) {
+
+        var regEx = /<[^>]*>/g;
+
+        return strText.replace(regEx, "");
+
+    }
+    this.annoinfos = function(annotation) {
+        var quote = RemoveHTML(annotation.quote);
+        quote.anchor(annotation.id);
+
+        $(".anno-infos").append('<li id="anno-info-id' + annotation.id + '" class="anno-infos-item ">' +
+            '<p><b>' + annotation.user.name + '</b></p>' +
+            '<a href="#' + annotation.id + '""><p class="annotation-quote"><i>' + annotation.quote + '</i></p></a>' +
+            annotation.text +
+            '</li>');
+
+    };
+
     function unique1(array) {
 
         var n = [];
@@ -623,7 +686,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             _this.annotator
 
                 .subscribe("annotationsLoaded", function(annotations) {
-
+                $(".anno-infos").empty();
                 if (_this.data.length == 0)
                     _this.data = annotations;
 
@@ -633,6 +696,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                     if (~isInArray)
                         _this.data.push(annotation);
                     _this.addReference(annotation);
+                    _this.annoinfos(annotation);
                     _this.allTags.push(annotation.tags[0]);
 
 

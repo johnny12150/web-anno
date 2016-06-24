@@ -52,35 +52,30 @@ class AnnotationView extends Model
                 }
             }
         }
-
-       /*if( isset($conditions['tag']) && $conditions['tag'] != '')
-            $query = $query->whereRaw('tags = "'.$conditions['tag'].'" OR tags LIKE "% ,'.$conditions['tag'].'%"'.' OR tags LIKE "%'.$conditions['tag'].' ,%"');
-    
-       */
-           
-        $query1 =$query;
+        
         if( isset($conditions['text']) && $conditions['text'] != '')
         {
-         
             $condata = explode(",", $conditions['text']);
             $count = count($condata);
             for($x = 0 ; $x < $count ; $x ++)
             {
-                $query = $query->where('text' , 'like' , '%'.$condata[$x]. '%') ;
-
-            } 
-          /*    for($x = 0 ; $x < $count ; $x ++)
-            {
-                if($x == 0 )
-                $query2 = $query1->where('tags' , 'like' , '%'.$condata[$x]. '%') ;
-                else
-
-            } */
+                $query = $query->Where('text' , 'like' , '%'.$condata[$x]. '%') ;
+                        
+            }
         }
-        
-        
-        $query = $query1 ;
 
+        if( isset($conditions['text']) && $conditions['text'] != '')
+        {
+            $condata = explode(",", $conditions['text']);
+            $count = count($condata);
+            for($x = 1 ; $x < $count ; $x ++)
+            {
+               $searchtag = $condata[$x-1];
+               $query_fortag = DB::table('annotations_view')->where('tags' , 'like' , "$searchtag"); 
+               $query = $query->union($query_fortag);
+            }
+        }
+ 
         if($limit == -1)
             $annos = $query->orderBy($orderBy, $sort)->get();
         else

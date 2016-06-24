@@ -152,7 +152,8 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                     if (editor.css('display') == 'none' || editor.hasClass('annotator-hide')) {
                         $('.annotator-adder')
                             .css('left', point.x + scope.endx - offset.left)
-                            .css('top', point.y + scope.endy - offset.top);
+                            .css('top', point.y + scope.endy - offset.top-50);
+                        console.log(offset.top,scope.endx,point.y);
                     }
                 }
             });
@@ -242,8 +243,8 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         return {
             x: a[0],
             y: a[1],
-            endx: a[2],
-            endy: a[3],
+            height: a[3]-a[1],
+            width: a[2]-a[0],
         };
     }
 
@@ -293,11 +294,13 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                     if (scope.target != null) {
                         annotation.type = 'image';
                         annotation.src = scope.target.parentElement.children[0].src;
+                        var flip = makeObj(flipCoords(scope.x, scope.y, scope.endx, scope.endy));
+
                         annotation.position = {
-                            x: scope.x,
-                            y: scope.y,
-                            width: scope.endx - scope.x,
-                            height: scope.endy - scope.y
+                            x: flip.x,
+                            y: flip.y,
+                            width: flip.width,
+                            height: flip.height
                         };
                         if (annotation.type == 'image') {
                            var relative = annotation.src.split("http://annotation.ipicbox.tw/")[1];
