@@ -127,7 +127,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                         var offset = $('.annotator-wrapper').offset();
                         var left = parseInt(scope.show[0].position.x)+ parseInt($(e.target.parentElement.children[0]).offset().left)-parseInt(offset.left);
                         var top = parseInt(scope.show[0].position.y)+parseInt($(e.target.parentElement.children[0]).offset().top)-parseInt(offset.top);
-                        scope.showViewer(scope.show,{"left": left, "top":top});
+                        scope.showViewer(scope.show,{"left": left, "top":top+15});
                         }
                         else
                          {
@@ -142,14 +142,13 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                 scope.endx = e.offsetX;
                 scope.endy = e.offsetY;
                 var img = e.target.parentElement.children[0];
-        
+                flipCoords(scope.x,scope.y,scope.endx,scope.endy);
 
                 edit = false;
-                if (scope.getSelectionText() == '') {
+                if (scope.getSelectionText() == '' && scope.endx - scope.x > 10 && scope.endy-scope.y > 10) {
                     scope.target = e.currentTarget;
                     var offset = $('.annotator-wrapper').offset();
                     var editor = $('.annotator-editor');
-                    console.log($('.annotator-wrapper'));
                     if (editor.css('display') == 'none' || editor.hasClass('annotator-hide')) {
                         $('.annotator-adder')
                             .css('left', $(img).offset().left + scope.endx - offset.left)
@@ -223,7 +222,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         }
 
     };
-  
+    
     /*還沒用到*/
     function flipCoords(x1, y1, x2, y2) {
         var xa = x1,
@@ -238,6 +237,10 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
             ya = y2;
             yb = y1;
         }
+        scope.x = xa;
+        scope.endx = xb;
+        scope.y =ya;
+        scope.endy = yb;
         return [xa, ya, xb, yb];
     }
     /*產生positions的物件*/
@@ -296,8 +299,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                     if (scope.target != null) {
                         annotation.type = 'image';
                         annotation.src = scope.target.parentElement.children[0].src;
-                        var flip = makeObj(flipCoords(scope.x, scope.y, scope.endx, scope.endy));
-
+                     
                         annotation.position = {
                             x: flip.x,
                             y: flip.y,
