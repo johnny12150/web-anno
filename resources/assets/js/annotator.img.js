@@ -125,8 +125,8 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                         if(scope.show.length > 0   && edit ==false){
                              $('.annotator-viewer').removeClass('annotator-hide');
                         var offset = $('.annotator-wrapper').offset();
-                        var left = parseInt(scope.show[0].position.x)+ parseInt(e.target.parentElement.children[0].x)-parseInt(offset.left);
-                        var top = parseInt(scope.show[0].position.y)+parseInt(e.target.parentElement.children[0].y)-parseInt(offset.top);
+                        var left = parseInt(scope.show[0].position.x)+ parseInt($(e.target.parentElement.children[0]).offset().left)-parseInt(offset.left);
+                        var top = parseInt(scope.show[0].position.y)+parseInt($(e.target.parentElement.children[0]).offset().top)-parseInt(offset.top);
                         scope.showViewer(scope.show,{"left": left, "top":top});
                         }
                         else
@@ -141,19 +141,21 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
             $(img[i].parentElement.children[2]).mouseup(function(e) {
                 scope.endx = e.offsetX;
                 scope.endy = e.offsetY;
-                var point = e.target.parentElement.children[0];
-
+                var img = e.target.parentElement.children[0];
+        
 
                 edit = false;
                 if (scope.getSelectionText() == '') {
                     scope.target = e.currentTarget;
                     var offset = $('.annotator-wrapper').offset();
                     var editor = $('.annotator-editor');
+                    console.log($('.annotator-wrapper'));
                     if (editor.css('display') == 'none' || editor.hasClass('annotator-hide')) {
                         $('.annotator-adder')
-                            .css('left', point.x + scope.endx - offset.left)
-                            .css('top', point.y + scope.endy - offset.top-50);
-                        console.log(offset.top,scope.endx,point.y);
+                            .css('left', $(img).offset().left + scope.endx - offset.left)
+                            .css('top',  $(img).offset().top + scope.endy - offset.top);
+                         
+                       
                     }
                 }
             });
