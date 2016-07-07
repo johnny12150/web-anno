@@ -3,7 +3,6 @@
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link type="text/css" rel="stylesheet" href="./LTA_Annotation_DEMO_files/css"><style type="text/css">.gm-style .gm-style-cc span,.gm-style .gm-style-cc a,.gm-style .gm-style-mtc div{font-size:10px}</style><style type="text/css">@media print {  .gm-style .gmnoprint, .gmnoprint {    display:none  }}@media screen {  .gm-style .gmnoscreen, .gmnoscreen {    display:none  }}</style><style type="text/css">.gm-style{font-family:Roboto,Arial,sans-serif;font-size:11px;font-weight:400;text-decoration:none}.gm-style img{max-width:none}</style>
     <title>Link Taiwan Artists</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="{{ asset('css/easy-autocomplete.css') }}"/>
     <link rel="stylesheet" href="{{ asset('css/annotator.min.css') }}"/>
     <link rel="stylesheet" href="{{ asset('css/richText-annotator.min.css')}}">
     <link rel="stylesheet" href="{{ asset('css/annotation.css') }}"/>
@@ -43,7 +42,7 @@
       <div class="content-wrap">
         <div class="field-content-panel">
         <img src ="image/test1.jpg" width ="500" height = "500">
-         <img src ="image/test2.jpg" width ="500" height = "500">
+         <img src ="image/test3.png" width ="500" height = "500">
        
           <div class="field-title">Chen Cheng-po  <a class="field-title-icon" href="http://data.asdc.tw/lod/Person/PR0001#lodlive-section"></a>
 </div>

@@ -317,6 +317,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             $('#anno-search-input')[0].value = "";
             $('#anno-search-submit').click();
         });
+
         //綁定所有按讚事件
         $(document).on('click', '.anno-like', function(e) {
             e.preventDefault(); //The preventDefault() method will prevent the link above from following the URL.
@@ -398,11 +399,11 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 $(".btn-appear").stop().animate({
                     'right': '0px'
                 }, 1000, 'linear');
-                 $(".btn-appear").html('<i class="fa fa-chevron-left " aria-hidden="true"></i>');
+                $(".btn-appear").html('<i class="fa fa-chevron-left " aria-hidden="true"></i>');
                 _this.showUI = false;
             } else {
                 _this.ui.stop().animate({
-                  'right': '0px'
+                    'right': '0px'
                 }, 1000, 'linear');
                 $(".btn-appear").stop().animate({
                     'right': '260px'
@@ -649,14 +650,18 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 
     }
     this.annoinfos = function(annotation) {
-        var quote = RemoveHTML(annotation.quote);
-        quote.anchor(annotation.id);
 
-        $(".anno-infos").append('<li id="anno-info-id' + annotation.id + '" class="anno-infos-item ">' +
+        $(".anno-infos").append('<li id="anno-info-id' + annotation.id + '" class="anno-infos-item" style="z-index:50">' +
             '<p><b>' + annotation.user.name + '</b></p>' +
-            '<a href="#' + annotation.id + '""><p class="annotation-quote"><i>' + annotation.quote + '</i></p></a>' +
+            '<p class="annotation-quote"><i>' + annotation.quote + '</i></p>' +
             annotation.text +
             '</li>');
+        $("#anno-info-id" + annotation.id).click(function(e) {
+            if (annotation.highlights.length == 1) {
+
+                $(annotation.highlights[0]).scrollIntoView();
+            }
+        });
 
     };
 

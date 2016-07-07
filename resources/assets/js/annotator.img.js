@@ -301,10 +301,10 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                         annotation.src = scope.target.parentElement.children[0].src;
                      
                         annotation.position = {
-                            x: flip.x,
-                            y: flip.y,
-                            width: flip.width,
-                            height: flip.height
+                            x: scope.x,
+                            y: scope.y,
+                            width: scope.endx-scope.x,
+                            height: scope.endy-scope.y
                         };
                         if (annotation.type == 'image') {
                            var relative = annotation.src.split("http://annotation.ipicbox.tw/")[1];
