@@ -59,7 +59,7 @@ class AuthController extends Controller
             //'g-recaptcha-response' => 'required|recaptcha',
         ]);
     }
-
+    
     function getLogin()
     {
 

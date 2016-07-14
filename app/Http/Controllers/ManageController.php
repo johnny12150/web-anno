@@ -7,6 +7,7 @@ use App\Tag;
 use App\TagUse;
 use App\User;
 use App\UrlInfo;
+use App\BodyMember;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 
@@ -45,8 +46,8 @@ class ManageController extends Controller {
         $titles = [];
 
         //$tags = Tag::getAllTags();
-		$tags = TagUse::fidTagNameforuser($user->id);
-     
+		//$tags = TagUse::fidTagNameforuser($user->id);
+        $tags =  BodyMember::getTags();
         
 
         $annoData = [];
@@ -55,7 +56,7 @@ class ManageController extends Controller {
             $annoData[$anno['uri']] []= $anno;
         }
 
-        $tags = array_unique($tags);
+        //$tags = array_unique($tags);
 
 
         return view('manage.index', [
@@ -64,8 +65,7 @@ class ManageController extends Controller {
             'page' => $page,
             'pagesCount' => $pagesCount,
             'count' => $count,
-            'tags' => $tags,
-            
+            'tags' => $tags ,
             'old' => [
                 'search_text' => Input::get('search_text'),
                 'search_tag' => Input::get('search_tag'),
@@ -90,7 +90,8 @@ class ManageController extends Controller {
         $text = Input::get('text');
         $id = Input::get('id');
         $user_id = Auth::user()->id;
-        $result = Annotation::editText($user_id, $id, $text);
+        $tags = Input::get('tags');
+        $result = Annotation::editText($user_id, $id, $text,$tags);
 
         return [
             'result' => $result != false ,

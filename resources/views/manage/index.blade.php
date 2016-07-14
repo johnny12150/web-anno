@@ -95,7 +95,7 @@
                                 {{ $anno['created_at'] }}
                             </div>
                         </div>
-                        <a href="{{ $anno['link'] . '#anno_id=' .$anno['id'] }}">
+                        <a href="{{ $anno['uri'] . '#anno_id=' .$anno['id'] }}">
                             <i class="fa fa-reply" style="color: dodgerblue"></i>
                             <span>瀏覽此標記</span>
                         </a>
@@ -128,6 +128,7 @@
     <div id="editorDiv" style="display: none;">
         <input type="hidden" id="editor_anno_id">
         <textarea name="editor" id="editor" cols="30" rows="10"></textarea>
+        <input id="tags" placeholder="請輸入標籤…">
         <div class="buttons ">
             <div class="pull-right">
                 <button class="btn btn-primary" onclick="postEdit();">確定</button>
@@ -163,14 +164,14 @@
         function postEdit() {
             var id = $('#editor_anno_id').val();
             var content = tinyMCE.activeEditor.getContent();
-
+            var tags = $('#tags').val();
             $.ajax({
                 xhrFields: {
                     withCredentials: true
                 },
                 url: '/manage/edit',
                 method: "POST",
-                data: {id: id, 'text' : content},
+                data: {id: id, 'text' : content,'tags':tags},
                 success: function (data) {
                     if (data.result) {
                         $('#anno-' + id + ' .anno-text').html(content);

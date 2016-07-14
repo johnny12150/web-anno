@@ -2246,16 +2246,16 @@
     };
 
     Store.prototype.annotationCreated = function(annotation) {
-      console.log("in created");
       if (__indexOf.call(this.annotations, annotation) < 0) {
         this.registerAnnotation(annotation);
+        console.log(annotation.text);
         return this._apiRequest('create', annotation, (function(_this) {
           return function(data) {
             if (data.id == null) {
               console.warn(Annotator._t("Warning: No ID returned from server for annotation "), annotation);
             }
-            console.log('out created');
             return _this.updateAnnotation(annotation, data);
+
           };
         })(this));
       } else {

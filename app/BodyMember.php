@@ -35,6 +35,7 @@ class BodyMember extends Model{
 				->update(array('text' => $data['text'] ));
 			
 		}
+		return true;
 	}
 	public static function deleteBody($id)
 	{
@@ -45,5 +46,9 @@ class BodyMember extends Model{
 		Body::deleteAnno($id);
 	}
 
+	public static function getTags()
+	{
+		return DB::table('body_member')->where('role','tagging')->lists('text');
+	}
 }
 ?>

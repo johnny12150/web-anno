@@ -238,14 +238,18 @@ class Annotation extends Model {
             return false;
         }
     }
-    public static function editText($uid, $id, $text)
+    public static function editText($uid, $id, $text,$tags)
     {
         if(self::checkOwner($uid, $id))
         {
-
-            $res =  self::whereRaw('id = ? and creator_id = ?',array($id, $uid))->update(array(
-                'text' => $text ));
-
+           $res = Bodymember::getupdate([
+                'creator_id' => $uid,
+                'role' => "tagging",
+                'anno_id' => $id,
+                'text' => $text,
+                'tags' => $tags
+                ]); 
+        
             return $res;
         } else {
             return false;
@@ -280,7 +284,6 @@ class Annotation extends Model {
                 $Bodymember = Bodymember::getupdate([
                 'creator_id' => $data['creator_id'],
                 'tags' => $data['tags'],
-                'role' => "tagging",
                 'anno_id' => $id,
                 'text' => $data['text']
                 ]);
