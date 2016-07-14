@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Validator;
 
 class Tag extends Model {
 
-    //protected $table = 'tags';
     protected $table = 'tags';
 
     protected $fillable = ['name'];

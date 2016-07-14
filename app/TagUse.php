@@ -61,11 +61,6 @@ class TagUse extends Model {
     {
         return self::where('annotation_id', $anno_id)->delete();
     }
-    public function annotatioin()
-    {
-        return $this->belongsto('App\Annotation');
-    }
-
 	public static function fidTagNameforuser($user_id)
 	{
 		$tags_objs=DB::select('select name from tags where tags.id in (select tags_use.tag_id from annotations,tags_use where annotations.id=tags_use.annotation_id and annotations.creator_id = ?)',[$user_id]);

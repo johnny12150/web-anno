@@ -7,8 +7,8 @@ use App\Http\Requests;
 use App\Like;
 use App\TagUse;
 use App\Tag;
-
 use App\User;
+use App\BodyMember;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use OAuth\Common\Exception\Exception;
@@ -30,8 +30,9 @@ class AnnotationController extends Controller
         ];
     }
 
-    public function add()
+    public function add(Request $request)
     {
+        
         $text = Request::input('text');
         $quote = Request::input('quote');
         $uri = Request::input('uri');
@@ -64,8 +65,9 @@ class AnnotationController extends Controller
         $is_public = count($permissions['read']) == 0;
 
         $user = Session::get('user');
-
+        $content_type= Request::getContentType();
         /* 新增標記 */
+       
         $anno = Annotation::add([
             'creator_id' => $user->id,
             'text' => $text,
@@ -76,7 +78,7 @@ class AnnotationController extends Controller
             'ranges_start' =>  $ranges_start,
             'ranges_end' => $ranges_end,
             'type' => $isImage ? $type : 'text',
-            'src' => $isImage ? $image_src : null,
+            'src' => $isImage ? $image_src : $uri,
             'position' => $isImage ? [
                 'x' => $x,
                 'y' => $y,
@@ -88,8 +90,10 @@ class AnnotationController extends Controller
             'is_public' => $is_public,
             'tags' => $tags
         ]);
+         
         //回傳該標記
-        return self::get($anno['id']);
+        return self::get($anno);
+
     }
     /*Update the annotator*/
     public function update($id)
@@ -201,7 +205,7 @@ class AnnotationController extends Controller
             ]
         ], $limit, $offset);
 
-        $annotations = AnnotationView::sortByUserTop($annotations, $user_id);
+      
 
         $result = [
             'total' => count($annotations),

@@ -137,15 +137,16 @@ var annotation = function(e) {
                 search:  'http://' + this.server_host + '/api/search/'
             },
             annotationData: {
-                uri: _annotation.uri,        //var uri = 'http://testing';
+                //uri: _annotation.uri,        //var uri = 'http://testing';
+                uri : location.href.split('#')[0] ,
                 domain : _annotation.host,   //var x = location.host;  >> www.w3schools.com
                 anno_token : anno_token,
-                likes: 0,
-                link : location.href.split('#')[0]  //var x = location.href; >> http://www.w3schools.com/jsref/prop_loc_href.asp
+                likes: 0
+                //link : "http://www.w3schools.com/"  //var x = location.href; >> http://www.w3schools.com/jsref/prop_loc_href.asp
             },
             loadFromSearch: {
                 limit: 0,
-                uri: _annotation.uri,
+                uri: location.href.split('#')[0],
                 domain : _annotation.host, 
                 anno_token : anno_token
 

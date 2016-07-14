@@ -3,7 +3,10 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Thomaswelton\LaravelGravatar\Facades\Gravatar;
-
+use App\bodyview;
+use App\likeview;
+use App\action;
+use App\Target;
 /**
  * Class AnnotationView
  * @package App
@@ -16,14 +19,85 @@ class AnnotationView extends Model
      *
      * @var string
      */
-    protected $table = 'annotations_view';
-
+    protected $table = 'annotation';
    
     public static function search($conditions , $limit, $offset, $orderBy = 'likes', $sort='desc')
     {
-
+        $annos = DB::table('annotation');
+        if(isset($conditions['id']) && $conditions['id'] != '')
+        {
+            $annos = $annos->where('anno_id', $conditions['id']);
+        }
+         $annos = $annos->get();
+   
        
-        $query = DB::table('annotations_view');
+        foreach ($annos as $anno ) {
+           $bodys = bodyview::getbody($anno->anno_id);
+           $likes =likeview::getlike($anno->anno_id);
+           $action = action::getaction($anno->anno_id);
+           $targets = Target::getTarget($anno->anno_id);
+           $anno->id = $anno->anno_id;
+           $anno->quote ="";
+           $anno->ranges_start="";
+           $anno->ranges_end="";
+           $anno->ranges_startOffset="";
+           $anno->ranges_endOffset="";
+           $anno->x ="";
+           $anno->y ="";
+           $anno->width ="";
+           $anno->height = "";
+           $anno->likes ="0";
+           $anno->created_at ="2016-07-01 06:33:57";
+            
+           foreach($bodys as $body)
+            {
+                if($body->role == 'tagging')
+                {
+                    $anno->tags = $body->text;
+                }
+                else if($body->role =='describing')
+                {
+                    $anno->text = $body->text;
+                }
+            }
+            foreach ($likes as $like) {
+                $anno->likes = $like->likes ;
+            }
+            foreach ($action as $action ) {
+                $anno->created_at = $action->created_at;
+            }
+            foreach ($targets as $target ) {
+                $selector = json_decode($target->selector);
+               
+                if($target->type =='image')
+                {
+                    $anno->src = $target->source;
+                    $img = explode(",", $selector->value);
+                    $anno->x = $img [0];
+                    $anno->y = $img [1];
+                    $anno->width =$img [2];
+                    $anno->height =$img [3];
+                    $anno->type = $target->type;
+                }
+                else if ($target->type =="text")
+                {
+                    $anno->src = $target->source;
+                    $anno->quote = $selector->quote;
+                    $anno->type = $target->type;
+                    $anno->ranges_start = $selector->startSelector->value;
+                    $anno->ranges_end =   $selector->endSelector->value;
+                    $anno->ranges_startOffset = $selector->startSelector->refinedBy->start;
+                    $anno->ranges_endOffset  = $selector->endSelector->refinedBy->end;  
+                } 
+              
+            }
+        }
+        $ret =[];
+        foreach($annos as $anno) {
+           $ret[] = self::format($anno);
+        }
+        return  $ret;
+       /* $query = DB::table('annotations_view');
 
         if( isset($conditions['id']) && $conditions['id'] != '')
             $query = $query->where('id', $conditions['id']);
@@ -86,6 +160,8 @@ class AnnotationView extends Model
             $ret[] = self::format($anno);
         }
         return $ret;
+        */
+
     }
     public static function sortByUserTop(Array $annos, $user_id)
     {
@@ -118,7 +194,7 @@ class AnnotationView extends Model
             'quote' => $row->quote,
             'uri' => $row->uri,
             'domain' => $row->domain,
-            'link' => $row->link,
+            //'link' => $row->link,
             'ranges' => [
                 [
                     'start' => $row->ranges_start,

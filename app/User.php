@@ -34,40 +34,12 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      * @param $fbid - facebook id
      * @return User|null
      */
-    public static function getByFacebook($fbid)
-    {
-        return self::where('facebook_id',$fbid)->first();
-    }
-
-    /**
-     * Get user by id
-     *
-     * @param $uid - User id
-     * @return User|null
-     */
+   
     public static function get($uid)
     {
         return self::where('id', $uid)->first();
     }
 
-    /**
-     * Add user by facebook user obj
-     *
-     * @param $fbuser
-     * @param $token
-     * @return User
-     */
-    public static function addByFacebook($fbuser, $token)
-    {
-        $user = new self();
-        $user->facebook_id = $fbuser->id;
-        $user->name = $fbuser->name;
-        $user->email = $fbuser->email;
-        $user->facebook_token = $token;
-        $user->save();
-
-        return $user;
-    }
 
     /**
      * update lastlogin timestamp of user
@@ -79,10 +51,6 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         self::where('id', $uid)->update([
             'lastlogin' => 'CURRENT_TIMESTAMP',
         ]);
-    }
-    public function Annotation()
-    {
-        return $this->hasmany('App\Annotation','creator_id');
     }
 
 }

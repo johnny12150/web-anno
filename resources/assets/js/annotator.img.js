@@ -11,7 +11,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
     this.y = 0;
     this.endx = 0;
     this.endy = 0;
-    this.show =[];
+    this.show = [];
     this.inEdit = false;
     this.annotator = $(element).annotator().data('annotator');
     this.init = function() {
@@ -29,9 +29,8 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         }
         return text;
     };
-    this.showViewer = function(annotation,location)
-    {
-        scope.annotator.showViewer(annotation,location);
+    this.showViewer = function(annotation, location) {
+        scope.annotator.showViewer(annotation, location);
     }
     this.addHook = function() {
         /*網頁要使用註記範圍時*/
@@ -81,7 +80,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
             });
             $(img[i].parentElement.children[2]).mousemove(function(e) {
                 /*顯示adder位置，這裡有BUG(因為照理說adder顯示應該在mouseup上面，可是使用mouseup時，adder不知為啥會消失，所以暫時寫在mousemove事件*/
-                scope.show=[];
+                scope.show = [];
                 $('.annotator-adder')
                     .removeClass('annotator-hide')
                     .show();
@@ -118,21 +117,19 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                         var strokeStyle = "#FFFFFF";
                         if (temp.indexOf("," + i + ",") > -1) {
                             strokeStyle = "#FFFF77";
-                            if($.inArray( annotation[i],scope.show) == -1) 
-                            scope.show.push(annotation[i]);
+                            if ($.inArray(annotation[i], scope.show) == -1)
+                                scope.show.push(annotation[i]);
                         }
 
-                        if(scope.show.length > 0   && edit ==false){
-                             $('.annotator-viewer').removeClass('annotator-hide');
-                        var offset = $('.annotator-wrapper').offset();
-                        var left = parseInt(scope.show[0].position.x)+ parseInt($(e.target.parentElement.children[0]).offset().left)-parseInt(offset.left);
-                        var top = parseInt(scope.show[0].position.y)+parseInt($(e.target.parentElement.children[0]).offset().top)-parseInt(offset.top);
-                        scope.showViewer(scope.show,{"left": left, "top":top+15});
-                        }
-                        else
-                         {
+                        if (scope.show.length > 0 && edit == false) {
+                            $('.annotator-viewer').removeClass('annotator-hide');
+                            var offset = $('.annotator-wrapper').offset();
+                            var left = parseInt(scope.show[0].position.x) + parseInt($(e.target.parentElement.children[0]).offset().left) - parseInt(offset.left);
+                            var top = parseInt(scope.show[0].position.y) + parseInt($(e.target.parentElement.children[0]).offset().top) - parseInt(offset.top);
+                            scope.showViewer(scope.show, { "left": left, "top": top + 15 });
+                        } else {
                             $('.annotator-viewer').addClass('annotator-hide');
-                         }
+                        }
                         show(this.parentElement.children[0], annotation[i].position, strokeStyle);
                     }
                 }
@@ -142,19 +139,19 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                 scope.endx = e.offsetX;
                 scope.endy = e.offsetY;
                 var img = e.target.parentElement.children[0];
-                flipCoords(scope.x,scope.y,scope.endx,scope.endy);
+                flipCoords(scope.x, scope.y, scope.endx, scope.endy);
 
                 edit = false;
-                if (scope.getSelectionText() == '' && scope.endx - scope.x > 10 && scope.endy-scope.y > 10) {
+                if (scope.getSelectionText() == '' && scope.endx - scope.x > 10 && scope.endy - scope.y > 10) {
                     scope.target = e.currentTarget;
                     var offset = $('.annotator-wrapper').offset();
                     var editor = $('.annotator-editor');
                     if (editor.css('display') == 'none' || editor.hasClass('annotator-hide')) {
                         $('.annotator-adder')
                             .css('left', $(img).offset().left + scope.endx - offset.left)
-                            .css('top',  $(img).offset().top + scope.endy - offset.top);
-                         
-                       
+                            .css('top', $(img).offset().top + scope.endy - offset.top);
+
+
                     }
                 }
             });
@@ -222,7 +219,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         }
 
     };
-    
+
     /*還沒用到*/
     function flipCoords(x1, y1, x2, y2) {
         var xa = x1,
@@ -239,7 +236,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         }
         scope.x = xa;
         scope.endx = xb;
-        scope.y =ya;
+        scope.y = ya;
         scope.endy = yb;
         return [xa, ya, xb, yb];
     }
@@ -248,8 +245,8 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         return {
             x: a[0],
             y: a[1],
-            height: a[3]-a[1],
-            width: a[2]-a[0],
+            height: a[3] - a[1],
+            width: a[2] - a[0],
         };
     }
 
@@ -299,28 +296,17 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                     if (scope.target != null) {
                         annotation.type = 'image';
                         annotation.src = scope.target.parentElement.children[0].src;
-                     
                         annotation.position = {
                             x: scope.x,
                             y: scope.y,
-                            width: scope.endx-scope.x,
-                            height: scope.endy-scope.y
+                            width: scope.endx - scope.x,
+                            height: scope.endy - scope.y
                         };
-                        if (annotation.type == 'image') {
-                           var relative = annotation.src.split("http://annotation.ipicbox.tw/")[1];
-                            var origin = $(".annotator-wrapper img[src='" + relative + "']");
-                            var offset = $('.annotator-wrapper').offset();
-
-                            var x = parseInt(annotation.position.x) + parseInt(origin[0].x) - parseInt(offset.left);
-                            var y = parseInt(annotation.position.y) + parseInt(origin[0].y) - parseInt(offset.top);
-
-                            now++;
-                            annotation.id = String(now);
-                      
-                            scope.addImgAnnotation(annotation);
-                            scope.target = null; 
-                        }
+                         scope.addImgAnnotation(annotation);
+                         scope.target = null;
                     }
+            
+
                 }).subscribe("annotationDeleted", function(annotation) {
                     if (annotation.type == 'image') {
                         $('#img-anno-' + annotation.id).remove();
@@ -334,15 +320,9 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                         var annotation = annotations[i];
 
                         if (annotation.type == 'image') {
-
-                            var relative = annotation.src.split("http://annotation.ipicbox.tw/")[1];
-                            var origin = $(".annotator-wrapper img[src='" + relative + "']");
-                            var offset = $('.annotator-wrapper').offset();
-
-                            var x = parseInt(annotation.position.x) + parseInt(origin[0].x) - parseInt(offset.left);
-                            var y = parseInt(annotation.position.y) + parseInt(origin[0].y) - parseInt(offset.top);
+                         
+                
                             now = annotation.id;
-                 
                             scope.addImgAnnotation(annotation);
 
                         }

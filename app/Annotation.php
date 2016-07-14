@@ -4,6 +4,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use App\Tag;
+use App\BodyMember;
+use App\Body;
+use App\Target;
 use Thomaswelton\LaravelGravatar\Facades\Gravatar;
 
 /**
@@ -17,8 +20,8 @@ class Annotation extends Model {
      *
      * @var string
      */
-    protected $table = 'annotations';
-
+    protected $table = 'annotation';
+    public $timestamps = false;
     /**
      * @param $data the data that will be verified
      * @return bool result of validation
@@ -47,14 +50,7 @@ class Annotation extends Model {
             return true;
         }
     }
-        public function User()
-        {
-            return $this->belongsto('App\User','creator_id');
-        }
-        public function TagUse()
-        {
-            return $this->hasmany('App\TagUse','annotation_id');
-        }
+      
     /**
      * Check Annotation exists
      * @param $uid User ID
@@ -178,6 +174,53 @@ class Annotation extends Model {
         {
             $new_anno = new Annotation();
             $new_anno->creator_id = $data['creator_id'];
+            $new_anno->uri = $data['uri'];
+            $new_anno->domain = $data['domain'];
+            $new_anno->is_public  = $data['is_public'];
+            $new_anno->save();
+
+          
+
+            $tags = $data['tags'];
+            if(!$tags)
+                $tags = [];
+            $tags = array_unique($tags);
+
+            foreach( $tags as $tagName) {
+                $data['tags']= $tagName;
+                $Bodymember = Bodymember::add([
+                'creator_id' => $data['creator_id'],
+                'text' => $data['tags'],
+                'role' => "tagging",
+                'anno_id' => $new_anno->id
+            ]);
+            $new_anno->tags = $data['tags'];
+            }
+            Bodymember::add([
+                'creator_id' => $data['creator_id'],
+                'text' => $data['text'],
+                'role' => "describing",
+                'anno_id' => $new_anno->id
+            ]);
+            $json = self::CreatSelectorArray($data);
+            Target::add([
+                'source' => $data['src'],
+                'type' => $data['type'],
+                'anno_id' => $new_anno->id,
+                'json' => $json
+            ]);
+
+          return $new_anno->id;
+
+        }
+        else
+        {
+            return $check;
+        }
+        /*if($check == true)
+        {
+            $new_anno = new Annotation();
+            $new_anno->creator_id = $data['creator_id'];
             $new_anno->text = $data['text'];
             $new_anno->quote = $data['quote'];
             $new_anno->uri = $data['uri'];
@@ -217,7 +260,7 @@ class Annotation extends Model {
         else
         {
             return $check;
-        }
+        }*/
     }
 
     /**
@@ -306,10 +349,11 @@ class Annotation extends Model {
      * @param $anno
      * @return array
      */
+
     public static function format($anno)
     {
         //Link tags
-        $tag_list = TagUse::findTagIds($anno->id);
+        /*$tag_list = TagUse::findTagIds($anno->id);
         $tags = [];
         foreach($tag_list as $tag_id) {
             $tagName = Tag::getNameById($tag_id);
@@ -317,7 +361,7 @@ class Annotation extends Model {
                 $tags[] = $tagName;
             }
         }
-
+        */
         $creator = User::get($anno->creator_id);
         // Refact object
         return [
@@ -325,7 +369,7 @@ class Annotation extends Model {
             'text' => $anno->text,
             'quote' => $anno->quote,
             'uri' => $anno->uri,
-            'link' => $anno->link,
+            //'link' => $anno->link,
             'ranges' => [
                 [
                     'start' => $anno->ranges_start,
@@ -334,7 +378,7 @@ class Annotation extends Model {
                     'endOffset' => $anno->ranges_endOffset
                 ]
             ],
-            'tags' => $tags,
+            'tags' => $anno->tags,
             'permissions' => [
                 "read" => $anno->is_public ? [] :[(int)$anno->creator_id],
                 "admin" => [(int)$anno->creator_id],
@@ -362,5 +406,46 @@ class Annotation extends Model {
     public static function getName()
     {
         return self::all()->lists('text');
+    }
+    public static function CreatSelectorArray($data)
+    {
+        if($data['type']== "text"){
+            $tempArray = array(
+                'type' =>"RangeSelector",
+                'startSelector' =>array(
+                    'type' => "XPathSelector",
+                    'value'=> $data['ranges_start'],
+                    'refinedBy' => array(
+                        'type' =>"TextPositionSelector",
+                        'start'=> $data['ranges_startOffset'],
+                        'end' => 'null'
+                    )
+                ),
+                'endSelector' =>array(
+                    'type' => "XPathSelector",
+                    'value'=> $data['ranges_end'],
+                    'refinedBy' => array(
+                        'type' =>"TextPositionSelector",
+                        'start' =>'null',
+                        'end'=> $data['ranges_endOffset']
+                    )
+                ),
+                'quote' => $data['quote']
+            );
+        }
+        else if ($data['type']=="image")
+        {
+            $x = sprintf("%d",$data['position']['x']);
+            $y = sprintf("%d",$data['position']['y']);
+            $w = sprintf("%d",$data['position']['width']);
+            $h = sprintf("%d",$data['position']['height']);
+             $tempArray = array(
+                'type' =>"FragmentSelector",
+                'conformsTo' =>"http://www.w3.org/TR/media-frags/",
+                'value'=>  $x.','.$y.','.$w.','.$h
+            
+            );
+        }
+        return json_encode($tempArray);
     }
 }

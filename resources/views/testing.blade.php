@@ -42,7 +42,7 @@
       <div class="content-wrap">
         <div class="field-content-panel">
         <img src ="image/test1.jpg" width ="500" height = "500">
-         <img src ="image/test3.png" width ="500" height = "500">
+         <img src ="http://static.ettoday.net/images/351/d351817.jpg" width ="400" height = "400">
        
           <div class="field-title">Chen Cheng-po  <a class="field-title-icon" href="http://data.asdc.tw/lod/Person/PR0001#lodlive-section"></a>
 </div>
@@ -205,7 +205,6 @@ Besides painting, Chen was also actively involved in Taiwanese art movements. Am
 
 </body>
 <script src="{{ asset('js/tinymce/tinymce.min.js')}}"></script>
-<script src="code.jquery.com/jquery-1.11.2.min.js"></script>
 <script src="{{ asset('js/annotation.full.js')}}"></script>
 <script type="text/javascript">
 
