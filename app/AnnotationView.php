@@ -24,11 +24,22 @@ class AnnotationView extends Model
     public static function search($conditions , $limit, $offset, $orderBy = 'likes', $sort='desc')
     {
         $annos = DB::table('annotation');
+        if(isset($conditions['text']) && $conditions['text'] != '')
+        {
+            $anno_ids = bodyview::search($conditions['text']);
+             $annos = $annos->where('anno_id', '0');
+            foreach ($anno_ids as $id) {
+             $annos = $annos->orWhere('anno_id',$id);
+        
+            }  
+        }
+
         if(isset($conditions['id']) && $conditions['id'] != '')
         {
             $annos = $annos->where('anno_id', $conditions['id']);
         }
-         $annos = $annos->get();
+        
+        $annos = $annos->get();
    
        
         foreach ($annos as $anno ) {
@@ -97,6 +108,8 @@ class AnnotationView extends Model
            $ret[] = self::format($anno);
         }
         return  $ret;
+
+    }
        /* $query = DB::table('annotations_view');
 
         if( isset($conditions['id']) && $conditions['id'] != '')
@@ -162,7 +175,6 @@ class AnnotationView extends Model
         return $ret;
         */
 
-    }
     public static function sortByUserTop(Array $annos, $user_id)
     {
         $user_annos = [];

@@ -28,5 +28,9 @@ class Target extends Model{
 		 $targets = self::where('anno_id',$anno_id)->get();
 		 return $targets;
 	}
+	public static function deleteTarget($anno_id)
+	{
+		DB::table('target')->where('anno_id',$anno_id)->delete();
+	}
 }
 ?>

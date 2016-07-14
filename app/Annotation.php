@@ -59,7 +59,7 @@ class Annotation extends Model {
      */
     public static function checkOwner($uid, $id)
     {
-        $count = self::whereRaw('id = ? and creator_id = ?',array($id, $uid))->count();
+        $count = self::whereRaw('anno_id = ? and creator_id = ?',array($id, $uid))->count();
         if($count == 0)
             return False;
         else
@@ -217,50 +217,7 @@ class Annotation extends Model {
         {
             return $check;
         }
-        /*if($check == true)
-        {
-            $new_anno = new Annotation();
-            $new_anno->creator_id = $data['creator_id'];
-            $new_anno->text = $data['text'];
-            $new_anno->quote = $data['quote'];
-            $new_anno->uri = $data['uri'];
-            $new_anno->domain = $data['domain'];
-            $new_anno->link = $data['link'];
-            $new_anno->is_public  = $data['is_public'];
-            $new_anno->ranges_start = $data['ranges_start'];
-            $new_anno->ranges_end = $data['ranges_end'];
-            $new_anno->ranges_startOffset = $data['ranges_startOffset'];
-            $new_anno->ranges_endOffset = $data['ranges_endOffset'];
-            $new_anno->type = $data['type'];
-            if($data['type'] == 'image') {
-                $new_anno->x = $data['position']['x'];
-                $new_anno->y = $data['position']['y'];
-                $new_anno->w = $data['position']['width'];
-                $new_anno->h = $data['position']['height'];
-                $new_anno->src = $data['src'];
-            }
-            $new_anno->save();
-
-            $tags = $data['tags'];
-
-            if(!$tags)
-                $tags = [];
-            $tags = array_unique($tags);
-
-            foreach( $tags as $tagName) {
-                $tagName = str_replace(',','',$tagName);
-                $tag = Tag::getByName($tagName);
-                if ($tag == null)
-                    $tag = Tag::add($tagName);
-                TagUse::add($tag->id, $new_anno->id);
-            }
-                    
-            return self::format($new_anno);
-        }
-        else
-        {
-            return $check;
-        }*/
+       
     }
 
     /**
@@ -272,7 +229,9 @@ class Annotation extends Model {
     {
         if(self::checkOwner($uid, $id) )
         {
-            return self::where('id', $id)->where('creator_id', $uid)->delete();
+            Target::deleteTarget($id);
+            Bodymember::deleteBody($id);
+            return self::where('anno_id', $id)->where('creator_id', $uid)->delete();
         }
         else
         {
@@ -304,35 +263,28 @@ class Annotation extends Model {
         if(self::checkOwner($uid, $id)) {
             $check = self::validator($data);
             if( $check == true ) {
-                $anno =  self::whereRaw('id = ? and creator_id = ?',array($id, $uid))->update(array(
-                    'text' => $data['text'],
-                    'quote' => $data['quote'],
+                $anno = self::whereRaw('anno_id = ? and creator_id = ?',array($id, $uid))->update(array(
+
                     'domain' => $data['domain'],
-                    'ranges_start' => $data['ranges_start'],
-                    'ranges_end' => $data['ranges_end'],
-                    'ranges_startOffset' => $data['ranges_startOffset'],
-                    'ranges_endOffset' => $data['ranges_endOffset'],
                     'is_public' => $data['is_public']
+
                 ));
+            $tags = $data['tags'];
 
-                $tags = $data['tags'];
+            if(!$tags)
+                $tags = [];
+            $tags = array_unique($tags);
 
-                if(!$tags)
-                    $tags = [];
-                $tags = array_unique($tags);
-
-                //clear origin relation and readd relation
-                TagUse::delByAnnoId($id);
-
-                foreach( $tags as $tagName) {
-                    //find this tag
-                    $tagName = str_replace(',','',$tagName);
-                    $tag = Tag::getByName($tagName);
-
-                    if ($tag == null)
-                        $tag = Tag::add($tagName);
-                    TagUse::add($tag->id,$id);
-                }
+            foreach( $tags as $tagName) {
+                $data['tags']= $tagName;
+                $Bodymember = Bodymember::getupdate([
+                'creator_id' => $data['creator_id'],
+                'tags' => $data['tags'],
+                'role' => "tagging",
+                'anno_id' => $id,
+                'text' => $data['text']
+                ]);
+            }
 
                 return $data;
 
@@ -340,7 +292,8 @@ class Annotation extends Model {
             else {
                 return $check;
             }
-        } else {
+        } 
+        else {
             return 'anootation does not exist';
         }
     }
@@ -439,7 +392,7 @@ class Annotation extends Model {
             $y = sprintf("%d",$data['position']['y']);
             $w = sprintf("%d",$data['position']['width']);
             $h = sprintf("%d",$data['position']['height']);
-             $tempArray = array(
+            $tempArray = array(
                 'type' =>"FragmentSelector",
                 'conformsTo' =>"http://www.w3.org/TR/media-frags/",
                 'value'=>  $x.','.$y.','.$w.','.$h
