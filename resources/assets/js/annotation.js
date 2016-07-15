@@ -39,10 +39,7 @@ function getHashParam(name) {
 
 var annotation = function(e) {
 
-
-    //this.server_host = '172.16.0.140:8022';
-
-
+    //from setting.js
     this.server_host = server_host;    
 
     this.element = e;
@@ -136,13 +133,11 @@ var annotation = function(e) {
                 destroy: 'http://' + this.server_host + '/api/annotations/:id/',
                 search:  'http://' + this.server_host + '/api/search/'
             },
-            annotationData: {
-                //uri: _annotation.uri,        //var uri = 'http://testing';
+            annotationData: {                
                 uri : location.href.split('#')[0] ,
                 domain : _annotation.host,   //var x = location.host;  >> www.w3schools.com
                 anno_token : anno_token,
                 likes: 0
-                //link : "http://www.w3schools.com/"  //var x = location.href; >> http://www.w3schools.com/jsref/prop_loc_href.asp
             },
             loadFromSearch: {
                 limit: 0,
@@ -167,20 +162,15 @@ var annotation = function(e) {
         var user = this.annotator.data('annotator-user');
 
 
-            /*this.annotator.data('annotator-user')
-            Object {id: "1", name: "jonathan", email: "jonathan@gmail.com", 
-            gravatar: "https://secure.gravatar.com/avatar/6b8838d8cfe36333788d1565c358b962?s=80&amp;r=g&amp;d=identicon"}*/
-        //var user = this.annotator.data('annotator-user');// confirm the permission is right
-
         this.annotator.annotator('addPlugin', 'Permissions', {
                 showEditPermissionsCheckbox: false,
                 user: user != null ? parseInt(user.id) : 0
             });
-        //.annotator('addPlugin', 'Keyword', {})
+       
         
 
 
     };
    
     return this;
-}//;
+}

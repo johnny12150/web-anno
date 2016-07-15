@@ -48,7 +48,9 @@ class BodyMember extends Model{
 
 	public static function getTags()
 	{
-		return DB::table('body_member')->where('role','tagging')->lists('text');
+		
+		$tags = DB::table('body_member')->where('role','tagging')->lists('text');
+		return array_unique($tags);
 	}
 }
 ?>

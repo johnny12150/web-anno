@@ -18,11 +18,7 @@ Route::get('/', function() { return redirect('/manage');});
 Route::get('testing', function() {
     return view('testing');
 });
-Route::get('article/{aid}', 'ArticleController@show')->where('id', '[0-9]+');
 
-Route::post('article/add', 'ArticleController@add');
-Route::post('article/edit', 'ArticleController@edit');
-Route::delete('article/del', 'ArticleController@delete');
 
 /* Annotation API routing */
 Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
@@ -70,9 +66,6 @@ Route::group(['prefix' => '/manage', 'middleware' => 'auth'], function() {
 
 Route::get('gethint','AnnotationController@gethint');
 Route::get('gravatar/{email}', 'GravatarController@get');
-/* Test Article routing */
-Route::get('articles', 'ArticleController@index');
-Route::get('articles/{page}', 'ArticleController@index')->where('id', '[0-9]+');
 
 /* Auth login routing */
 Route::controller('auth', 'AuthController');

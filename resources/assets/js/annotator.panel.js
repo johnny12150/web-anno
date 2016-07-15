@@ -131,42 +131,6 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
     /*panel 主體*/
     this.insertPanelUI = function() {
 
-        /* $('body').append(
-             '<div class="anno-panel">' +
-             '<div class="anno-login">' +
-             '</div>' +
-             '<div class="anno-keywords">' +
-             '<p><strong>匯入權威檔</strong></p>' +
-             '<ul>' +
-             '</ul>' +
-             '</div>' +
-             '<div class="anno-search">' +
-             '<p><strong>增加搜尋條件</strong></p>' +
-             '<form action="#" id="form-search">' +
-             '<input id="anno-search-input" type="text" />' +
-             '<button id="anno-search-submit" type="submit">' +
-             '</button></div>' +
-             '</form>' +
-
-             '<div class="anno-tags"><p><strong>條件</strong></p>' +
-             '</div>' +
-             '<div class="anno-users">' +
-             '<p><strong>在此網頁標籤的人</strong><input type="checkbox" name="all" id ="checkboxid"  checked" />全選/全不選</p>' +
-
-             '<ul>' +
-             '</ul>' +
-             '</div>' +
-             '<div class="anno-search-list">' +
-             '<ul>' +
-             '</ul>' +
-             '</div>' +
-             '<div class="anno-viewall">' +
-             '<button class="btn-viewall" id="btn-viewall">顯示全部</button>' +
-             '</div>' +
-             '<div class="btn-appear">' +
-             '<i class="fa fa-list fa-2x"></i>' +
-             '</div>' +
-             '</div>');*/
         $('body').append(
             '<div class="anno-panel">' +
 
@@ -576,27 +540,6 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 .click(_this.refreshHighLights);
         }
 
-        //add tag to tag list
-        var tags = annotation.tags;
-
-        /*
-                if (Array.isArray(tags) && annotation.id.indexOf('keyword') == -1) tags.forEach(function(tagName, index, tagsAry) {
-
-                    if (tagName !== '') {
-                        var tagId = 'anno-tag-' + tagName;
-                        if (!_this.ui.find('#' + tagId).length) {
-                            _this.ui.find('.anno-tags ul')
-                                .append($('<li>').attr('id', tagId)
-                                    .append($('<input>').attr('type', 'checkbox')
-                                        .attr('checked', '')
-                                        .attr('data-search', 'tag-' + tagName))
-                                    .append($('<span>').text(tagName)));
-                            $('#' + tagId).find('input[type=checkbox]')
-                                .click(_this.refreshHighLights);
-                        }
-                    }
-                });
-        */
     };
 
     // add user filed to Annotation View

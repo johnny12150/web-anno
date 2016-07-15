@@ -1,5 +1,8 @@
 @extends('app')
 @section('custom_css')
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="../../vendor/bower_components/autocomplete/jquery.easy-autocomplete.js"></script>
+<link rel="stylesheet" href="../../vendor/bower_components/autocomplete/jquery.easy-autocomplete.css"></script>
 @endsection
 @section('content')
     <div class="container">
@@ -17,8 +20,6 @@
                     <div class="col-sm-10">
                         <input type="text" name="search_text" class="form-control" id="search_text" value="{{ $old['search_text'] }}" placeholder="標記內容" onkeyup="showhint(this.value)">                        
                     </div>
-                    <label class="col-sm-2 control-label">Hint:</label>
-                    <div class="col-sm-10 control-text" ><p><span id="txtHint"></span></p></div>
                 </div>
                 <div class="form-group">
                     <label for="search_tag" class="col-sm-2 control-label">標籤</label>
@@ -145,7 +146,7 @@
 @section('custom_script')
     <script src="{{ url('js/tinymce/tinymce.min.js') }}"></script>
     <script>
-        function showhint(str) {
+        /*function showhint(str) {
             if (str.length == 0) {
                 document.getElementById("txtHint").innerHTML = "";
                 return;
@@ -159,7 +160,7 @@
                 xmlhttp.open("GET", "/gethint?q=" + str, true);
                 xmlhttp.send();
             }     
-        }
+        }*/
    
         function postEdit() {
             var id = $('#editor_anno_id').val();
@@ -175,6 +176,7 @@
                 success: function (data) {
                     if (data.result) {
                         $('#anno-' + id + ' .anno-text').html(content);
+                        $('#anno-' + id + ' .anno-tag').html(tags);
                         newAlert('success', '編輯成功');
                         $('#editorDiv').hide();
                     } else {
@@ -206,6 +208,7 @@
 
             var rect =$('#anno-' + id)[0].getBoundingClientRect();
             tinyMCE.editors[0].setContent($('#anno-' + id + ' .anno-text').html());
+            $('#tags').val($('#anno-' + id + ' .anno-tag').html());
             $('#editor_anno_id').val(id);
             $('#editorDiv').css('position', 'absolute')
                     .css('left', e.pageX)

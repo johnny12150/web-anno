@@ -1,6 +1,6 @@
 <?php namespace App;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 class bodyview extends Model{
 	protected $table = 'body_view';
@@ -47,5 +47,22 @@ class bodyview extends Model{
           $body = $body->lists('anno_id');
        	  return $body;
 	}
+    public static function gettext($text)
+        {
+            $body_view =DB::table('body_view');
+            $body_view = $body_view->where('role','describing')
+                                   ->where('text' , 'like' , '%'.$text.'%')->lists('anno_id');
+ 
+            return $body_view;
+        }
+    public static function gettags($text)
+        {
+            $body_view =DB::table('body_view');
+            $body_view = $body_view->where('role','tagging')
+                                   ->where('text' , 'like' , '%'.$text.'%')->lists('anno_id');
+ 
+            return $body_view;
+        }
 }
+
 ?>

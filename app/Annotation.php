@@ -7,6 +7,8 @@ use App\Tag;
 use App\BodyMember;
 use App\Body;
 use App\Target;
+use App\action;
+use App\history;
 use Thomaswelton\LaravelGravatar\Facades\Gravatar;
 
 /**
@@ -66,100 +68,6 @@ class Annotation extends Model {
             return True;
     }
 
-
-    /**
-     * Get Annotations by Uri
-     * @param string $uri
-     * @param int $limit
-     * @param int $offset
-     * @param string $orderBy
-     * @param string $order
-     * @return array Array of formatted Annotations
-     */
-    public static function getByUri($uri, $limit = 1, $offset = 0, $orderBy = 'id', $order = 'asc') {
-
-        $annos = self::where('uri', $uri)->take($limit)->skip($offset)->take($limit)->orderBy($orderBy, $order)->get();
-
-        $ret = [];
-        foreach($annos as $anno) {
-            $ret[] = self::format($anno);
-        }
-
-        return $ret;
-    }
-
-    /**
-     * Get Annotations by user_id and uri
-     * @param int $uid
-     * @param int $uri
-     * @param int $limit
-     * @param int $offset
-     * @param string $orderBy
-     * @param string $order
-     * @return array Array of formatted Annotations
-     */
-    public static function getByUserUri($uid, $uri, $limit = 1, $offset = 0, $orderBy = 'id', $order = 'asc') {
-
-        $annos = self::where('creator_id', $uid)->where('uri', $uri)->skip($offset)->take($limit)->orderBy($orderBy, $order)->get();
-        $ret = [];
-        foreach($annos as $anno) {
-            $ret[] = self::format($anno);
-        }
-        return $ret;
-    }
-
-    /**
-     * Get Public Annotations by uri
-     * @param $uri
-     * @param int $limit
-     * @param int $offset
-     * @param string $orderBy
-     * @param string $order
-     * @return array Array of formatted Annotations
-     */
-    public static function getPublicByUri($uri, $limit = 1, $offset = 0, $orderBy = 'id', $order = 'asc') {
-        $annos = self::where('uri', $uri)->where('is_public', true)->skip($offset)->take($limit)->orderBy($orderBy, $order)->get();
-        $ret = [];
-        foreach($annos as $anno) {
-            $ret[] = self::format($anno);
-        }
-        return $ret;
-    }
-
-    /**
-     * Get Annotations by user_id
-     * @param $uid
-     * @param int $limit
-     * @param int $offset
-     * @param string $orderBy
-     * @param string $order
-     * @return array Array of formatted Annotations
-     */
-    public static function getByUser($uid, $limit = 1, $offset = 0, $orderBy = 'id', $order = 'asc') {
-        $annos = self::where('creator_id', $uid)->take($limit)->skip($offset)->orderBy($orderBy, $order)->get();
-        $ret = [];
-        foreach($annos as $anno) {
-            $ret[] = self::format($anno);
-        }
-        return $ret;
-    }
-
-
-    /**
-     * Get Annotation by id
-     * @param int $id
-     * @return array Formatted Annotaton
-     */
-    public static function getById($id) {
-        $anno = self::where('id', '=', $id)->first();
-        return self::format($anno);
-    }
-
-    public static function getCountByUser($uid)
-    {
-        return self::where('creator_id', $uid)->count();
-    }
-
     /**
      * Add Annotation
      *
@@ -209,7 +117,11 @@ class Annotation extends Model {
                 'anno_id' => $new_anno->id,
                 'json' => $json
             ]);
-
+            Action::add([
+                'anno_id' =>  $new_anno->id,
+                'user_id' =>  $data['creator_id'],
+                'state' => 'create'
+                ]);
           return $new_anno->id;
 
         }
@@ -242,6 +154,8 @@ class Annotation extends Model {
     {
         if(self::checkOwner($uid, $id))
         {
+           Annotation::updateaction($id,$uid,$text,$tags);
+                
            $res = Bodymember::getupdate([
                 'creator_id' => $uid,
                 'role' => "tagging",
@@ -279,8 +193,10 @@ class Annotation extends Model {
                 $tags = [];
             $tags = array_unique($tags);
 
+
             foreach( $tags as $tagName) {
                 $data['tags']= $tagName;
+                Annotation::updateaction($id,$uid,$data['text'],$data['tags']);
                 $Bodymember = Bodymember::getupdate([
                 'creator_id' => $data['creator_id'],
                 'tags' => $data['tags'],
@@ -308,16 +224,7 @@ class Annotation extends Model {
 
     public static function format($anno)
     {
-        //Link tags
-        /*$tag_list = TagUse::findTagIds($anno->id);
-        $tags = [];
-        foreach($tag_list as $tag_id) {
-            $tagName = Tag::getNameById($tag_id);
-            if($tagName != null) {
-                $tags[] = $tagName;
-            }
-        }
-        */
+     
         $creator = User::get($anno->creator_id);
         // Refact object
         return [
@@ -325,7 +232,6 @@ class Annotation extends Model {
             'text' => $anno->text,
             'quote' => $anno->quote,
             'uri' => $anno->uri,
-            //'link' => $anno->link,
             'ranges' => [
                 [
                     'start' => $anno->ranges_start,
@@ -355,14 +261,7 @@ class Annotation extends Model {
             ]
         ];
     }
-    public static function count()
-    {
-        return self::all()->count();
-    }
-    public static function getName()
-    {
-        return self::all()->lists('text');
-    }
+  
     public static function CreatSelectorArray($data)
     {
         if($data['type']== "text"){
@@ -403,5 +302,48 @@ class Annotation extends Model {
             );
         }
         return json_encode($tempArray);
+    }
+    public static function updateaction($id,$uid,$text,$tags)
+    {
+            $bodys = bodyview::getbody($id);
+            foreach ($bodys as $body) {
+                if($body->role =='tagging')
+                {
+                    if($body->text != $tags )
+                    {
+                         Action::add([
+                            'anno_id' =>  $id,
+                            'user_id' =>  $uid,
+                            'body_id' =>  $body->member_id,
+                            'state' => 'update'
+                        ]);
+                         history::add([
+                            'member_id' =>$body->member_id,
+                            'text' => $body->text,
+                            'role' => $body->role,
+                            'type' => 'TextualBody'
+                            ]);
+                    }
+                } 
+                else if ($body->role =='describing')
+                {
+                    if($body->text != $text )
+                    {
+                         Action::add([
+                            'anno_id' =>  $id,
+                            'user_id' =>  $uid,
+                            'body_id' =>  $body->member_id,
+                            'state' => 'update'
+                        ]);
+                        history::add([
+                            'member_id' =>$body->member_id,
+                            'text' => $body->text,
+                            'role' => $body->role,
+                            'type' => 'TextualBody'
+                        ]);
+                    }
+                }
+            }
+
     }
 }

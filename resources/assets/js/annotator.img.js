@@ -220,7 +220,6 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
 
     };
 
-    /*還沒用到*/
     function flipCoords(x1, y1, x2, y2) {
         var xa = x1,
             xb = x2,
@@ -240,16 +239,6 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         scope.endy = yb;
         return [xa, ya, xb, yb];
     }
-    /*產生positions的物件*/
-    function makeObj(a) {
-        return {
-            x: a[0],
-            y: a[1],
-            height: a[3] - a[1],
-            width: a[2] - a[0],
-        };
-    }
-
 
     /*取得圖片上的註記*/
     function getImgAnnotation(element) {

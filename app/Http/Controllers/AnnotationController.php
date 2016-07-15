@@ -37,7 +37,6 @@ class AnnotationController extends Controller
         $quote = Request::input('quote');
         $uri = Request::input('uri');
         $domain = Request::input('domain');
-        $link = Request::input('link');
         $isImage = Request::input('type') == 'image';
         $image_src = Request::input('src');
         $type = Request::input('type');
@@ -74,7 +73,6 @@ class AnnotationController extends Controller
             'quote' => $quote,
             'uri' => $uri,
             'domain' => $domain,
-            'link' => $link,
             'ranges_start' =>  $ranges_start,
             'ranges_end' => $ranges_end,
             'type' => $isImage ? $type : 'text',
