@@ -38,7 +38,9 @@
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
                     @if (Auth::check())
-					<li class="active"><a href="{{ url('/manage') }}">編輯標記</a></li>
+					<li ><a href="{{ url('/manage/index') }}">首頁</a></li>
+					<li ><a href="{{ url('/manage') }}">個人頁面管理</a></li>
+					<li ><a href="{{ url('/manage/collect') }}">收藏</a></li>
                     @endif
 				</ul>
 				<ul class="nav navbar-nav navbar-right">

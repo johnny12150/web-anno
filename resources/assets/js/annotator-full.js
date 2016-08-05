@@ -1194,12 +1194,14 @@
     };
 
     Annotator.prototype.onEditorSubmit = function(annotation) {
+      console.log(annotation);
       return this.publish('annotationEditorSubmit', [this.editor, annotation]);
     };
 
     Annotator.prototype.showViewer = function(annotations, location) {
-      this.viewer.element.css(location);
-      this.viewer.load(annotations);
+      
+      //this.viewer.element.css(location);
+      //this.viewer.load(annotations);
       return this.publish('annotationViewerShown', [this.viewer, annotations]);
     };
 

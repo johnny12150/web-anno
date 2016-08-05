@@ -5,7 +5,7 @@ use App\AnnotationView;
 use App\AuthTable;
 use App\Http\Requests;
 use App\Like;
-use App\TagUse;
+use App\bodygroup;
 use App\Tag;
 use App\User;
 use App\BodyMember;
@@ -107,7 +107,7 @@ class AnnotationController extends Controller
         $ranges_end = '';
         $ranges_startOffset = '';
         $ranges_endOffset = '';
-
+        $bid = Request::input('bid');
         if(isset(Request::input('ranges')[0]['start']))
             $ranges_start = Request::input('ranges')[0]['start'];
         if(isset(Request::input('ranges')[0]['end']))
@@ -133,7 +133,8 @@ class AnnotationController extends Controller
             'ranges_startOffset' => $ranges_startOffset,
             'ranges_endOffset' => $ranges_endOffset,
             'is_public' => $is_public,
-            'tags' => $tags
+            'tags' => $tags,
+            'bg_id' => $bid,
         ]);
 
 
@@ -155,7 +156,75 @@ class AnnotationController extends Controller
 
         return (isset($anno[0]) ? $anno[0] : []);
     }
+    public function addbody()
+    {
+        $text = Request::input('text');
+        $id = Request::input('id');
+        $uri = Request::input('uri');
+        $user_id = Session::get('user')->id;
+        $tags = explode(" ",Request::input('tags'));
+        $bg_id = bodygroup::add($id);
+        foreach ($tags as $tag) {
+            Bodymember::add([
+            'creator_id' => $user_id,
+            'text' => $tag,
+            'purpose' => "tagging",
+            'bg_id' => $bg_id,
+            'type' =>'TextualBody'
+        ]);
+        }
+        Bodymember::add([
+            'creator_id' => $user_id,
+            'text' => $text,
+            'purpose' => "describing",
+            'bg_id' => $bg_id,
+            'type' =>'TextualBody'
+        ]);
+        $annos = self::search();
+        return [$annos,$bg_id];
+    }
+    public function deletebody($bg_id){
+        bodygroup::deletebody($bg_id);
+        
+        $uri = Request::input('uri');
 
+        return self::search();
+    }
+    public function updatebody(){
+
+        $text = Request::input('text');
+        $id = Request::input('id');
+        $user_id = Session::get('user')->id;
+        $tags = explode(" ",Request::input('tags'));
+        $uri = Request::input('uri');
+        Bodymember::deleteBody($id);
+
+        foreach ($tags as $tag) {
+            Bodymember::add([
+            'creator_id' => $user_id,
+            'text' => $tag,
+            'purpose' => "tagging",
+            'bg_id' => $id,
+            'type' =>'TextualBody'
+        ]);
+        }
+        Bodymember::add([
+            'creator_id' => $user_id,
+            'text' => $text,
+            'purpose' => "describing",
+            'bg_id' => $id,
+            'type' =>'TextualBody'
+        ]);
+
+        $annotations = AnnotationView::search([
+            'uri' => $uri
+        ]);
+        $result = [
+            'total' => count($annotations),
+            'rows' => $annotations
+        ];
+        return $result;
+    }
     public function delete($id)
     {
         $user = Session::get('user');
@@ -168,7 +237,18 @@ class AnnotationController extends Controller
             abort(401);
         }
     }
-
+    public function tempdelete($id)
+    {
+        $user = Session::get('user');
+        if($user != null) {
+            //Delete Annotation
+            Annotation::tempdelete($user->id, $id);
+            //return 204 code
+            abort(204);
+        } else {
+            abort(401);
+        }
+    }
 
     /**
      * @return array
@@ -223,18 +303,20 @@ class AnnotationController extends Controller
         $user = Session::get('user');
         $user_id = $user->id;
         Like::setLike($user_id, $id, $like);
-        return self::get($id);   //??????
+        return like::count($id);  
     }
 
     public function check()
     {
         $user = Session::get('user');
+      
         return [
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'gravatar' => Gravatar::src($user->email)
+                'gravatar' => Gravatar::src($user->email),
+                'like' =>  Like::getlikebyuser($user->id)
             ]
         ];
     }

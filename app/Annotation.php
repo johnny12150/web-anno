@@ -3,12 +3,11 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
-use App\Tag;
 use App\BodyMember;
-use App\Body;
 use App\Target;
-use App\action;
-use App\history;
+use App\bodygroup;
+//use App\action;
+//use App\history;
 use Thomaswelton\LaravelGravatar\Facades\Gravatar;
 
 /**
@@ -80,15 +79,29 @@ class Annotation extends Model {
         $check = self::validator($data);
         if($check == true)
         {
+            //1.annotation
             $new_anno = new Annotation();
             $new_anno->creator_id = $data['creator_id'];
-            $new_anno->uri = $data['uri'];
+            //$new_anno->uri = $data['uri'];
             $new_anno->domain = $data['domain'];
             $new_anno->is_public  = $data['is_public'];
+            $new_anno->state = "exist";
             $new_anno->save();
 
-          
+            //2.target
+            $json = self::CreatSelectorArray($data);
+            Target::add([
+                'source' => $data['src'],
+                'type' => $data['type'],
+                'anno_id' => $new_anno->id,
+                'uri' => $data['uri'],
+                'json' => $json
+            ]);
 
+
+            //3.body_group
+            $bg_id = bodygroup::add($new_anno->id);
+        
             $tags = $data['tags'];
             if(!$tags)
                 $tags = [];
@@ -99,29 +112,20 @@ class Annotation extends Model {
                 $Bodymember = Bodymember::add([
                 'creator_id' => $data['creator_id'],
                 'text' => $data['tags'],
-                'role' => "tagging",
-                'anno_id' => $new_anno->id
+                'purpose' => "tagging",
+                'bg_id' => $bg_id,
+                'type' =>'TextualBody'
             ]);
             $new_anno->tags = $data['tags'];
             }
             Bodymember::add([
                 'creator_id' => $data['creator_id'],
                 'text' => $data['text'],
-                'role' => "describing",
-                'anno_id' => $new_anno->id
+                'purpose' => "describing",
+                'bg_id' => $bg_id,
+                'type' =>'TextualBody'
             ]);
-            $json = self::CreatSelectorArray($data);
-            Target::add([
-                'source' => $data['src'],
-                'type' => $data['type'],
-                'anno_id' => $new_anno->id,
-                'json' => $json
-            ]);
-            Action::add([
-                'anno_id' =>  $new_anno->id,
-                'user_id' =>  $data['creator_id'],
-                'state' => 'create'
-                ]);
+
           return $new_anno->id;
 
         }
@@ -142,7 +146,7 @@ class Annotation extends Model {
         if(self::checkOwner($uid, $id) )
         {
             Target::deleteTarget($id);
-            Bodymember::deleteBody($id);
+            bodygroup::deleteBody($id);
             return self::where('anno_id', $id)->where('creator_id', $uid)->delete();
         }
         else
@@ -158,7 +162,7 @@ class Annotation extends Model {
                 
            $res = Bodymember::getupdate([
                 'creator_id' => $uid,
-                'role' => "tagging",
+                'purpose' => "tagging",
                 'anno_id' => $id,
                 'text' => $text,
                 'tags' => $tags
@@ -182,29 +186,33 @@ class Annotation extends Model {
             $check = self::validator($data);
             if( $check == true ) {
                 $anno = self::whereRaw('anno_id = ? and creator_id = ?',array($id, $uid))->update(array(
-
-                    'domain' => $data['domain'],
                     'is_public' => $data['is_public']
-
                 ));
             $tags = $data['tags'];
 
             if(!$tags)
                 $tags = [];
             $tags = array_unique($tags);
-
+            
+            Bodymember::deleteBody($data['bg_id']);
 
             foreach( $tags as $tagName) {
                 $data['tags']= $tagName;
-                Annotation::updateaction($id,$uid,$data['text'],$data['tags']);
-                $Bodymember = Bodymember::getupdate([
+                $Bodymember = Bodymember::add([
                 'creator_id' => $data['creator_id'],
-                'tags' => $data['tags'],
-                'anno_id' => $id,
-                'text' => $data['text']
-                ]);
+                'text' => $data['tags'],
+                'purpose' => "tagging",
+                'bg_id' => $data['bg_id'],
+                'type' =>'TextualBody'
+            ]);
             }
-
+            Bodymember::add([
+                'creator_id' => $data['creator_id'],
+                'text' => $data['text'],
+                'purpose' => "describing",
+                'bg_id' => $data['bg_id'],
+                'type' =>'TextualBody'
+            ]);
                 return $data;
 
             }
@@ -265,7 +273,7 @@ class Annotation extends Model {
     public static function CreatSelectorArray($data)
     {
         if($data['type']== "text"){
-            $tempArray = array(
+            $tempArray = [array(
                 'type' =>"RangeSelector",
                 'startSelector' =>array(
                     'type' => "XPathSelector",
@@ -285,8 +293,11 @@ class Annotation extends Model {
                         'end'=> $data['ranges_endOffset']
                     )
                 ),
-                'quote' => $data['quote']
-            );
+              
+            ),array(
+            'type' =>'TextQuotePosition',
+            'exact' => $data['quote']
+            )];
         }
         else if ($data['type']=="image")
         {
@@ -305,9 +316,9 @@ class Annotation extends Model {
     }
     public static function updateaction($id,$uid,$text,$tags)
     {
-            $bodys = bodyview::getbody($id);
+            $bodys = BodyMember::getbody($id);
             foreach ($bodys as $body) {
-                if($body->role =='tagging')
+                if($body->purpose =='tagging')
                 {
                     if($body->text != $tags )
                     {
@@ -320,12 +331,12 @@ class Annotation extends Model {
                          history::add([
                             'member_id' =>$body->member_id,
                             'text' => $body->text,
-                            'role' => $body->role,
+                            'purpose' => $body->purpose,
                             'type' => 'TextualBody'
                             ]);
                     }
                 } 
-                else if ($body->role =='describing')
+                else if ($body->purpose =='describing')
                 {
                     if($body->text != $text )
                     {
@@ -338,12 +349,119 @@ class Annotation extends Model {
                         history::add([
                             'member_id' =>$body->member_id,
                             'text' => $body->text,
-                            'role' => $body->role,
+                            'purpose' => $body->purpose,
                             'type' => 'TextualBody'
                         ]);
                     }
                 }
             }
 
+    }
+    public static function tempdelete($uid,$id)
+    {
+        if(self::checkOwner($uid, $id) )
+        {
+            return self::where('anno_id', $id)->where('creator_id', $uid)->update(['state'=>'delete']);
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public static function import($data)
+    {
+        $domain =  explode("/",$data->id);
+        $uri = preg_replace('|[0-9]+|', '', $data->id);
+        $new_anno = new Annotation();
+        $new_anno->creator_id = '0';
+        $new_anno->uri = $uri;
+        $new_anno->domain = $domain [2];
+        $new_anno->is_public  = '1';
+        $new_anno->state = "exist";
+        if(array_key_exists("creator", get_object_vars($data)))
+        $new_anno->import= $data->creator;
+        $new_anno->save();
+
+        if(gettype($data->body)== 'string')
+        {
+            $new_anno->body = $data->body;
+            $new_anno->purpose = 'null';
+            $new_anno->type = 'null';
+        }
+        else
+        {
+            $array = get_object_vars($data->body);
+            if(array_key_exists("puropose", $array))
+            {
+                $new_anno->purpose = $data->body->purpose;
+            }
+            else {
+                $new_anno->purpose = 'null';
+            }
+            if(array_key_exists("value", $array))
+            {
+                $new_anno->body = $data->body->value;
+            }
+            else{
+                 $new_anno->body = $data->body->id;
+            }
+            if (array_key_exists("type", $array)) {
+                $new_anno->type = $data->body->type;
+            }
+            else
+            {
+                $new_anno->type = 'null';
+            }
+        }
+
+
+        if(gettype($data->target)== 'string')
+        {
+            $new_anno->ttype = 'null';
+            $new_anno->tselector = 'null';
+           $new_anno->tsource =  $data->target;
+        }
+        else
+        {
+            $array = get_object_vars($data->target);
+            if(array_key_exists("type", $array))
+            {
+                $new_anno->ttype = $data->target->type;
+            }
+            else {
+                $new_anno->ttype = 'null';
+            }
+            if(array_key_exists("source", $array))
+            {
+                $new_anno->tsource = $data->target->source;
+            }
+            else if(array_key_exists("id", $array))  {
+                $new_anno->tsource = $data->target->id;
+            }
+            if(array_key_exists("selector", $array))
+            {
+                $new_anno->tselector = json_encode($data->target->selector);
+            }
+            else {
+               $new_anno->tselector = 'null';
+            }
+       
+       
+        }
+        Bodymember::add([
+                'creator_id' => '0',
+                'text' => $new_anno->body,
+                'purpose' => $new_anno->purpose,
+                'anno_id' => $new_anno->id,
+                'type' => $new_anno->type 
+            ]);
+        Target::add([
+                'source' => $new_anno->tsource,
+                'type' => $new_anno->ttype,
+                'anno_id' => $new_anno->id,
+                'json' => $new_anno->tselector
+            ]);
+
+        return $new_anno->id;
     }
 }

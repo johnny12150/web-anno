@@ -19,11 +19,72 @@
   }
 
 }
+.anno-user{
+  font-family: Arial, "Microsoft YaHei", "黑體", "文泉驛正黑", "WenQuanYi Zen Hei", "儷黑 Pro", "LiHei Pro", "微軟正黑體", "Microsoft JhengHei", "標楷體", DFKai-SB, sans-serif;
+  //width: 900px;
+  padding: 20px;
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  border: 1px solid #cccccc;
+  margin-bottom: 15px;
+
+  .anno-user-name{
+    padding-top: 7px;
+    padding-bottom: 10px;
+  }
+  .anno-user-email{
+    padding-top: 7px;
+    padding-bottom: 10px;
+  }
+}
+.anno-sort{
+  font-family: Arial, "Microsoft YaHei", "黑體", "文泉驛正黑", "WenQuanYi Zen Hei", "儷黑 Pro", "LiHei Pro", "微軟正黑體", "Microsoft JhengHei", "標楷體", DFKai-SB, sans-serif;
+  //width: 900px;
+  padding: 20px;
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  border: 1px solid #cccccc;
+  margin-bottom: 15px;
+}
+.anno-collect{
+    font-family: Arial, "Microsoft YaHei", "黑體", "文泉驛正黑", "WenQuanYi Zen Hei", "儷黑 Pro", "LiHei Pro", "微軟正黑體", "Microsoft JhengHei", "標楷體", DFKai-SB, sans-serif;
+  //width: 900px;
+  padding: 20px;
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  border: 1px solid #cccccc;
+  margin-bottom: 15px;
+}
+.anno-body{
+  font-family: Arial, "Microsoft YaHei", "黑體", "文泉驛正黑", "WenQuanYi Zen Hei", "儷黑 Pro", "LiHei Pro", "微軟正黑體", "Microsoft JhengHei", "標楷體", DFKai-SB, sans-serif;
+  //width: 900px;
+  padding: 5px;
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  border: 1px solid #cccccc;
+  margin-bottom: 15px;
+    .body-time{
+      color: #999999;
+      padding-bottom: 3px;
+  }
+    .body-content{
+       font-size: 15px;
+       line-height: 19pt;
+    }
+    .body-user{
+      color: #0055aa;
+      margin-right: 5px;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+}
+
 
 
 .anno-list-item {
   font-family: Arial, "Microsoft YaHei", "黑體", "文泉驛正黑", "WenQuanYi Zen Hei", "儷黑 Pro", "LiHei Pro", "微軟正黑體", "Microsoft JhengHei", "標楷體", DFKai-SB, sans-serif;
-  width: 900px;
+  //width: 900px;
   padding: 20px;
   background-color: #FFFFFF;
   border-radius: 5px;
@@ -151,7 +212,7 @@
 
 #anno-filter {
   position: relative;
-  width: 900px;
+  //width: 900px;
 
   background-color: #FFFFFF;
   border-radius: 5px;

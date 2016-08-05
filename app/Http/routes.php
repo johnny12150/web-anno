@@ -18,6 +18,8 @@ Route::get('/', function() { return redirect('/manage');});
 Route::get('testing', function() {
     return view('testing');
 });
+Route::get('testing/anno{id}','Apicontroller@getanno');
+
 
 
 /* Annotation API routing */
@@ -33,7 +35,7 @@ Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
     Route::options('check', function () {});
     Route::options('annotations', function () {});
     Route::options('annotations/{id}', function () {});
-
+   
     Route::get('/', 'AnnotationController@index');
     Route::get('user', function() {});
     Route::get('annotations', 'AnnotationController@index');
@@ -44,9 +46,15 @@ Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
         Route::post('annotations', 'AnnotationController@add');
         Route::put('annotations/{id}', 'AnnotationController@update');
         Route::get('annotations/{id}', 'AnnotationController@add');
+        Route::post('addbody', 'AnnotationController@addbody');
+        Route::post('body/{id}','AnnotationController@deletebody');
+        Route::post('updatebody','AnnotationController@updatebody');
+        Route::post('collect','collecteController@create');
         Route::delete('annotations/{id}', 'AnnotationController@delete');
         Route::get('check', 'AnnotationController@check');
         Route::post('logout', 'AnnotationController@logout');
+
+        Route::post('checkcollect','collecteController@check');      
     });
 
     Route::any('{all}', function($uri)
@@ -58,16 +66,24 @@ Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
 });
 /**/
 Route::group(['prefix' => '/manage', 'middleware' => 'auth'], function() {
-    Route::get('/', 'ManageController@index');
+    Route::get('/', 'ManageController@manage');
+    Route::get('/collect', 'ManageController@collect');
     Route::get('/page/{id}', 'ManageController@index');
+    Route::get('/index', 'ManageController@all');
+    Route::get('/search' , 'ManageController@getall');
     Route::post('delete', 'ManageController@delete');
     Route::post('edit', 'ManageController@edit');
-});
+    Route::post('/follow','UserController@follow');
+    Route::post('/delfollow','UserController@delfollow');
+    Route::post('/cancel' , 'collecteController@destroy');
 
+});
+Route::get('api','Apicontroller@output');
+Route::get('apiget', 'Apicontroller@import');
 Route::get('gethint','AnnotationController@gethint');
 Route::get('gravatar/{email}', 'GravatarController@get');
 
-/* Auth login routing */
+//Route::get('manage/{name}','ManageController@index');
 Route::controller('auth', 'AuthController');
 
 

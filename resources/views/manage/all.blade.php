@@ -14,17 +14,8 @@
                      <div class="anno-user-email">
                           <strong>用戶email：</strong>  {{ $user['email'] }}
                     </div>
-                    <div class="anno-user-follow">
-                        @if($following == 'false')
-                        <button type="button" class="btn btn-default anno-user-following" 
-                        data-id="{{$user['id']}}">following</button>
-                        @elseif($following == 'true')
-                        <button type="button" class="btn btn-default anno-user-refollowing" 
-                        data-id="{{$user['id']}}">取消following</button>
-                        @endif
-                    </div>
+                 
                </div>
-            
                 <div id="anno-filter">
                     <form action="" class="form-horizontal" method="GET">
                         <div class="form-group">
@@ -35,17 +26,6 @@
                             <label for="search_text" class="col-sm-3 control-label">標記內容</label>
                             <div class="col-sm-9">
                                 <input type="text" name="search_text" class="form-control" id="search_text" value="{{ $old['search_text'] }}" placeholder="標記內容" >                        
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="search_uri" class="col-sm-3 control-label">uri</label>
-                            <div class="col-sm-9">
-                                <select class="form-control" name="search_uri" id="search_uri">
-                                    <option value="">所有</option>
-                                    @foreach($urilists as $uri)
-                                        <option value="{{ $uri }}" {{ $old['search_uri'] == $uri ? 'selected' :'' }}>{{$uri}}</option>
-                                    @endforeach
-                                </select>
                             </div>
                         </div>
                         <div class="form-group">
@@ -69,15 +49,6 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="search_sort" class="col-sm-3 control-label">排序方式</label>
-                            <div class="col-sm-9">
-                                <select class="form-control" name="search_sort" id="search_sort">
-                                    <option value="time">Time</option>
-                                    <option value="likes">Likes</option>                                
-                                </select>
-                            </div>
-                        </div>
                         <div class="row">
                             <div class="col-md-1 col-md-offset-6">
                                 <button class="btn btn-default" type="submit">搜尋</button>
@@ -93,23 +64,32 @@
                 
                 <div class="anno-list">
 
-                    @foreach( $annoData as $uri => $annos )
+                    @foreach( $annos as $anno  )
                         <div class="anno-list-item">
-                           
-                        @foreach( $annos as $index => $anno)
-
                             <div class="anno-item-bottom"  id="anno-{{ $anno['id'] }}">
-                                
-                                <strong>標記：</strong>
+
+                           
+                               <strong>標記：</strong>
                                 @if($anno['type'] == 'text')
                                 <div class="anno-quote">
-                                     <a href="{{ $anno['uri'] . '#anno_id=' .$anno['id'] }}"> {{ $anno['quote'] }}</a>
+                                    {{ $anno['quote'] }}
                                 </div>
                                 @else
-                                <div class="anno-quote">
-                                    <a href="{{ $anno['uri'] . '#anno_id=' .$anno['id'] }}">  <img src="{{ $anno['src'] }}"></a>
+                                   <div class="anno-quote">
+                                   <img src="{{ $anno['src'] }}">
                                 </div>
                                 @endif
+
+                                 <span class="body-content"> {!! $anno['text'] !!} </span>
+                                   
+                                <div class="anno-tags">
+                                    <div><i class="fa fa-tags" aria-hidden="true"></i>
+                                        @foreach($anno['tags'] as $tag)
+                                            <span class="anno-tag">{{ $tag }}</span>
+                                        @endforeach
+                                    </div>
+                                </div>
+
 
                                 <div class="anno-public">
                                     <div>
@@ -118,72 +98,45 @@
                                     </div>
                                 </div>
 
-                                <strong>建立時間:{{ $anno['created_at'] }}</strong>
+                                <div class="anno-likes">
+                                    <div>
+                                        <strong>評分：</strong>
+                                        @if($anno['likes'] >= 0)
+                                        <span  class="fa fa-thumbs-up"><span>{{ $anno['likes'] }}</span></span>
+                                        @else
+                                        <span class="fa fa-thumbs-down"><span>{{ $anno['likes'] }}</span></span>
+                                        @endif
+                                    </div>
+                                </div>
+                                        {{ $anno['created_at'] }}
                             
-                               
-                               
-                                <!--<a href="#" class="anno-edit" data-id="{{ $anno['id'] }}">
-                                    <i class="fa fa-edit "></i>
-                                <span>編輯標記內容</span>
-                                </a>
-                                <a href="#" class="anno-delete" data-id="{{ $anno['id'] }}">
-                                    <i class="fa fa-times " style="color: #ff0000"></i>
-                                    <span>刪除標記</span>
-                                </a>-->
                                 <hr>
-                               
-                                @foreach($anno['otherbodys'] as $body)
-                                    <div class="anno-body" id ="anno-body-{{ $body['bid'] }}">
+                                 @foreach($anno['otherbodys'] as $body)
+                                    <div class="anno-body">
                                         <span class="body-user">{{$body['creator']}}</span> 
                                         <span class="body-time">{{ $body['created_time'] }}</span>
                                         <span class="body-content">{!!$body['text'][0]!!}</span>
                                         
-                                        <strong>評分：</strong>
+                                          <strong>評分：</strong>
                                             @if($body['like'] >= 0)
                                             <span  class="fa fa-thumbs-up"><span>{{ $body['like'] }}</span></span>
                                             @else
                                             <span class="fa fa-thumbs-down"><span>{{ $body['like'] }}</span></span>
                                             @endif
                                             <div class="anno-tags">
-                                             <div><i class="fa fa-tags" aria-hidden="true"></i>
+                                             <div><strong>標籤：</strong>
                                             @foreach($body['tags'] as $tag)
                                                 <span class="anno-tag">{{ $tag }}</span>
                                             @endforeach
                                             </div>
                                             </div>
-                                            @if( $body['creator'] == $user['name'])
-                                            <a href="#" class="anno-edit" data-id="{{ $body['bid'] }}">
-                                                <i class="fa fa-edit "></i>
-                                            <span>編輯</span>
-                                            </a>
-                                            <a href="#" class="anno-delete" data-id="{{ $body['bid'] }}">
-                                                <i class="fa fa-times " style="color: #ff0000"></i>
-                                                <span>刪除</span>
-                                            </a>
-                                            @endif
                                     </div>
                                  @endforeach
-                                </div>
-
-                    
-                                <hr/>
-                         @endforeach
-                 </div>
+                            </div>
+                        </div>
                     @endforeach
-              
-
-
-            </div>
-                <div class="anno-pages">
-                    @for($i = 1 ; $i <= $pagesCount ;$i++)
-                        @if($i != $page)
-                            <span><a href="/manage/page/{{ $i }}{{ "?search_text=".$old["search_text"]."&search_tag=".$old["search_tag"]."&search_public=".$old["search_public"] }}">{{ $i }}</a></span>
-                        @else
-                            <span>{{ $i }}</span>
-                        @endif
-                    @endfor
-                        <span> 共{{ $pagesCount }}頁 </span>
                 </div>
+           
             
             </div>
 
@@ -215,7 +168,7 @@
     <script>
        
 
-       /* $(document).ready(function() {
+        $(document).ready(function() {
             $.ajax({
                 xhrFields: {
                     withCredentials: true
@@ -245,7 +198,9 @@
 
        
         });
-        */
+        $(document).on('click','.anno-user-follow',function(e){
+            
+        });
         function postEdit() {
             var id = $('#editor_anno_id').val();
             var content = tinyMCE.activeEditor.getContent();
@@ -259,8 +214,8 @@
                 data: {id: id, 'text' : content,'tags':tags},
                 success: function (data) {
                     if (data.result) {
-                        $('#anno-body-' + id + ' .body-content').html(content);
-                        $('#anno-body-' + id + ' .anno-tag').html(tags);
+                        $('#anno-' + id + ' .anno-text').html(content);
+                        $('#anno-' + id + ' .anno-tag').html(tags);
                         newAlert('success', '編輯成功');
                         $('#editorDiv').hide();
                     } else {
@@ -268,7 +223,7 @@
                     }
                 },
                 error: function(data) {
-                   // location.reload();
+                    location.reload();
                 },
                 dataType: 'json'
             });
@@ -288,11 +243,11 @@
 
         $('.anno-edit').click(function(e){
             e.preventDefault();
-
             var id = $(e.currentTarget).attr('data-id');
-            var rect =$('#anno-body-' + id)[0].getBoundingClientRect();
-            tinyMCE.editors[0].setContent($('#anno-body-' + id + ' .body-content').html());
-            $('#tags').val($('#anno-body-' + id + ' .anno-tag').html());
+
+            var rect =$('#anno-' + id)[0].getBoundingClientRect();
+            tinyMCE.editors[0].setContent($('#anno-' + id + ' .anno-text').html());
+            $('#tags').val($('#anno-' + id + ' .anno-tag').html());
             $('#editor_anno_id').val(id);
             $('#editorDiv').css('position', 'absolute')
                     .css('left', e.pageX)
@@ -300,24 +255,7 @@
                     .show();
 
         });
-        $('.anno-user-following').click(function(e){
-               e.preventDefault();
-                var target = $(e.target); //事件驅動的目
-                var fid = target.attr('data-id'); 
-                $.post('/manage/follow',{'fid': fid}).success(function(data) {
-                    alert('成功追隨'); 
-                    location.reload();
-                });
-         });
-        $('.anno-user-refollowing').click(function(e){
-               e.preventDefault();
-                var target = $(e.target); //事件驅動的目
-                var fid = target.attr('data-id'); 
-                $.post('/manage/delfollow',{'fid': fid}).success(function(data) {
-                    alert('取消追隨'); 
-                    location.reload();
-                });
-         });
+
         $('.anno-delete').click(function(e){
             e.preventDefault();
 
@@ -343,7 +281,7 @@
                         }
                     },
                     error: function(data) {
-                        //location.reload();
+                        location.reload();
                     },
                     dataType: 'json'
                 });

@@ -115,7 +115,9 @@ var annotation = function(e) {
         if(setting.imageAnnotation === true) {
             this.annotator
                 .annotator('addPlugin', 'ImageAnnotation', {
-                    server: this.server_host
+                    server: this.server_host,
+                    anno_token : anno_token,
+                    domain : _annotation.host
                 });
         }
            

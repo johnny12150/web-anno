@@ -39,7 +39,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     {
         return self::where('id', $uid)->first();
     }
-
+    public static function getbyname($name)
+    {
+        return self::where('name',$name)->first();
+    }
 
     /**
      * update lastlogin timestamp of user

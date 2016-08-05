@@ -68,7 +68,8 @@ function keywordInit(element, settings) {
                                     "read": [],
                                     "update": [0],
                                     "delete": [0]
-                                }
+                                },
+                                "otherbodys" :[]
                             };
                         keyword_obj.anno.push(obj);
                         keyword_index++;

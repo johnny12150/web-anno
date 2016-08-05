@@ -3,8 +3,9 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Thomaswelton\LaravelGravatar\Facades\Gravatar;
-use App\bodyview;
-use App\likeview;
+use App\BodyMember;
+use App\Like;
+use App\bodygroup;
 use App\action;
 use App\Target;
 /**
@@ -21,90 +22,44 @@ class AnnotationView extends Model
      */
     protected $table = 'annotation';
    
-    public static function search($conditions , $limit, $offset, $orderBy = 'likes', $sort='desc')
+    public static function search($conditions , $orderBy = 'created_time', $sort='desc')
     {
+    
         $annos = DB::table('annotation');
         /**/
+       
+         if(isset($conditions['uri']) && $conditions['uri'] != '')
+        {
+             $annos = $annos->where('anno_id', '0');
+            $anno_ids = Target::getannobyuri($conditions['uri']);
+            foreach ($anno_ids as $anno_id) {
+             $annos = $annos->orWhere('anno_id',$anno_id);
+             }
+        }
+
         if(isset($conditions['text']) && $conditions['text'] != '')
         {
-            $anno_ids = bodyview::search($conditions['text']);
-             $annos = $annos->where('anno_id', '0');
-            foreach ($anno_ids as $id) {
-             $annos = $annos->orWhere('anno_id',$id);
-        
-            }  
-        }
+
+            $bg_ids = BodyMember::search($conditions['text']);
+            $anno_ids=[];
+      
+            foreach ($bg_ids as $bg_id) {
+                $annos = $annos->orWhere('anno_id',bodygroup::getanno_id($bg_id->bg_id)->anno_id);
+          
+            } 
+        }        
+
         /*新增用的搜尋  return新增的資料 */
         if(isset($conditions['id']) && $conditions['id'] != '')
         {
             $annos = $annos->where('anno_id', $conditions['id']);
         }
-
+        $annos = $annos->where('state','exist');
         
-        $annos = $annos->get();
+        $annos = $annos->orderBy('created_time',$sort)->get();
    
        
-        foreach ($annos as $anno ) {
-           $bodys = bodyview::getbody($anno->anno_id);
-           $likes =likeview::getlike($anno->anno_id);
-           $actions = action::getaction($anno->anno_id);
-           $targets = Target::getTarget($anno->anno_id);
-
-           $anno->id = $anno->anno_id;
-           $anno->quote ="";
-           $anno->ranges_start="";
-           $anno->ranges_end="";
-           $anno->ranges_startOffset="";
-           $anno->ranges_endOffset="";
-           $anno->x ="";
-           $anno->y ="";
-           $anno->width ="";
-           $anno->height = "";
-           $anno->likes ="0";
-    
-           foreach($bodys as $body)
-            {
-                if($body->role == 'tagging')
-                {
-                    $anno->tags = $body->text;
-                }
-                else if($body->role =='describing')
-                {
-                    $anno->text = $body->text;
-                }
-            }
-            foreach ($likes as $like) {
-                $anno->likes = $like->likes ;
-            }
-            foreach ($actions as $action ) {
-                $anno->created_at = $action->created_at;
-            }
-            foreach ($targets as $target ) {
-                $selector = json_decode($target->selector);
-               
-                if($target->type =='image')
-                {
-                    $anno->src = $target->source;
-                    $img = explode(",", $selector->value);
-                    $anno->x = $img [0];
-                    $anno->y = $img [1];
-                    $anno->width =$img [2];
-                    $anno->height =$img [3];
-                    $anno->type = $target->type;
-                }
-                else if ($target->type =="text")
-                {
-                    $anno->src = $target->source;
-                    $anno->quote = $selector->quote;
-                    $anno->type = $target->type;
-                    $anno->ranges_start = $selector->startSelector->value;
-                    $anno->ranges_end =   $selector->endSelector->value;
-                    $anno->ranges_startOffset = $selector->startSelector->refinedBy->start;
-                    $anno->ranges_endOffset  = $selector->endSelector->refinedBy->end;  
-                } 
-              
-            }
-        }
+        $annos = AnnotationView::annotation($annos);
         $ret =[];
         foreach($annos as $anno) {
            $ret[] = self::format($anno);
@@ -112,19 +67,92 @@ class AnnotationView extends Model
         return  $ret;
 
     }
-    public static function backendsearch($conditions , $limit, $offset, $orderBy = 'likes', $sort='desc')
+    public static function getall($conditions){
+       
+        $annos = DB::table('annotation');
+
+        if( isset($conditions['domain']) && $conditions['domain'] != '')
+            $annos = $annos->where('domain', $conditions['domain']);
+
+        $bidbylike = Like::getlikebyuser($conditions['user']);
+        $folusers = follow::getfid($conditions['user']);
+        
+        $annos =$annos->where('anno_id',0);
+        //get by follow
+        if(empty($folusers) != false){
+            foreach ($folusers as $foluser) {
+                $annos = $annos->orWhere('creator_id',$foluser->fid);
+            }
+        }
+        //get by like  
+        if (empty($bidbylike) != false){
+            
+            foreach ($bidbylike as $id) {
+                 $annoidbybid[] =  bodygroup::getanno_id($id->bg_id)->anno_id;
+            }
+            foreach ($annoidbybid as $id) {
+                $annos = $annos->orWhere('anno_id',$id);
+            }
+        }
+
+        $temp = $annos->lists('anno_id');
+        //return $temp;
+        if(isset($conditions['tag']) && $conditions['tag'] != '')
+        {
+
+             $bg_ids = BodyMember::backgettags($conditions['tag']);
+            
+             $anno_ids = [];
+             foreach ($bg_ids as $bg_id ) {
+                 
+                 array_push($anno_ids, bodygroup::getanno_id($bg_id->bg_id)->anno_id);
+
+             }
+            
+            
+            $temp = array_intersect($temp, $anno_ids);
+      
+        }  
+
+        $result = DB::table('annotation');
+        $result = $result->where('anno_id','0');
+        foreach ($temp as $id) {
+            
+            $result = $result->orWhere('anno_id',$id);
+        }
+   
+        $result = AnnotationView::annotation($result->get());
+        //$annos = $annos->orderBy('created_time', 'desc')->get();
+        //$result = AnnotationView::annotation($annos);
+        $ret =[];
+        foreach($result as $anno) {
+           $ret[] = self::format($anno);
+        }
+        return  $ret;
+
+
+    }
+    public static function backendsearch($conditions , $limit, $offset, $orderBy = 'created_time', $sort='desc')
     {
         $annos = DB::table('annotation');
        
-        if( isset($conditions['uri']) && $conditions['uri'] != '')
-            $annos = $annos->where('uri', $conditions['uri']);
+
         if( isset($conditions['domain']) && $conditions['domain'] != '')
             $annos = $annos->where('domain', $conditions['domain']);
         if( isset($conditions['creator_id']) && $conditions['creator_id'] != '')
             $annos = $annos->where('creator_id', $conditions['creator_id']);
+      
+        if(isset($conditions['uri']) && $conditions['uri'] != '')
+        {
+
+             $anno_ids = Target::getannobyuri($conditions['uri']);
+             $annos = $annos ->where('anno_id',0);
+            foreach ($anno_ids as $anno_id) {
+             $annos = $annos->orWhere('anno_id',$anno_id);
+             }
+        }
         $temp = $annos->lists('anno_id');
-       
-        
+
         if( isset($conditions['public']) && is_array($conditions['public']))
         {
             if( isset($conditions['public']['is_public']) && $conditions['public']['is_public'] !== '')
@@ -134,11 +162,12 @@ class AnnotationView extends Model
             }  
          
         }
-        
+       
 
         if(isset($conditions['text']) && $conditions['text'] != '')
         {
-            $anno_ids = bodyview::gettext($conditions['text']);
+            $anno_ids = BodyMember::gettext($conditions['text']);
+
             $text = $annos->where('anno_id', '0');
             foreach ($anno_ids as $id) {
               $text = $annos->orWhere('anno_id',$id);
@@ -149,10 +178,17 @@ class AnnotationView extends Model
 
         if(isset($conditions['tag']) && $conditions['tag'] != '')
         {
-             $anno_ids = bodyview::gettags($conditions['tag']);
+             $bg_ids = BodyMember::backgettags($conditions['tag']);
+            
+             $anno_ids = [];
+             foreach ($bg_ids as $bg_id ) {                 
+                 array_push($anno_ids, bodygroup::getanno_id($bg_id->bg_id)->anno_id);
+
+             }
+            
              $tags = $annos->where('anno_id', '0');
-             foreach ($anno_ids as $id) {
-             $tags = $annos->orWhere('anno_id',$id);
+             foreach ($anno_ids as $anno) {
+             $tags = $annos->orWhere('anno_id',$anno);
             }  
             $tags = $annos ->lists('anno_id');
             $temp = array_intersect($temp, $tags);
@@ -165,18 +201,93 @@ class AnnotationView extends Model
             $result = $result->orWhere('anno_id',$id);
         }
 
-       
+        
         if($limit == -1)
-            $result = $result->orderBy($orderBy, $sort)->get();
+            $result = $result->skip($offset)->take($limit)->orderBy($orderBy, $sort)->get();
         else
             $result = $result->skip($offset)->take($limit)->orderBy($orderBy, $sort)->get();
-       
-        foreach ( $result as $anno ) {
-           $bodys = bodyview::getbody($anno->anno_id);
-           $likes =likeview::getlike($anno->anno_id);
-           $actions = action::getaction($anno->anno_id);
-           $targets = Target::getTarget($anno->anno_id);
+        
+        if(isset($conditions['sort']) && $conditions['sort'] != '') 
+            {$sort = $conditions['sort'];
+            $result = AnnotationView::annotation($result,$sort);
+            }
+        else
+            $result = AnnotationView::annotation($result);
+    
+        $ret =[];
+        foreach($result as $anno) {
+           $ret[] = self::format($anno);
+        }
+        return  $ret;
 
+    }
+    public static function apisearch($conditions,$count,$orderBy)
+    {
+        $annos = DB::table('annotation');
+       
+ 
+        $temp = $annos->lists('anno_id');
+          if( isset($conditions['id']) && $conditions['id'] != '')
+            {
+                $annos = $annos->where('anno_id', $conditions['id']);
+                  $temp = array_intersect($temp, $annos->lists('anno_id'));
+            }
+
+        if(isset($conditions['text']) && $conditions['text'] != '')
+        {
+            $anno_ids = BodyMember::gettext($conditions['text']);
+            $text = $annos->where('anno_id', '0');
+            foreach ($anno_ids as $id) {
+              $text = $annos->orWhere('anno_id',$id);
+            }  
+            $text = $text->lists('anno_id');
+            $temp = array_intersect($temp, $text);
+        }     
+
+        $result = DB::table('annotation');
+        $result = $result->where('anno_id','0');
+        foreach ($temp as $id) {
+            $result = $result->orWhere('anno_id',$id);
+        }
+        
+        $result = $result->take($count)->orderBy('anno_id','desc')->get();
+
+        $annos = AnnotationView::annotation($result);
+
+        $ret =[];
+
+        foreach ($annos as $anno) {
+                $ret[] = self::oacformat($anno);
+        }
+        return $ret ;
+    
+    }
+    private static function annotation($result, $bsort="time" )
+    {
+
+        foreach ( $result as $anno ) {
+           /*$bgs_id = bodygroup::getbodygroup($anno->anno_id);
+           $anno->bid = $bgs_id->bg_id;
+           $bodys = BodyMember::getbody($bgs_id->bg_id);
+           */
+           if($bsort =='likes')
+              $otherbodys_id = bodygroup::getohtergroup($anno->anno_id);
+           elseif($bsort =='time')
+              $otherbodys_id = bodygroup::getohtergroupbytime($anno->anno_id);
+           
+           $others = [];
+        
+           if($otherbodys_id != null)
+            {
+                foreach ( $otherbodys_id as $id) {
+                  
+                   $others[] = BodyMember::getothers($id);
+                }
+            }
+
+           $anno->otherbodys = $others ;
+           $targets = Target::getTarget($anno->anno_id);
+          
            $anno->id = $anno->anno_id;
            $anno->quote ="";
            $anno->ranges_start="";
@@ -188,27 +299,28 @@ class AnnotationView extends Model
            $anno->width ="";
            $anno->height = "";
            $anno->likes ="0";
-    
-           foreach($bodys as $body)
+           $anno->created_at =$anno->created_time;
+           $anno->tags = array();
+           //$anno->likes = Like::count($bgs_id->bg_id);
+          
+           /*foreach($bodys as $body)
             {
-                if($body->role == 'tagging')
+                $anno->bodytype = $body->type;
+                $anno->purpose = $body->purpose;
+                if($body->purpose == 'tagging')
                 {
-                    $anno->tags = $body->text;
+                    array_push($anno->tags,$body->text);
                 }
-                else if($body->role =='describing')
+                else if($body->purpose =='describing')
                 {
                     $anno->text = $body->text;
                 }
-            }
-            foreach ($likes as $like) {
-                $anno->likes = $like->likes ;
-            }
-            foreach ($actions as $action ) {
-                $anno->created_at = $action->created_at;
-            }
+            }*/
             foreach ($targets as $target ) {
+                $anno ->selector  = json_decode($target->selector);
+                $anno ->src = $target->source;
                 $selector = json_decode($target->selector);
-               
+                $anno->uri = $target->uri;
                 if($target->type =='image')
                 {
                     $anno->src = $target->source;
@@ -222,24 +334,17 @@ class AnnotationView extends Model
                 else if ($target->type =="text")
                 {
                     $anno->src = $target->source;
-                    $anno->quote = $selector->quote;
+                    $anno->quote = $selector[1]->exact;
                     $anno->type = $target->type;
-                    $anno->ranges_start = $selector->startSelector->value;
-                    $anno->ranges_end =   $selector->endSelector->value;
-                    $anno->ranges_startOffset = $selector->startSelector->refinedBy->start;
-                    $anno->ranges_endOffset  = $selector->endSelector->refinedBy->end;  
+                    $anno->ranges_start = $selector[0]->startSelector->value;
+                    $anno->ranges_end =   $selector[0]->endSelector->value;
+                    $anno->ranges_startOffset = $selector[0]->startSelector->refinedBy->start;
+                    $anno->ranges_endOffset  = $selector[0]->endSelector->refinedBy->end;  
                 } 
               
             }
         }
-
-  
-        $ret =[];
-        foreach($result as $anno) {
-           $ret[] = self::format($anno);
-        }
-        return  $ret;
-
+        return $result;
     }
     private static function format($row)
     {
@@ -247,7 +352,7 @@ class AnnotationView extends Model
         // Refact object
         return [
             'id' => $row->id,
-            'text' => $row->text,
+            'text' => '不使用',
             'quote' => $row->quote,
             'uri' => $row->uri,
             'domain' => $row->domain,
@@ -259,7 +364,7 @@ class AnnotationView extends Model
                     'endOffset' => $row->ranges_endOffset
                 ]
             ],
-            'tags' => explode(',',$row->tags),
+            'tags' => '不使用',
             'permissions' => [
                 "read" => $row->is_public ? [] :[(int)$row->creator_id],
                 "admin" => [(int)$row->creator_id],
@@ -280,8 +385,43 @@ class AnnotationView extends Model
                 'id' => $creator->id ,
                 'name' => $creator->name,
                 'gravatar' => Gravatar::src($creator->email)
-            ]
+            ],
+            'otherbodys' => $row->otherbodys
+            //'bid' =>  $row->bid
+
         ];
+    }
+    private static function oacformat($row)
+    {   
+        $creator = User::get($row->creator_id);
+        $temparray = array(
+            '@context' => 'http://www.w3.org/ns/anno.jsonld',
+             'id' => $row->uri.'/anno'.$row->id,
+             'type' => "annotation",
+             'created_at' => $row->created_at,
+             'creator' => array(
+                'id' => $row->uri.$creator->id,
+                'name'=> $creator->name,
+                ),
+             'body' => [array(
+                    'type' => $row->bodytype,
+                    'value'=> $row->text,
+                    'format'=> "text/html",
+                    'purpose' => $row->purpose,
+                ),
+                 array(
+                    'type' => $row->bodytype,
+                    'value'=> $row->tags,
+                    'format'=> "text/html",
+                    'purpose' => 'tagging',
+                )],
+             'target'=> array(
+                'type'=>'SpecificResource',
+                'source' => $row->src,
+                'selector'=> $row->selector,
+                )
+            );
+        return ($temparray);
     }
 }
 
