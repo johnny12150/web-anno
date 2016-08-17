@@ -18,6 +18,15 @@ Route::get('/', function() { return redirect('/manage');});
 Route::get('testing', function() {
     return view('testing');
 });
+Route::get('test2', function() {
+    return view('test2');
+});
+Route::get('test3', function() {
+    return view('demo');
+});
+Route::get('test4', function() {
+    return view('test3');
+});
 Route::get('testing/anno{id}','Apicontroller@getanno');
 
 
@@ -66,11 +75,13 @@ Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
 });
 /**/
 Route::group(['prefix' => '/manage', 'middleware' => 'auth'], function() {
+    Route::post('/', 'ManageController@manage');
     Route::get('/', 'ManageController@manage');
     Route::get('/collect', 'ManageController@collect');
-    Route::get('/page/{id}', 'ManageController@index');
+    Route::post('/collect', 'ManageController@collect');
+    Route::post('/index', 'ManageController@all');
     Route::get('/index', 'ManageController@all');
-    Route::get('/search' , 'ManageController@getall');
+    Route::get('/search' , 'ManageController@gettags');  //api for get user's tag and text
     Route::post('delete', 'ManageController@delete');
     Route::post('edit', 'ManageController@edit');
     Route::post('/follow','UserController@follow');
@@ -83,7 +94,8 @@ Route::get('apiget', 'Apicontroller@import');
 Route::get('gethint','AnnotationController@gethint');
 Route::get('gravatar/{email}', 'GravatarController@get');
 
-//Route::get('manage/{name}','ManageController@index');
+Route::get('manage/profile/{name}','ManageController@index');
+Route::post('manage/profile/{name}','ManageController@index');
 Route::controller('auth', 'AuthController');
 
 

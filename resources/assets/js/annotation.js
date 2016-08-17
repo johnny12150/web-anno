@@ -73,7 +73,7 @@ var annotation = function(e) {
         var old_anno_token = getCookie('anno_token'); 
         var old_user_id = getCookie('user_id');
 
-            /*假設從hash中抓不到anno_token跟user_ID則從cookie中取得*/
+        /*假設從hash中抓不到anno_token跟user_ID則從cookie中取得*/
         if( anno_token == '') {
             if (old_anno_token != "") {
                 anno_token = old_anno_token;
@@ -145,7 +145,8 @@ var annotation = function(e) {
                 limit: 0,
                 uri: location.href.split('#')[0],
                 domain : _annotation.host, 
-                anno_token : anno_token
+                anno_token : anno_token,
+                user :  user_id
 
             }
         })

@@ -32,15 +32,15 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="{{ url('testing') }}">數位人文工具</a>
+				<a class="navbar-brand" href="{{ url('/manage') }}">數位人文工具</a>
 			</div>
 
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
                     @if (Auth::check())
-					<li ><a href="{{ url('/manage/index') }}">首頁</a></li>
-					<li ><a href="{{ url('/manage') }}">個人頁面管理</a></li>
-					<li ><a href="{{ url('/manage/collect') }}">收藏</a></li>
+					<li id="index"><a href="{{ url('/manage/index') }}">首頁</a></li>
+					<li id="manage"><a href="{{ url('/manage') }}">個人頁面管理</a></li>
+					<li id="collect"><a href="{{ url('/manage/collect') }}">收藏</a></li>
                     @endif
 				</ul>
 				<ul class="nav navbar-nav navbar-right">

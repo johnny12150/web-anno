@@ -8,6 +8,7 @@ use App\Like;
 use App\bodygroup;
 use App\action;
 use App\Target;
+use App\collect;
 /**
  * Class AnnotationView
  * @package App
@@ -25,40 +26,55 @@ class AnnotationView extends Model
     public static function search($conditions , $orderBy = 'created_time', $sort='desc')
     {
     
-        $annos = DB::table('annotation');
-        /**/
-       
+        $temp =[];
          if(isset($conditions['uri']) && $conditions['uri'] != '')
         {
-             $annos = $annos->where('anno_id', '0');
+             //$annos = $annos->where('anno_id', '0');
             $anno_ids = Target::getannobyuri($conditions['uri']);
-            foreach ($anno_ids as $anno_id) {
+            /*foreach ($anno_ids as $anno_id) {
              $annos = $annos->orWhere('anno_id',$anno_id);
-             }
+             }*/
+            $temp = $anno_ids;
         }
-
         if(isset($conditions['text']) && $conditions['text'] != '')
         {
-
             $bg_ids = BodyMember::search($conditions['text']);
             $anno_ids=[];
-      
             foreach ($bg_ids as $bg_id) {
-                $annos = $annos->orWhere('anno_id',bodygroup::getanno_id($bg_id->bg_id)->anno_id);
-          
+                array_push($anno_ids, bodygroup::getanno_id($bg_id->bg_id)->anno_id);
             } 
+            $temp = array_intersect($temp, $anno_ids); 
         }        
+   
 
+        $annos = DB::table('annotation');
+     
+       
         /*新增用的搜尋  return新增的資料 */
         if(isset($conditions['id']) && $conditions['id'] != '')
         {
             $annos = $annos->where('anno_id', $conditions['id']);
+            $annos = $annos->get();
+            $annos = AnnotationView::annotation($annos);
+                $ret =[];
+                foreach($annos as $anno) {
+                   $ret[] = self::format($anno);
+                }
+                return  $ret;
         }
-        $annos = $annos->where('state','exist');
         
-        $annos = $annos->orderBy('created_time',$sort)->get();
-   
-       
+        if(isset($conditions['public']) && $conditions['public'] != '')
+        {
+            $a = $conditions['public']['creator_id'];
+            $annos = $annos->where(function($query) use ($a){
+                $query->where('is_public',1)->orWhere('creator_id',$a);
+            });
+        }
+        if(empty($temp) ==false)
+            $annos = $annos->whereIn('anno_id',$temp)->orderBy('created_time',$sort)->get();
+        else 
+            return ;
+
         $annos = AnnotationView::annotation($annos);
         $ret =[];
         foreach($annos as $anno) {
@@ -101,7 +117,7 @@ class AnnotationView extends Model
         {
 
              $bg_ids = BodyMember::backgettags($conditions['tag']);
-            
+     
              $anno_ids = [];
              foreach ($bg_ids as $bg_id ) {
                  
@@ -132,6 +148,69 @@ class AnnotationView extends Model
 
 
     }
+    public static function beckendbriefsearch($conditions,$limit, $offset, $orderBy = 'created_time', $sort='desc'){
+        if(isset($conditions['search_all']) && $conditions['search_all'])
+        {
+            $result1 = Target::search_with_likes($conditions['search_all']); //return anno_id array
+         
+            $bg_ids = BodyMember::search_with_like($conditions['search_all']);
+            $result2 = bodygroup::getannobyid($bg_ids);
+            $array = array_merge($result1,$result2);
+
+            $annos = DB::table('annotation')->whereIn('anno_id',$array);
+        }
+       if( isset($conditions['creator_id']) && $conditions['creator_id'] != '')
+            $annos = $annos->where('creator_id', $conditions['creator_id']);
+       if( isset($conditions['public']) && is_array($conditions['public']))
+        {
+            if( isset($conditions['public']['is_public']) && $conditions['public']['is_public'] !== '')
+            {
+                $annos = $annos->where('is_public',$conditions['public']['is_public']);
+
+            }  
+        }
+        $count = $annos->count();
+        $result = $annos->skip($offset)->take($limit)->orderBy($orderBy,$sort)->get();
+        $result = AnnotationView::annotation($result);
+        $ret =[];
+        foreach( $result as $anno) {
+           $ret[] = self::format($anno);
+        }
+        return  ['annos' =>$ret, 'count' => $count];
+    }
+    
+    public static function beckendbriefsearch_collect($conditions,$limit, $offset, $orderBy = 'created_time', $sort='desc'){
+        if(isset($conditions['search_all']) && $conditions['search_all'])
+        {
+            $result1 = Target::search_with_likes($conditions['search_all']); //return anno_id array
+         
+            $bg_ids = BodyMember::search_with_like($conditions['search_all']);
+            $result2 = bodygroup::getannobyid($bg_ids);
+            $array = array_merge($result1,$result2);
+
+            $annos = DB::table('annotation')->whereIn('anno_id',$array);
+        }
+       if( isset($conditions['creator_id']) && $conditions['creator_id'] != '')
+        {
+            $collect = collect::get($conditions['creator_id']);
+            $annos = $annos->whereIn('anno_id',$collect);
+        }
+       if( isset($conditions['public']) && is_array($conditions['public']))
+        {
+            if( isset($conditions['public']['is_public']) && $conditions['public']['is_public'] !== '')
+            {
+                $annos = $annos->where('is_public',$conditions['public']['is_public']);
+            }  
+        }
+        $count = $annos->count();
+        $result = $annos->skip($offset)->take($limit)->orderBy($orderBy,$sort)->get();
+        $result = AnnotationView::annotation($result);
+        $ret =[];
+        foreach( $result as $anno) {
+           $ret[] = self::format($anno);
+        }
+        return  ['annos' =>$ret, 'count' => $count];
+    }
     public static function backendsearch($conditions , $limit, $offset, $orderBy = 'created_time', $sort='desc')
     {
         $annos = DB::table('annotation');
@@ -141,65 +220,53 @@ class AnnotationView extends Model
             $annos = $annos->where('domain', $conditions['domain']);
         if( isset($conditions['creator_id']) && $conditions['creator_id'] != '')
             $annos = $annos->where('creator_id', $conditions['creator_id']);
-      
-        if(isset($conditions['uri']) && $conditions['uri'] != '')
-        {
-
-             $anno_ids = Target::getannobyuri($conditions['uri']);
-             $annos = $annos ->where('anno_id',0);
-            foreach ($anno_ids as $anno_id) {
-             $annos = $annos->orWhere('anno_id',$anno_id);
-             }
-        }
-        $temp = $annos->lists('anno_id');
-
         if( isset($conditions['public']) && is_array($conditions['public']))
         {
             if( isset($conditions['public']['is_public']) && $conditions['public']['is_public'] !== '')
             {
-                $public = $annos->where('is_public',$conditions['public']['is_public'])->lists('anno_id');
-                $temp = array_intersect($temp, $public);
+                $annos = $annos->where('is_public',$conditions['public']['is_public']);
+                //$temp = array_intersect($temp, $public);
             }  
-         
+        }
+
+        $temp = $annos->lists('anno_id');
+        if(isset($conditions['uri']) && $conditions['uri'] != '')
+        {
+
+             $anno_ids = Target::getannobyuri($conditions['uri']);
+             $uri =[];
+             foreach ($anno_ids as $anno_id) {
+                array_push($uri, $anno_id);
+             }
+             $temp = array_intersect($temp, $uri);
         }
        
 
         if(isset($conditions['text']) && $conditions['text'] != '')
         {
-            $anno_ids = BodyMember::gettext($conditions['text']);
+            $bg_ids = BodyMember::backsearchtext($conditions['text']);
+            $anno_ids = [];
 
-            $text = $annos->where('anno_id', '0');
-            foreach ($anno_ids as $id) {
-              $text = $annos->orWhere('anno_id',$id);
-            }  
-            $text = $text->lists('anno_id');
-            $temp = array_intersect($temp, $text);
+             foreach ($bg_ids as $bg_id ) {                 
+                 array_push($anno_ids, bodygroup::getanno_id($bg_id->bg_id)->anno_id);
+             }
+            $temp = array_intersect($temp, $anno_ids);
         }        
 
         if(isset($conditions['tag']) && $conditions['tag'] != '')
         {
              $bg_ids = BodyMember::backgettags($conditions['tag']);
-            
+             
              $anno_ids = [];
              foreach ($bg_ids as $bg_id ) {                 
                  array_push($anno_ids, bodygroup::getanno_id($bg_id->bg_id)->anno_id);
 
              }
-            
-             $tags = $annos->where('anno_id', '0');
-             foreach ($anno_ids as $anno) {
-             $tags = $annos->orWhere('anno_id',$anno);
-            }  
-            $tags = $annos ->lists('anno_id');
-            $temp = array_intersect($temp, $tags);
+            $temp = array_intersect($temp, $anno_ids);
         }  
 
         $result = DB::table('annotation');
-        $result = $result->where('anno_id','0');
-        foreach ($temp as $id) {
-            
-            $result = $result->orWhere('anno_id',$id);
-        }
+        $result = $result->whereIn('anno_id',$temp);
 
         
         if($limit == -1)
@@ -209,16 +276,95 @@ class AnnotationView extends Model
         
         if(isset($conditions['sort']) && $conditions['sort'] != '') 
             {$sort = $conditions['sort'];
-            $result = AnnotationView::annotation($result,$sort);
-            }
+                $result = AnnotationView::annotation($result,$sort);
+        }
         else
-            $result = AnnotationView::annotation($result);
+        $result = AnnotationView::annotation($result);
     
         $ret =[];
         foreach($result as $anno) {
            $ret[] = self::format($anno);
         }
-        return  $ret;
+        return  ['annos' =>$ret, 'count' => count($temp)];
+
+    }
+    public static function backendsearch_collect($conditions , $limit, $offset, $orderBy = 'created_time', $sort='desc')
+    {
+        $annos = DB::table('annotation');
+       
+
+        if( isset($conditions['domain']) && $conditions['domain'] != '')
+            $annos = $annos->where('domain', $conditions['domain']);
+        if( isset($conditions['creator_id']) && $conditions['creator_id'] != '')
+              $anno_id = collect::get($conditions['creator_id']);
+        
+            $annos = $annos->whereIn('anno_id',$anno_id);
+        if( isset($conditions['public']) && is_array($conditions['public']))
+        {
+            if( isset($conditions['public']['is_public']) && $conditions['public']['is_public'] !== '')
+            {
+                $annos = $annos->where('is_public',$conditions['public']['is_public']);
+                //$temp = array_intersect($temp, $public);
+            }  
+        }
+
+        $temp = $annos->lists('anno_id');
+        if(isset($conditions['uri']) && $conditions['uri'] != '')
+        {
+
+             $anno_ids = Target::getannobyuri($conditions['uri']);
+             $uri =[];
+             foreach ($anno_ids as $anno_id) {
+                array_push($uri, $anno_id);
+             }
+             $temp = array_intersect($temp, $uri);
+        }
+       
+
+        if(isset($conditions['text']) && $conditions['text'] != '')
+        {
+            $bg_ids = BodyMember::backsearchtext($conditions['text']);
+            $anno_ids = [];
+
+             foreach ($bg_ids as $bg_id ) {                 
+                 array_push($anno_ids, bodygroup::getanno_id($bg_id->bg_id)->anno_id);
+             }
+            $temp = array_intersect($temp, $anno_ids);
+        }        
+
+        if(isset($conditions['tag']) && $conditions['tag'] != '')
+        {
+             $bg_ids = BodyMember::backgettags($conditions['tag']);
+             
+             $anno_ids = [];
+             foreach ($bg_ids as $bg_id ) {                 
+                 array_push($anno_ids, bodygroup::getanno_id($bg_id->bg_id)->anno_id);
+
+             }
+            $temp = array_intersect($temp, $anno_ids);
+        }  
+
+        $result = DB::table('annotation');
+        $result = $result->whereIn('anno_id',$temp);
+
+        
+        if($limit == -1)
+            $result = $result->skip($offset)->take($limit)->orderBy($orderBy, $sort)->get();
+        else
+            $result = $result->skip($offset)->take($limit)->orderBy($orderBy, $sort)->get();
+        
+        if(isset($conditions['sort']) && $conditions['sort'] != '') 
+            {$sort = $conditions['sort'];
+                $result = AnnotationView::annotation($result,$sort);
+        }
+        else
+        $result = AnnotationView::annotation($result);
+    
+        $ret =[];
+        foreach($result as $anno) {
+           $ret[] = self::format($anno);
+        }
+        return  ['annos' =>$ret, 'count' => count($temp)];
 
     }
     public static function apisearch($conditions,$count,$orderBy)
@@ -262,18 +408,15 @@ class AnnotationView extends Model
         return $ret ;
     
     }
-    private static function annotation($result, $bsort="time" )
+    private static function annotation($result, $bsort ="time",$priority = "false")
     {
 
         foreach ( $result as $anno ) {
-           /*$bgs_id = bodygroup::getbodygroup($anno->anno_id);
-           $anno->bid = $bgs_id->bg_id;
-           $bodys = BodyMember::getbody($bgs_id->bg_id);
-           */
+ 
            if($bsort =='likes')
-              $otherbodys_id = bodygroup::getohtergroup($anno->anno_id);
+              $otherbodys_id = bodygroup::getohtergroup($anno->anno_id,$priority);
            elseif($bsort =='time')
-              $otherbodys_id = bodygroup::getohtergroupbytime($anno->anno_id);
+              $otherbodys_id = bodygroup::getohtergroupbytime($anno->anno_id,$priority);
            
            $others = [];
         
@@ -298,6 +441,7 @@ class AnnotationView extends Model
            $anno->y ="";
            $anno->width ="";
            $anno->height = "";
+           $anno->Xpath = "";
            $anno->likes ="0";
            $anno->created_at =$anno->created_time;
            $anno->tags = array();
@@ -330,6 +474,7 @@ class AnnotationView extends Model
                     $anno->width =$img [2];
                     $anno->height =$img [3];
                     $anno->type = $target->type;
+                    $anno->Xpath = $selector->Xpath;
                 }
                 else if ($target->type =="text")
                 {
@@ -386,8 +531,8 @@ class AnnotationView extends Model
                 'name' => $creator->name,
                 'gravatar' => Gravatar::src($creator->email)
             ],
-            'otherbodys' => $row->otherbodys
-            //'bid' =>  $row->bid
+            'otherbodys' => $row->otherbodys,
+            'Xpath' => $row->Xpath
 
         ];
     }

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use OAuth\Common\Exception\Exception;
 use Thomaswelton\LaravelGravatar\Facades\Gravatar;
-
+use Illuminate\Support\Facades\Auth;
 
 class AnnotationController extends Controller
 {
@@ -60,6 +60,7 @@ class AnnotationController extends Controller
         $y = ($isImage && isset(Request::input('position')['y'])) ?  Request::input('position')['y'] : 0;
         $width = ($isImage && isset(Request::input('position')['width'])) ?  Request::input('position')['width'] : 0;
         $height = ($isImage && isset(Request::input('position')['height'])) ?  Request::input('position')['height'] : 0;
+        $Xpath = Request::input('Xpath');
         $permissions = Request::input('permissions');
         $is_public = count($permissions['read']) == 0;
 
@@ -83,6 +84,7 @@ class AnnotationController extends Controller
                 'width'=>$width,
                 'height'=>$height
             ] : null,
+            'Xpath' => $Xpath, // image Xpath
             'ranges_startOffset' => $ranges_startOffset,
             'ranges_endOffset' => $ranges_endOffset,
             'is_public' => $is_public,
@@ -267,12 +269,10 @@ class AnnotationController extends Controller
         $uri = Request::input('uri');
         // 搜尋的 user id
         $user_id = intval(Request::input('user'));
-
         // 搜尋的標記內容
         $searchText = Request::input('search');
-
+        
         $offset = intval(Request::input('offset'));
-
         $annotations = AnnotationView::search([
             'uri' => $uri,
             'quote' => $searchText,
@@ -325,6 +325,7 @@ class AnnotationController extends Controller
     public function logout() {
         $domain = Request::input('domain');
         $token = Request::input('anno_token');
+        Auth::logout();
         AuthTable::remove($domain, $token);
         return [
             'response' => true

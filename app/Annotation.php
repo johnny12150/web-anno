@@ -6,8 +6,7 @@ use Illuminate\Support\Facades\Validator;
 use App\BodyMember;
 use App\Target;
 use App\bodygroup;
-//use App\action;
-//use App\history;
+use Carbon\Carbon;
 use Thomaswelton\LaravelGravatar\Facades\Gravatar;
 
 /**
@@ -67,12 +66,14 @@ class Annotation extends Model {
             return True;
     }
 
+
     /**
      * Add Annotation
      *
      * @param $data
      * @return array|bool
      */
+ 
     public static function add($data)
     {
 
@@ -86,6 +87,7 @@ class Annotation extends Model {
             $new_anno->domain = $data['domain'];
             $new_anno->is_public  = $data['is_public'];
             $new_anno->state = "exist";
+            $new_anno->edited_time = Carbon::now();
             $new_anno->save();
 
             //2.target
@@ -153,6 +155,9 @@ class Annotation extends Model {
         {
             return false;
         }
+    }
+    public static function getAnnos($uid){
+        return self::where('creator_id',$uid)->lists('anno_id');
     }
     public static function editText($uid, $id, $text,$tags)
     {
@@ -301,14 +306,15 @@ class Annotation extends Model {
         }
         else if ($data['type']=="image")
         {
-            $x = sprintf("%d",$data['position']['x']);
-            $y = sprintf("%d",$data['position']['y']);
-            $w = sprintf("%d",$data['position']['width']);
-            $h = sprintf("%d",$data['position']['height']);
+            $x = sprintf("%f",$data['position']['x']);
+            $y = sprintf("%f",$data['position']['y']);
+            $w = sprintf("%f",$data['position']['width']);
+            $h = sprintf("%f",$data['position']['height']);
             $tempArray = array(
                 'type' =>"FragmentSelector",
                 'conformsTo' =>"http://www.w3.org/TR/media-frags/",
-                'value'=>  $x.','.$y.','.$w.','.$h
+                'value'=>  $x.','.$y.','.$w.','.$h,
+                'Xpath' => $data['Xpath']
             
             );
         }

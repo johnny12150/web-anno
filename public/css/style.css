@@ -5757,10 +5757,62 @@ button.close {
   nav.navbar.navbar-custom .navbar-nav > li.active {
     border-color: #00ccff; } }
 
+.anno-user {
+  font-family: Arial, "Microsoft YaHei", "黑體", "文泉驛正黑", "WenQuanYi Zen Hei", "儷黑 Pro", "LiHei Pro", "微軟正黑體", "Microsoft JhengHei", "標楷體", DFKai-SB, sans-serif;
+  padding: 20px;
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  border: 1px solid #cccccc;
+  margin-bottom: 15px; }
+  .anno-user .anno-user-name {
+    padding-top: 7px;
+    padding-bottom: 10px; }
+  .anno-user .anno-user-email {
+    padding-top: 7px;
+    padding-bottom: 10px; }
+
+.anno-collect {
+  font-family: Arial, "Microsoft YaHei", "黑體", "文泉驛正黑", "WenQuanYi Zen Hei", "儷黑 Pro", "LiHei Pro", "微軟正黑體", "Microsoft JhengHei", "標楷體", DFKai-SB, sans-serif;
+  padding: 5px;
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  border: 1px solid #cccccc;
+  margin-bottom: 15px; }
+
+.anno-body {
+  font-family: Arial, "Microsoft YaHei", "黑體", "文泉驛正黑", "WenQuanYi Zen Hei", "儷黑 Pro", "LiHei Pro", "微軟正黑體", "Microsoft JhengHei", "標楷體", DFKai-SB, sans-serif;
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  border-top: 1px solid #cccccc; }
+  .anno-body .body-time {
+    color: #999999;
+    padding-bottom: 3px; }
+  .anno-body .body-content {
+    font-size: 15px;
+    line-height: 19pt; }
+  .anno-body .body-user {
+    color: #0055aa;
+    margin-right: 5px;
+    font-size: 15px;
+    font-weight: bold; }
+
+.anno-content .body-time {
+  color: #999999;
+  padding-bottom: 3px; }
+
+.anno-content .body-content {
+  font-size: 15px;
+  line-height: 19pt; }
+
+.anno-content .body-user {
+  color: #0055aa;
+  margin-right: 5px;
+  font-size: 15px;
+  font-weight: bold; }
+
 .anno-list-item {
   font-family: Arial, "Microsoft YaHei", "黑體", "文泉驛正黑", "WenQuanYi Zen Hei", "儷黑 Pro", "LiHei Pro", "微軟正黑體", "Microsoft JhengHei", "標楷體", DFKai-SB, sans-serif;
-  width: 900px;
-  padding: 20px;
+  padding: 5px;
   background-color: #FFFFFF;
   border-radius: 5px;
   border: 1px solid #cccccc;
@@ -5779,7 +5831,7 @@ button.close {
       margin-top: 5px;
       word-wrap: break-word; }
   .anno-list-item .anno-item-bottom {
-    padding-top: 15px; }
+    padding-top: 5px; }
     .anno-list-item .anno-item-bottom .anno-text {
       margin-top: 5px;
       border-left: 4px solid yellow; }
@@ -5799,14 +5851,11 @@ button.close {
     .anno-list-item .anno-item-bottom .anno-text, .anno-list-item .anno-item-bottom .anno-quote {
       font-family: Arial, "Microsoft YaHei", "微軟雅黑", "文泉驛正黑", "WenQuanYi Zen Hei", "儷黑 Pro", "LiHei Pro", "微軟正黑體", "Microsoft JhengHei", "標楷體", DFKai-SB, sans-serif;
       font-size: 14px;
-      padding-top: 7px;
-      padding-left: 15px;
-      padding-bottom: 15px;
-      margin-bottom: 15px;
+      padding-left: 10px;
       word-wrap: break-word; }
     .anno-list-item .anno-item-bottom .anno-tags {
-      padding-top: 7px;
-      padding-bottom: 10px; }
+      padding-top: 5px;
+      padding-bottom: 5px; }
     .anno-list-item .anno-item-bottom .anno-likes {
       padding-top: 7px;
       padding-bottom: 10px; }
@@ -5843,7 +5892,6 @@ button.close {
 
 #anno-filter {
   position: relative;
-  width: 900px;
   background-color: #FFFFFF;
   border-radius: 5px;
   border: 1px solid #cccccc;

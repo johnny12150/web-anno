@@ -868,6 +868,7 @@
       this.onHighlightMouseover = __bind(this.onHighlightMouseover, this);
       this.checkForEndSelection = __bind(this.checkForEndSelection, this);
       this.checkForStartSelection = __bind(this.checkForStartSelection, this);
+      this.prevent = __bind(this.prevent,this);
       this.clearViewerHideTimer = __bind(this.clearViewerHideTimer, this);
       this.startViewerHideTimer = __bind(this.startViewerHideTimer, this);
       this.showViewer = __bind(this.showViewer, this);
@@ -937,7 +938,8 @@
     Annotator.prototype._setupDocumentEvents = function() {
       $(document).bind({
         "mouseup": this.checkForEndSelection,
-        "mousedown": this.checkForStartSelection
+        "mousedown": this.checkForStartSelection,
+        'dblclick' : this.prevent
       });
       return this;
     };
@@ -1182,7 +1184,7 @@
     };
 
     Annotator.prototype.showEditor = function(annotation, location) {
-      this.editor.element.css(location);
+      //this.editor.element.css(location);
       this.editor.load(annotation);
       this.publish('annotationEditorShown', [this.editor, annotation]);
       return this;
@@ -1194,7 +1196,7 @@
     };
 
     Annotator.prototype.onEditorSubmit = function(annotation) {
-      console.log(annotation);
+   
       return this.publish('annotationEditorSubmit', [this.editor, annotation]);
     };
 
@@ -1223,7 +1225,19 @@
       }
       return this.mouseIsDown = true;
     };
-
+    Annotator.prototype.prevent =function(event){
+        function clearSelection() {
+            if(document.selection && document.selection.empty) {
+                document.selection.empty();
+            } else if(window.getSelection) {
+                var sel = window.getSelection();
+                sel.removeAllRanges();
+            }
+        }
+        clearSelection();
+        this.adder.css('top', 100000)
+                  .css('left',100000);
+    };
     Annotator.prototype.checkForEndSelection = function(event) {
       var container, range, _k, _len2, _ref1;
       this.mouseIsDown = false;
@@ -1243,8 +1257,10 @@
         }
       }
       if (event && this.selectedRanges.length) {
+
         return this.adder.css(Util.mousePosition(event, this.wrapper[0])).show();
       } else {
+         
         return this.adder.hide();
       }
     };
@@ -1260,6 +1276,7 @@
         return false;
       }
       annotations = $(event.target).parents('.annotator-hl').addBack().map(function() {
+  
         return $(this).data("annotation");
       });
       
@@ -2250,7 +2267,7 @@
     Store.prototype.annotationCreated = function(annotation) {
       if (__indexOf.call(this.annotations, annotation) < 0) {
         this.registerAnnotation(annotation);
-        console.log(annotation.text);
+  
         return this._apiRequest('create', annotation, (function(_this) {
           return function(data) {
             if (data.id == null) {

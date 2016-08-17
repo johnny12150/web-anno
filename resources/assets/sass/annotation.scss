@@ -1,3 +1,4 @@
+
 @import './vendor/bower_components/bootstrap-sass/assets/stylesheets/bootstrap';
 .authDialog {
 
@@ -72,18 +73,21 @@
 .anno-panel {
   font-family: Arial, "Microsoft YaHei", "黑體", "文泉驛正黑", "WenQuanYi Zen Hei", "儷黑 Pro", "LiHei Pro", "微軟正黑體", "Microsoft JhengHei", "標楷體", DFKai-SB, sans-serif;
   position: fixed;
+  text-align: left;
+  color :black;
   right: 0px;
   top: 0px;
   width: 300px ;
   height: 100%;
   float :right; 
-  z-index: 0;
+  z-index:1500;
   background-color: #FFFFFF;
   overflow-y:auto;
   overflow-x:hidden;
   /*-webkit-box-shadow: -2px 0px 6px 0px rgba(50, 50, 50, 0.78);
   -moz-box-shadow:    -2px 0px 6px 0px rgba(50, 50, 50, 0.78);
   box-shadow:         -2px 0px 6px 0px rgba(50, 50, 50, 0.78);*/
+
   .anno-test{
     background-color:#FFFFFF;
     .anno-body{
@@ -173,17 +177,33 @@
       max-height: 160px;
       overflow-y: scroll;
     }
+    a{
+      color: black;
+    }
   }
-
+  .anno-con{
+    a{
+      color: black;
+    }
+  }
+  .anno-keywords{
+    a{
+      color: black;
+    }
+  }
   .anno-tags {
     margin-top: 10px;
     ul {
       max-height: 140px;
       overflow-y: scroll;
     }
+  
   }
   .anno-search{
     padding: 10px 15px;
+    a{
+      color: black;
+    }
   }
   .anno-search-list {
     margin-top: 10px;
@@ -207,6 +227,7 @@
   }
   .anno-infos-item{
     padding: 15px;
+   
   }
   .anno-viewall {
     text-align: center;
@@ -240,6 +261,7 @@
     }
   }
 }
+
 .btn-appear {
     background-color: #F8F8F8;
     top: 0px;
@@ -249,18 +271,30 @@
     height: 36px;
     padding :5px;
     text-align:center;
+    z-index: 1500;
   }
 .btn-appear-count{
     background-color: #F8F8F8;
-    top: 40px;
+    top: 80px;
     position:fixed;
-    right: 305px;
+    right: 5px;
     width: 35px;
     height: 36px;
     padding :5px;
     text-align:center;
+      z-index: 1300;
   }
-
+.btn-show{
+    background-color: #F8F8F8;
+    top: 40px;
+    position:fixed;
+    right: 5px;
+    width: 35px;
+    height: 36px;
+    padding :5px;
+    text-align:center;
+    z-index: 1300;
+  }
 #form-search {
   input {
     height: 32px;
@@ -324,6 +358,7 @@
     &:hover, &:active, &:focus {
       text-decoration: none;
     }
+    color: black;
     text-decoration: none;
     margin-left: 2px;
     margin-right: 5px;
@@ -398,6 +433,11 @@ $alpha : ",0.3)";
   .anno-body-tag{
     color: #A6A6A6;
 
+  }
+  .annotator-controls{
+    a{
+      color: black;
+    } 
   }
 }
 .annotator-hl-focus{

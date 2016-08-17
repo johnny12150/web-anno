@@ -77,21 +77,59 @@ class BodyMember extends Model{
 	{
 		DB::table('body_member')->where('bg_id',$id)->delete();
 	}
-
+	//user for manageController get api
 	public static function getTags($user_id)
 	{
 		
 		$tags = DB::table('body_member')->where('purpose','tagging')->where('creator',$user_id)->lists('text');
 		return array_unique($tags);
 	}
+	//user for manageController get api
+	public static function getTexts($user_id)
+	{
+		
+		$texts = DB::table('body_member')->where('purpose','describing')->where('creator',$user_id)->lists('text');
+		return array_unique($texts);
+	}
+	//use for manageController  backend search
 	public static function backgettags($tags){
 
+		$body = DB::table('body_member')->where('text','0');
+		if( isset($tags) && $tags != '')
+        {
+            $condata = explode(",", $tags);
+            $count = count($condata);
+         
+            for($x = 0 ; $x < $count -1 ; $x ++)
+            {
+                $body = $body->orWhere('text', 'like' , '%'.$condata[$x]. '%')->where('purpose','tagging');                   	          
+            }
+            return $body->get();
+        }
+		//$tag = DB::table('body_member')->where('purpose','tagging')->where('text', 'like' , '%'.$tags. '%')->get();
+		//return $tag;
 		
+	}
+	public static function backsearchtext($texts){
+		$texts = DB::table('body_member')->where('purpose','describing')->where('text', 'like' , '%'.$texts. '%')->get();
+		return $texts;
+	}
+	public static function search_with_like($data){
+		$body = DB::table('body_member')->select('bg_id');
 
-		$tag = DB::table('body_member')->where('purpose','tagging')->where('text', 'like' , '%'.$tags. '%')->get();
-		return $tag;
-			
-		
+        if( isset($data) && $data != '')
+        {
+            $condata = explode(" ", $data);
+            $count = count($condata);
+            for($x = 0 ; $x < $count ; $x ++)
+            {
+            	if($x == 0)
+                $body = $body->Where('text', 'like' , '%'.$condata[$x]. '%');	
+                else
+                $body = $body->orWhere('text', 'like' , '%'.$condata[$x]. '%');							         
+            }
+        }
+        return $body->lists('bg_id');
 	}
 	public static function search($data){
         

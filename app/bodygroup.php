@@ -43,6 +43,11 @@ class bodygroup extends Model{
 		 }
 		 return $ids;
 	}
+	public static function getannobyid($bg_ids){
+		$array = DB::table('body_group')->whereIn('bg_id',$bg_ids)->lists('anno_id');
+		if(empty($array)==true) $array =[];
+		return$array;
+	}
 	public static function getohtergroupbytime($anno_id)
 	{
 		$bodygroup =DB::table('body_group')->leftJoin('body_member','body_group.bg_id','=','body_member.bg_id')
