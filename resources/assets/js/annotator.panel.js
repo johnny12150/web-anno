@@ -909,6 +909,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                             id: id,
                             text: content,
                             tags: tags,
+                            public : $('input[name=anno-body-public]')[0].checked ,
                             uri: location.href.split('#')[0],
                             anno_token: _this.anno_token,
                             domain: _this.domain

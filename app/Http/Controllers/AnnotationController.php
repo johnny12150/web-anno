@@ -205,12 +205,15 @@ class AnnotationController extends Controller
         $tags = explode(" ",Request::input('tags'));
         $uri = Request::input('uri');
         Bodymember::deleteBody($id);
-
+        $public = Request::input('public');
+        if($public =='true') $public = 1;
+        else $public = 0;
         foreach ($tags as $tag) {
             Bodymember::add([
             'creator_id' => $user_id,
             'text' => $tag,
             'purpose' => "tagging",
+             'public' => $public,
             'bg_id' => $id,
             'type' =>'TextualBody'
         ]);
@@ -219,6 +222,7 @@ class AnnotationController extends Controller
             'creator_id' => $user_id,
             'text' => $text,
             'purpose' => "describing",
+            'public' => $public,
             'bg_id' => $id,
             'type' =>'TextualBody'
         ]);
