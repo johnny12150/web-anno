@@ -63,7 +63,10 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
     this.initkeyword = function() {
         _this.show_annotations();
     }
-
+    $(window).resize(function(e){
+        $('.annotator-hl').removeClass('annotator-hl');
+        _this.loadAnnotations(_this.data);
+    })
 
     this.show_annotations = function() {
         $('.annotator-hl').removeClass('annotator-hl');
@@ -825,12 +828,14 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             .append('<div id="editorDiv" style="position:fixed;right:0px;bottom:0px;z-index:1800;width:300px;display:none">' +
                 '<input type="hidden" id="editor_anno_id">' +
                 '<textarea name="editor" id="editor" cols="30" rows="10"></textarea>' +
-                '<input id="tags" placeholder="請輸入標籤…" style="width:400px;">' +
-                '<div class="buttons ">' +
-                '<div style="background-color:#F0F0F0;">' +
-                '<button class="btn btn-primary anno-reply-save" ">確定</button>' +
-                '<button class="btn btn-default anno-reply-cancel" >取消</button>' +
-                '</div>' +
+                
+                '<div style="padding: 8px 6px;"><input id="tags" placeholder="請輸入標籤…" style="width:100%;border:0px;outline:none;font-size: 12px;"></div>' +
+                '<div class =annotator-item-checkbox>' +
+                '<input id="annotator-field-3" name="anno-body-public" placeholder="公開這個標記" type="checkbox" checked="checked"><label class="editor-label" for="annotator-field-3">公開這個標記</label></li>'+
+                '</div>'+
+                '<div class="add_body_control">' +
+                '<button class="anno-reply-cancel" >取消</button>' +
+                '<button class="anno-reply-save" ">儲存</button>' +
                 '</div>' +
                 '</div>')
 
@@ -854,7 +859,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 
                     var content = tinyMCE.activeEditor.getContent();
                     var tags = $('#tags').val();
-
+                    console.log($('input[name=anno-body-public]')[0].checked);
                     $.ajax({
                         crossDomain: true,
                         url: _this.postreplyurl,
@@ -863,6 +868,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                             id: aid,
                             text: content,
                             tags: tags,
+                            public : $('input[name=anno-body-public]')[0].checked ,
                             uri: location.href.split('#')[0],
                             anno_token: _this.anno_token,
                             domain: _this.domain

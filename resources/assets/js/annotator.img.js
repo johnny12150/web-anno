@@ -117,6 +117,16 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
             $(img[i].parentElement.children[2]).click(function(e) {
                 /*show annotations on panel*/
                 $('.annotator-hl-focus').removeClass('annotator-hl-focus');
+                $('.anno-panel').stop().animate({
+                    'right': '0px'
+                }, 1000, 'linear');
+                $(".btn-appear").stop().animate({
+                    'right': '300px'
+                }, 1000, 'linear');
+
+                $(".btn-appear").html('<i class="fa fa-chevron-right " aria-hidden="true"></i>');
+         
+                   
                 if(scope.show.length != 0 )
                     showAnnoOnpanel(scope.show,e.target);
                 else 
@@ -132,7 +142,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                 if(scope.endx -scope.x <10)
                     scope.initimgsetting();
             });
-
+            
             $(img[i].parentElement.children[2]).mousemove(function(e) {
                 /*顯示adder位置，這裡有BUG(因為照理說adder顯示應該在mouseup上面，可是使用mouseup時，adder不知為啥會消失，所以暫時寫在mousemove事件*/
                
@@ -369,7 +379,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         var annotatorhl;
         var img;
         var img1 = $(document).find('img');
-        for (var i = 0 in img1) {
+        for (var i = 0 ; i< img1.length ;i++) {
             if (img1[i].src == annotation.src && annotation.type == "image")
                 img = img1[i];
         }
