@@ -116,6 +116,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
             });
             $(img[i].parentElement.children[2]).click(function(e) {
                 /*show annotations on panel*/
+                $('.annotator-hl-focus').removeClass('annotator-hl-focus');
                 if(scope.show.length != 0 )
                     showAnnoOnpanel(scope.show,e.target);
                 else 

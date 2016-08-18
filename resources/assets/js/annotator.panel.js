@@ -218,6 +218,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             _this.show_annotations();
             _this.annotation_show = false;
             e.target.style.color ="black";
+            $('.annotator-hl-focus').removeClass('annotator-hl-focus');
             $('.panel-anno-show').css('color','black');
             }
             else if(_this.annotation_show == false){
@@ -1092,6 +1093,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 _this.data.push(annotation);
                 _this.addReference(annotation);
                 $("#anno-numer").html(_this.data.length);
+                 $('.panel-annolist-count').html(_this.data.length);
             }).subscribe("annotationUpdated", function(annotation) {
 
                 _this.checkLoginState();
