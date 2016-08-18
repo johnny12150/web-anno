@@ -116,6 +116,7 @@ class Annotation extends Model {
                 'text' => $data['tags'],
                 'purpose' => "tagging",
                 'bg_id' => $bg_id,
+                'public' => $data['is_public'],
                 'type' =>'TextualBody'
             ]);
             $new_anno->tags = $data['tags'];
@@ -125,6 +126,7 @@ class Annotation extends Model {
                 'text' => $data['text'],
                 'purpose' => "describing",
                 'bg_id' => $bg_id,
+                'public' => $data['is_public'],
                 'type' =>'TextualBody'
             ]);
 

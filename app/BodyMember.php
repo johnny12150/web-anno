@@ -19,8 +19,7 @@ class BodyMember extends Model{
 		$new_body->purpose = $data['purpose'];
 		$new_body->creator = $data['creator_id'];
 		$new_body->bg_id = $data['bg_id'];
-		if($data['public']== 'true') $new_body->is_public = 1;
-			else $new_body->is_public = 0;
+		$new_body->is_public = $data['public'];
 		$new_body->save();
 	}
 	public static function getbody($bg_id){

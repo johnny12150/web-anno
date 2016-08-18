@@ -166,6 +166,8 @@ class AnnotationController extends Controller
         $user_id = Session::get('user')->id;
         $tags = explode(" ",Request::input('tags'));
         $public = Request::input('public');
+        if($public =='true') $public = 1;
+        else $public = 0;
         $bg_id = bodygroup::add($id);
         foreach ($tags as $tag) {
             Bodymember::add([
