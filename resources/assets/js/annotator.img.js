@@ -43,8 +43,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                 clear(document.getElementsByClassName("annoitem select")[i]);
             }
         }
-        $(".annotator-adder").css("left", 10000)
-                .css("top", 10000);
+        $(".annotator-adder").css('left',0).css('top',0).hide();
     }
     this.addHook = function() {
         /*當離開圖片時  初始化沒使用的值*/
@@ -108,8 +107,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                 $(e.target.parentElement.children[1]).attr("class", "annoitem-focus draw");
                 if(scope.getSelectionText() != '')
                 {
-                    $(".annotator-adder").css("left", 10000)
-                                         .css("top", 10000);
+                    $(".annotator-adder").hide();
                     window.getSelection().removeAllRanges();
                    
                 }
@@ -134,8 +132,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                 
                 if(scope.getSelectionText() != '')
                 {
-                    $(".annotator-adder").css("left", 10000)
-                                         .css("top", 10000);
+                    $(".annotator-adder").hide();
                     window.getSelection().removeAllRanges();
                
                 }
@@ -147,7 +144,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                 /*顯示adder位置，這裡有BUG(因為照理說adder顯示應該在mouseup上面，可是使用mouseup時，adder不知為啥會消失，所以暫時寫在mousemove事件*/
                
                 scope.show = [];
-                if(scope.getSelectionText() == '')
+                if(scope.x > 0 && scope.y >0 && scope.endx > 0 &&scope.endy > 0 )
                     $('.annotator-adder')
                         .removeClass('annotator-hide')
                         .show();
@@ -376,14 +373,17 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                        );
         }
         var scrollTop;
-        var annotatorhl;
-        var img;
-        var img1 = $(document).find('img');
-        for (var i = 0 ; i< img1.length ;i++) {
-            if (img1[i].src == annotation.src && annotation.type == "image")
-                img = img1[i];
+        var img1 =  $(_element).find('img');
+        var img
+        for (var i = 0 ;i< img1.length ; i++){
+            var range = document.createRange();
+            range.selectNodeContents(img1[i]);
+            var Xpath = getxpath(range.startContainer.parentElement,document.getElementsByClassName("annotator-wrapper")[0]);
+            if(Xpath == annotation.Xpath){
+            scrollTop = $(img1[i]).offset().top;
+            img =img1[i];
+            }
         }
-
         $('#anno-info-id' + annotation.id).mouseenter(function() {
             if (annotation.type == "image") {
                 $(img.parentElement.children[1]).attr("class", "annoitem-focus draw");
@@ -400,7 +400,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
             if (annotation.type == "image")
                 show(img, annotation.position, "blue");
             $('html,body').animate({ scrollTop: scrollTop - 100 }, 800);
-
+            showAnnoOnpanel(new Array(annotation));
         });
 
     };
@@ -497,6 +497,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
 
                         scope.addImgAnnotation(annotation);
                         scope.target = null;
+
                     }
 
 
@@ -509,7 +510,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                 .subscribe("annotationsLoaded", function(annotations) {
                     $('.anno-lists').empty();
                     scope.initImgAnnotation();
-
+                     scope.initimgsetting();
                     for (var i = 0; i < annotations.length; i++) {
                         var annotation = annotations[i];
                        
@@ -524,8 +525,8 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                 .subscribe("annotationEditorHidden", function(editor) {
                     for (var i = 0; i < document.getElementsByClassName("annoitem select").length; i++) {
                         clear(document.getElementsByClassName("annoitem select")[i]);
-                        $(".annotator-adder").css("left", 10000)
-                            .css("top", 10000);
+                        $(".annotator-adder").hide();
+
                     }
                     if(scope.inEdit ==true)
                     scope.inEdit =false ;
