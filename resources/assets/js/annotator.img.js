@@ -326,6 +326,10 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                 '<a class="anno-collect fa fa-diamond" data-id=' + annotation.id + '>' + collect_text + '</a>' +
                 '<a class="anno-reply fa fa-comment" data-id=' + annotation.id + '>回覆</a>'
             );
+            if($(_element).data('annotator-user') != undefined)
+                if ($(_element).data('annotator-user').id == annotation.user.id)
+                    $('.anno-body #anno-info-id' + annotation.id).append(
+                       '<a class="anno-delete fa fa-trash-o" data-id="' + annotation.id + '" style="padding-left:5px;">刪除</a>');
         }
 
 
@@ -382,7 +386,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                     '<span class="anno-body-time">' + annotation.created_at + '</span>' 
                        );
         }
-        $('.anno-lists #anno-info-id' + annotation.id).append('<div ><a style="text-align:right">readmore</a></div>');
+        $('.anno-lists #anno-info-id' + annotation.id).append('<div><a style="text-align:right">readmore</a></div>');
         var scrollTop;
         var img1 =  $(_element).find('img');
         var img
