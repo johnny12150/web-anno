@@ -1163,9 +1163,9 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 
             }).subscribe('annotationViewerShown', function(viewer, annotations) {
                 $(document).on('click', '.annotator-hl', function(e) {
-                    $('.annotator-hl').removeClass('annotator-hl-focus');
+                    $('.annotator-hl-focus').removeClass('annotator-hl-focus');
                     showAnnoOnpanel(annotations);
-                    $(e.target).addClass('annotator-hl-focus');
+                   for (var i in annotations) $(annotations[i].highlights).addClass('annotator-hl-focus');
                      _this.ui.stop().animate({
                             'right': '0px'
                         }, 1000, 'linear');

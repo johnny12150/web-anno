@@ -73,7 +73,16 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         return path;
     };   
         /*圖片hook,將網頁要使用註記範圍時，對圖片作控制，產生兩個canvas以及一些控制的事件*/
-        var img = $(_element).find('img');        
+
+    $(window).resize(function(e){
+         var canvas = $(_element).find('canvas');        
+        for (var i = 0 ;i< canvas.length; i++)
+        {
+            canvas[i].width = canvas[i].parentElement.children[0].width;
+            canvas[i].height = canvas[i].parentElement.children[0].height;
+        }
+    })
+    var img = $(_element).find('img');        
         var state = false //紀錄範圍有沒有使用
         for (var i = 0; i < img.length; i++) {
             $(img[i]).wrap("<div class='annotationlayer' style='position:relative;'></div>");
