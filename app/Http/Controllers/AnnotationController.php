@@ -238,15 +238,16 @@ class AnnotationController extends Controller
     }
     public function delete($id)
     {
+        $uri= Request::input('uri');
         $user = Session::get('user');
         if($user != null) {
             //Delete Annotation
-            Annotation::del($user->id, $id);
-            //return 204 code
+            Annotation::del($user->id,$id);
             abort(204);
         } else {
             abort(401);
         }
+     
     }
     public function tempdelete($id)
     {

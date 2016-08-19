@@ -56,6 +56,7 @@ Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
         Route::put('annotations/{id}', 'AnnotationController@update');
         Route::get('annotations/{id}', 'AnnotationController@add');
         Route::post('addbody', 'AnnotationController@addbody');
+        Route::post('delete_anno/{id}', 'AnnotationController@delete');
         Route::post('body/{id}','AnnotationController@deletebody');
         Route::post('updatebody','AnnotationController@updatebody');
         Route::post('collect','collecteController@create');

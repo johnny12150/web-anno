@@ -76,7 +76,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         var img = $(_element).find('img');        
         var state = false //紀錄範圍有沒有使用
         for (var i = 0; i < img.length; i++) {
-            $(img[i]).wrap("<div class='annotationlayer' style='position:relative;display: inline-block;'></div>");
+            $(img[i]).wrap("<div class='annotationlayer' style='position:relative;'></div>");
             $(img[i].parentElement)
                 .append("<canvas  class ='annoitem-unfocus draw' style='position:absolute;top:0;left:0;'" +
                     "width='" + img[i].width + "' " +

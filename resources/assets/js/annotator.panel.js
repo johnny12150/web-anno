@@ -52,6 +52,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
     this.postdeleteurl = 'http://' + this.server + '/api/body';
     this.postupdateurl = 'http://' + this.server + '/api/updatebody';
     this.collecturl = 'http://' + this.server + '/api/collect';
+    this.delete_anno_url = 'http://' + this.server + '/api/delete_anno';
     this.showUI = true;
     this.annotation_show = true;
     this.user = null;
@@ -70,6 +71,8 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 
     this.show_annotations = function() {
         $('.annotator-hl').removeClass('annotator-hl');
+        $('.annotator-hl-focus').removeClass('annotator-hl-focus');
+
         /*for (x in _this.keywords) {
             $('.keyword-hl-' + _this.keywords[x].color).not('.anno-keywords ul li span.keyword-hl-' + _this.keywords[x].color).removeClass('keyword-hl-' + _this.keywords[x].color);
             if (_this.hide_keywords.indexOf(',' + x + ',') == -1) {
@@ -328,7 +331,30 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 
 
         });
+       $(document).on('click','.anno-delete',function(e){
+           
+            var data = _this.annotator.plugins.Store.options.loadFromSearch;
+            var anno_id =   $(e.target).attr('data-id');
 
+            $.ajax({
+                url: _this.delete_anno_url +'/'+ $(e.target).attr('data-id') ,
+                data: data,
+                dataType: 'json',
+                method :'POST',
+                success: function(data) {
+                     $('.annotator-hl-focus').removeClass('annotator-hl-focus');
+                     $('.panel-annolist').click();
+
+                     var tem_data = _this.data;
+                     _this.data = [];
+                      for (var i in tem_data) {
+                        if(tem_data[i].id != anno_id )
+                        _this.data.push(tem_data[i]);
+                        };
+                    $('#anno-search-submit').click();   
+                }
+            });
+        });
 
         this.autocomplete = function() {
             var options = {
@@ -814,9 +840,13 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 }
             }
             $('.anno-body #anno-info-id' + annotation.id).append(
-                '<a class="anno-collect fa fa-diamond" data-id=' + annotation.id + '>' + collect_text + '</a>' +
-                '<a class="anno-reply fa fa-comment" data-id=' + annotation.id + '>回覆</a>'
+                '<a class="anno-collect fa fa-diamond" data-id="' + annotation.id + '" style="padding-left:5px;">' + collect_text + '</a>' +
+                '<a class="anno-reply fa fa-comment" data-id="' + annotation.id + '" style="padding-left:5px;">回覆</a>'
             );
+            if($(_this.element).data('annotator-user') != undefined)
+                if ($(_this.element).data('annotator-user').id == annotation.user.id)
+                    $('.anno-body #anno-info-id' + annotation.id).append(
+                       '<a class="anno-delete fa fa-trash-o" data-id="' + annotation.id + '" style="padding-left:5px;">刪除</a>');
         }
 
 
@@ -925,6 +955,13 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                             $('.anno-body #anno-body' + id).find('.anno-body-text').html(content);
                             $('.anno-body #anno-body' + id).find('.anno-body-tag').html(tags);
                             $('#anno-search-submit').click();
+                            for (var i in _this.data) {
+                                if (_this.data[i].id == aid) {
+                                    var anno = new Array();
+                                    anno.push(_this.data[i]);
+                                    showAnnoOnpanel(anno);
+                                }
+                            };
 
                         },
                         error: function(xhr, status, error) {
@@ -955,6 +992,8 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                         _this.data = data.rows;
                         _this.show_annotations();
                         $('#anno-body' + id).remove();
+                        $('#anno-search-submit').click();
+                     
                     },
                     error: function(xhr, status, error) {
                         alert("xhr:" + xhr + '\n' + "status:" + status + '\n' + "error:" + error);
@@ -1003,6 +1042,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                     '<span class="anno-body-time">' + annotation.created_at + '</span>' 
                        );
         }
+        if(annotation.type == 'text')
         var scrollTop = $(annotation.highlights).offset().top;
         $('#anno-info-id' + annotation.id).mouseenter(function() {
             $(annotation.highlights).addClass('annotator-hl-focus');
