@@ -794,7 +794,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             }); 
             */
             $('.anno-body').append('<li id="anno-info-id' + annotation.id + '" class="anno-infos-item" style="z-index:50">' +
-                '<p><b>annotation_id' + annotation.id + '</b></p>');
+                '<p><b>註記建立者:' + annotation.user.name + '</b></p>');
 
             for (var j = 0; j < annotation.otherbodys.length; j++) {
 
@@ -1021,8 +1021,8 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
     this.annoinfos = function(annotation) {
 
         $(".anno-lists").html();
-        $(".anno-lists").append('<li id="anno-info-id' + annotation.id + '" class="anno-infos-item" style="z-index:50"></li>');
-
+        $(".anno-lists").append('<li id="anno-info-id' + annotation.id + '" class="anno-infos-item" style="z-index:50">' +
+                '<p><b>註記建立者:' + annotation.user.name + '</b></p>');
 
         var tags = "";
         if (annotation.otherbodys.length > 0) {
@@ -1042,6 +1042,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                     '<span class="anno-body-time">' + annotation.created_at + '</span>' 
                        );
         }
+         $('.anno-lists #anno-info-id' + annotation.id).append('<div ><a style="text-align:right">readmore</a></div>');
         if(annotation.type == 'text')
         var scrollTop = $(annotation.highlights).offset().top;
         $('#anno-info-id' + annotation.id).mouseenter(function() {
