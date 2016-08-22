@@ -87,10 +87,9 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
     $(a).bind('click',function(event){
         console.log(event.target.nodeName);
          if(event.target.nodeName =="CANVAS")
-         event.preventDefault();
-        
-       
+         event.preventDefault();  
     });
+
     var img = $(_element).find('img');
 
         var state = false //紀錄範圍有沒有使用

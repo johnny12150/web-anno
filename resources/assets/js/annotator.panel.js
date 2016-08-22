@@ -65,11 +65,13 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         _this.show_annotations();
     }
     $(window).resize(function(e){
+        $('.annotator-hl').unbind('click');
         $('.annotator-hl').removeClass('annotator-hl');
         _this.loadAnnotations(_this.data);
     })
 
     this.show_annotations = function() {
+        $('.annotator-hl').unbind('click');
         $('.annotator-hl').removeClass('annotator-hl');
         $('.annotator-hl-focus').removeClass('annotator-hl-focus');
 
@@ -224,6 +226,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             _this.show_annotations();
             _this.annotation_show = false;
             e.target.style.color ="black";
+
             $('.annotator-hl-focus').removeClass('annotator-hl-focus');
             $('.panel-anno-show').css('color','black');
             }
@@ -232,6 +235,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 _this.annotation_show = true;
                  _this.loadAnnotations(_this.showing);
                  e.target.style.color ="brown";
+                 $('.annotator-hl').unbind('click')
                  $('.panel-anno-show').css('color','brown');
             }
         });
@@ -319,8 +323,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                     if (data.total == 0) {
                         alert("查詢不到相關結果");
                     }
-                    //_this.data = [];
-                    // $('.anno-tags ul li').remove();
+                    $('.annotator-hl').unbind('click')
                     $('.anno-users ul li').remove();
                     _this.conditionData = data.rows;
                     _this.showing = data.rows;
@@ -438,6 +441,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 like: state
             }).success(function(likes) {
                 var count = 0
+                $('.annotator-hl').unbind('click')
                 for (var i in $(element).data('annotator-user').like) {
 
                     if ($(element).data('annotator-user').like[i].bg_id == aid) {
@@ -921,7 +925,8 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                         },
                         success: function(data) {
                             // editor hide and clean
-                             $('#editorDiv').hide();
+                            $('#editorDiv').hide();
+                            $('.annotator-hl').unbind('click')
                             tinyMCE.activeEditor.setContent('');
                             $('#tags').val('');
                             //update this_data
@@ -968,6 +973,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                             //update Annotations 'Data'
                             _this.data = data.rows;
                             _this.show_annotations();
+                            $('.annotator-hl').unbind('click')
                             $('.anno-body #anno-body' + id).find('.anno-body-text').html(content);
                             $('.anno-body #anno-body' + id).find('.anno-body-tag').html(tags);
                             $('#anno-search-submit').click();
@@ -1005,6 +1011,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                         domain: _this.domain
                     },
                     success: function(data) {
+                        $('.annotator-hl').unbind('click')
                         _this.data = data.rows;
                         _this.show_annotations();
                         $('#anno-body' + id).remove();
@@ -1102,6 +1109,8 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         var annotations = event.data.annotations;
         $('.annotator-hl-focus').removeClass('annotator-hl-focus');
         showAnnoOnpanel(annotations);
+       console.log(annotations);
+           
         for (var i in annotations) $(annotations[i].highlights).addClass('annotator-hl-focus');
         _this.ui.stop().animate({
             'right': '0px'
@@ -1195,7 +1204,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 
 
             }).subscribe('annotationViewerShown', function(viewer, annotations) {
-                $('.annotator-hl').unbind('click')
+                $('.annotator-hl').unbind('click');
                 $('.annotator-hl').bind('click',{annotations:annotations},handler);
             }).subscribe("annotationEditorHidden", function(editor) {
                 window.getSelection().removeAllRanges();
