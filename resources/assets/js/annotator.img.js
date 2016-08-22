@@ -59,7 +59,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                         scope.initimgsetting();
                     }
                 }
-        });
+    });
     function getxpath(elem,relativeRoot) {
         var idx, path, tagName;
         path = '';
@@ -81,8 +81,18 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
             canvas[i].width = canvas[i].parentElement.children[0].width;
             canvas[i].height = canvas[i].parentElement.children[0].height;
         }
-    })
-    var img = $(_element).find('img');        
+    });
+    var a = $(_element).find('a');
+   
+    $(a).bind('click',function(event){
+        console.log(event.target.nodeName);
+         if(event.target.nodeName =="CANVAS")
+         event.preventDefault();
+        
+       
+    });
+    var img = $(_element).find('img');
+
         var state = false //紀錄範圍有沒有使用
         for (var i = 0; i < img.length; i++) {
             $(img[i]).wrap("<div class='annotationlayer' style='position:relative;'></div>");
@@ -95,6 +105,12 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                     "width='" + img[i].width + "' " +
                     "height='" + img[i].height + "'" +
                     "></canvas>");
+            if(img[i].parentElement.parentElement.nodeName == 'A')
+            {
+                $(img[i].parentElement)
+                .append('<a href style="position:absolute;top:0;left:0;">hyperlink</a>');
+                $(img[i].parentElement.parentElement).find('a').attr('href',img[i].parentElement.parentElement.href);
+            }
             /*當選取範圍時，紀錄選取範圍起始點*/
             $(img[i].parentElement.children[2]).mousedown(function(e) {
                 e.preventDefault();
@@ -244,6 +260,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                 }
             });
     };
+    
 
     /*function selelct 跟 clear 功能為拉取註記選擇範圍
     對象為 canvas's select 暫時的canvas*/
@@ -321,10 +338,21 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                         }
                     }
                 }
+                $.post('api/checkcollect',{anno_id : annotation.id, anno_token :settings.anno_token ,domain: settings.domain })
+                .success(function(data){
+                    if(data == "true"){
+                       $('#anno-collect-'+ annotation.id).addClass('collecting');
+                       $('#anno-collect-'+ annotation.id).html('取消收藏');
+                    }
+                    else  {
+                        $('#anno-collect-'+ annotation.id).html('收藏');
+                        $('#anno-collect-'+ annotation.id).removeClass('collecting');
+                     }
+                }); 
             }
             $('.anno-body #anno-info-id' + annotation.id).append(
-                '<a class="anno-collect fa fa-diamond" data-id=' + annotation.id + '>' + collect_text + '</a>' +
-                '<a class="anno-reply fa fa-comment" data-id=' + annotation.id + '>回覆</a>'
+                '<a class="anno-collect fa fa-diamond" id ="anno-collect-'+annotation.id + '" data-id="' + annotation.id + '" style="padding-left:5px;">收藏</a>' +
+                '<a class="anno-reply fa fa-comment" data-id="' + annotation.id + '" style="padding-left:5px;">回覆</a>'
             );
             if($(_element).data('annotator-user') != undefined)
                 if ($(_element).data('annotator-user').id == annotation.user.id)
@@ -549,7 +577,6 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                 }).subscribe("annotationViewerShown", function(editor) {
                     for (var i = 0; i < document.getElementsByClassName("annoitem select").length; i++) {
                         clear(document.getElementsByClassName("annoitem select")[i]);
-                        
                     }
 
 

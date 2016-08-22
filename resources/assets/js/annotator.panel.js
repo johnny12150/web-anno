@@ -470,7 +470,15 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 domain: _this.domain,
                 anno_id: id
             }).success(function(e) {
-                alert("collect success");
+                if(target.hasClass('collecting')){
+                    target.html('收藏');
+                    target.removeClass('collecting');
+
+                }
+                else{
+                    target.addClass('collecting');
+                     target.html('取消收藏');
+                }
             })
         });
 
@@ -787,12 +795,8 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         for (var i in annotations) {
             var annotation = annotations[i];
 
-            /*$.post('api/checkcollect',{anno_id : annotation.id, anno_token :settings.anno_token ,domain: settings.domain })
-            .success(function(data){
-                if(data == "true")
-                collect_text="取消收藏";
-            }); 
-            */
+            
+            
             $('.anno-body').append('<li id="anno-info-id' + annotation.id + '" class="anno-infos-item" style="z-index:50">' +
                 '<p><b>註記建立者:' + annotation.user.name + '</b></p>');
 
@@ -838,9 +842,20 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                         }
                     }
                 }
+                $.post('api/checkcollect',{anno_id : annotation.id, anno_token :settings.anno_token ,domain: settings.domain })
+                .success(function(data){
+                    if(data == "true"){
+                       $('#anno-collect-'+ annotation.id).addClass('collecting');
+                       $('#anno-collect-'+ annotation.id).html('取消收藏');
+                    }
+                    else  {
+                        $('#anno-collect-'+ annotation.id).html('收藏');
+                        $('#anno-collect-'+ annotation.id).removeClass('collecting');
+                     }
+                }); 
             }
             $('.anno-body #anno-info-id' + annotation.id).append(
-                '<a class="anno-collect fa fa-diamond" data-id="' + annotation.id + '" style="padding-left:5px;">' + collect_text + '</a>' +
+                '<a class="anno-collect fa fa-diamond" id ="anno-collect-'+annotation.id + '" data-id="' + annotation.id + '" style="padding-left:5px;">收藏</a>' +
                 '<a class="anno-reply fa fa-comment" data-id="' + annotation.id + '" style="padding-left:5px;">回覆</a>'
             );
             if($(_this.element).data('annotator-user') != undefined)
@@ -1081,6 +1096,22 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         return n1;
     }
 
+    function handler(event) {
+
+        var annotations = event.data.annotations;
+        $('.annotator-hl-focus').removeClass('annotator-hl-focus');
+        showAnnoOnpanel(annotations);
+        for (var i in annotations) $(annotations[i].highlights).addClass('annotator-hl-focus');
+        _this.ui.stop().animate({
+            'right': '0px'
+        }, 1000, 'linear');
+        $(".btn-appear").stop().animate({
+            'right': '300px'
+        }, 1000, 'linear');
+
+        $(".btn-appear").html('<i class="fa fa-chevron-right " aria-hidden="true"></i>');
+        _this.showUI = true;
+    }
 
     return {
         pluginInit: function() {
@@ -1163,22 +1194,8 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 
 
             }).subscribe('annotationViewerShown', function(viewer, annotations) {
-                $(document).on('click', '.annotator-hl', function(e) {
-                    $('.annotator-hl-focus').removeClass('annotator-hl-focus');
-                    showAnnoOnpanel(annotations);
-                   for (var i in annotations) $(annotations[i].highlights).addClass('annotator-hl-focus');
-                     _this.ui.stop().animate({
-                            'right': '0px'
-                        }, 1000, 'linear');
-                        $(".btn-appear").stop().animate({
-                            'right': '300px'
-                        }, 1000, 'linear');
-
-                        $(".btn-appear").html('<i class="fa fa-chevron-right " aria-hidden="true"></i>');
-                        _this.showUI = true;
-                        
-                });
-
+                $('.annotator-hl').unbind('click')
+                $('.annotator-hl').bind('click',{annotations:annotations},handler);
             }).subscribe("annotationEditorHidden", function(editor) {
                 window.getSelection().removeAllRanges();
             }).subscribe("annotationEditorShown", function(editor) {
