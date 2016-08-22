@@ -342,6 +342,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 dataType: 'json',
                 method :'POST',
                 success: function(data) {
+                     $('.annotator-hl').unbind('click')
                      $('.annotator-hl-focus').removeClass('annotator-hl-focus');
                      $('.panel-annolist').click();
 
