@@ -85,7 +85,6 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
     var a = $(_element).find('a');
    
     $(a).bind('click',function(event){
-        console.log(event.target.nodeName);
          if(event.target.nodeName =="CANVAS")
          event.preventDefault();  
     });
@@ -288,7 +287,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         var collect_text = "收藏";
         $('.anno-body').html('');
         $('.panel-message').click();
-    
+       
 
         for (var i in annotations) {
             var annotation = annotations[i];
@@ -299,10 +298,11 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                 collect_text="取消收藏";
             }); 
             */
+
              $('.anno-body').append('<li id="anno-info-id' + annotation.id + '" class="anno-infos-item" style="z-index:50">' +
                 '<p><b>註記建立者:' + annotation.user.name + '</b></p>');
 
-
+            $('.anno-body #anno-info-id' + annotation.id).data('annotation',annotation);
             for (var j = 0; j < annotation.otherbodys.length; j++) {
 
                 var tags = "";
@@ -397,7 +397,21 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         }
 
     };
+     $(document).on('mouseenter','.anno-infos-item',function(e){
+        var annotation  = $(e.target).data('annotation');
+        if(annotation != undefined)
+            if(annotation.type =='image'){
+               show(annotation.img,annotation.position,'blue');
+               $(annotation.img.parentElement.children[1]).attr("class", "annoitem-focus draw");}
 
+    }).on('mouseleave','.anno-infos-item',function(e){
+        var annotation  = $(e.target).data('annotation');
+        if(annotation != undefined)
+            if(annotation.type =='image'){
+               show(annotation.img,annotation.position,'white');
+               $(annotation.img.parentElement.children[1]).attr("class", "annoitem-unfocus draw");}
+
+    });
     this.annoinfos = function(annotation) {
 
 
@@ -435,9 +449,12 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
             img =img1[i];
             }
         }
+        annotation.img = img;
+       
         $('#anno-info-id' + annotation.id).mouseenter(function() {
             if (annotation.type == "image") {
                 $(img.parentElement.children[1]).attr("class", "annoitem-focus draw");
+
                 show(img, annotation.position, "blue");
             }
         });
@@ -450,9 +467,11 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         $('#anno-info-id' + annotation.id).click(function() {
             if (annotation.type == "image")
                 show(img, annotation.position, "blue");
-            $('html,body').animate({ scrollTop: scrollTop - 100 }, 800);
-            showAnnoOnpanel(new Array(annotation));
+                 $('html,body').animate({ scrollTop: scrollTop - 100 }, 800);
+                showAnnoOnpanel(new Array(annotation));
         });
+      
+
 
     };
 

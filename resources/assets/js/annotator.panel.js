@@ -234,9 +234,9 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 _this.showing =_this.data;
                 _this.annotation_show = true;
                  _this.loadAnnotations(_this.showing);
-                 e.target.style.color ="brown";
+                 e.target.style.color ="blue";
                  $('.annotator-hl').unbind('click')
-                 $('.panel-anno-show').css('color','brown');
+                 $('.panel-anno-show').css('color','blue');
             }
         });
         $('.panel-main').click(function(e) {
@@ -251,7 +251,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             $('.anno-lists').hide();
         });
         $('.panel-annolist').click(function(e) {
-            $(e.target).css({ 'color': "green" });
+            $(e.target).css({ 'color': "blue" });
             $('.panel-main').css({ 'color': 'black' });
             $('.panel-message').css({ 'color': 'black' });
             $('.anno-search').hide();
@@ -262,7 +262,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             $('.anno-lists').show();
         });
         $('.panel-message').click(function(e) {
-            $(e.target).css({ 'color': "red" });
+            $(e.target).css({ 'color': "blue" });
             $('.panel-main').css({ 'color': 'black' });
             $('.panel-annolist').css({ 'color': 'black' });
             $('.anno-search').hide();
@@ -804,7 +804,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             
             $('.anno-body').append('<li id="anno-info-id' + annotation.id + '" class="anno-infos-item" style="z-index:50">' +
                 '<p><b>註記建立者:' + annotation.user.name + '</b></p>');
-
+            $('.anno-body #anno-info-id' + annotation.id).data('annotation',annotation);
             for (var j = 0; j < annotation.otherbodys.length; j++) {
 
                 var tags = "";
@@ -1041,6 +1041,13 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 
         return '';
     };
+    $(document).on('mouseenter','.anno-infos-item',function(e){
+        var annotation  = $(e.target).data('annotation');
+        if(annotation != undefined)
+            if(annotation.type =='text')
+            $(annotation.highlights).addClass('annotator-hl-focus');
+
+    });
     this.annoinfos = function(annotation) {
 
         $(".anno-lists").html();
@@ -1048,6 +1055,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 '<p><b>註記建立者:' + annotation.user.name + '</b></p>');
 
         var tags = "";
+
         if (annotation.otherbodys.length > 0) {
             for (var i = 0; i <= annotation.otherbodys[0].tags.length - 1; i++) {
                 tags += '<span class="anno-body-tag">' + annotation.otherbodys[0].tags[i] + ' </span>';
@@ -1065,19 +1073,22 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                     '<span class="anno-body-time">' + annotation.created_at + '</span>' 
                        );
         }
-         $('.anno-lists #anno-info-id' + annotation.id).append('<div ><a style="text-align:right">readmore</a></div>');
+       
+        $('.anno-lists #anno-info-id' + annotation.id).append('<div ><a style="text-align:right">readmore</a></div>');
         if(annotation.type == 'text')
         var scrollTop = $(annotation.highlights).offset().top;
         $('#anno-info-id' + annotation.id).mouseenter(function() {
+          
             $(annotation.highlights).addClass('annotator-hl-focus');
         });
         $('#anno-info-id' + annotation.id).mouseleave(function() {
             $(annotation.highlights).removeClass('annotator-hl-focus');
         });
         $('#anno-info-id' + annotation.id).click(function() {
-            $('html,body').animate({ scrollTop: scrollTop - 100 }, 800);
-             showAnnoOnpanel(new Array(annotation));
+             $('html,body').animate({ scrollTop: scrollTop - 100 }, 800);
+              showAnnoOnpanel(new Array(annotation));
         });
+        
 
     };
     function RemoveHTML(strText) {
@@ -1109,8 +1120,6 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         var annotations = event.data.annotations;
         $('.annotator-hl-focus').removeClass('annotator-hl-focus');
         showAnnoOnpanel(annotations);
-       console.log(annotations);
-           
         for (var i in annotations) $(annotations[i].highlights).addClass('annotator-hl-focus');
         _this.ui.stop().animate({
             'right': '0px'
@@ -1182,7 +1191,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 _this.data.push(annotation);
                 _this.addReference(annotation);
                 $("#anno-numer").html(_this.data.length);
-                 $('.panel-annolist-count').html(_this.data.length);
+                $('.panel-annolist-count').html(_this.data.length);
             }).subscribe("annotationUpdated", function(annotation) {
 
                 _this.checkLoginState();
