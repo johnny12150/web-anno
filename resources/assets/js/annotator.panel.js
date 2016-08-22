@@ -885,7 +885,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 '</div>'+
                 '<div class="add_body_control">' +
                 '<button class="anno-reply-cancel" >取消</button>' +
-                '<button class="anno-reply-save" ">儲存</button>' +
+                '<button class="anno-reply-save">儲存</button>' +
                 '</div>' +
                 '</div>')
 

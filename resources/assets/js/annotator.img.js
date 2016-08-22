@@ -107,8 +107,17 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
             if(img[i].parentElement.parentElement.nodeName == 'A')
             {
                 $(img[i].parentElement)
-                .append('<a href style="position:absolute;top:0;left:0;">hyperlink</a>');
+                .append('<a href style="position:absolute;top:5px;left:5px;display:none" title =""><i class="fa fa-link" style="font-size:18px"; aria-hidden="true"></i></a>');
                 $(img[i].parentElement.parentElement).find('a').attr('href',img[i].parentElement.parentElement.href);
+                $(img[i].parentElement).find('a').mouseenter(function(e){
+                        $(e.target).css('display','block');
+                });
+                $(img[i].parentElement.children[2]).mouseenter(function(e){
+                        $(e.target.parentElement).find('a').css('display','block');
+                });
+                $(img[i].parentElement.children[2]).mouseleave(function(e){
+                        $(e.target.parentElement).find('a').css('display','none');
+                });
             }
             /*當選取範圍時，紀錄選取範圍起始點*/
             $(img[i].parentElement.children[2]).mousedown(function(e) {
