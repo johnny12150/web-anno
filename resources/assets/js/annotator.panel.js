@@ -58,6 +58,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
     this.user = null;
 
     this.loadAnnotations = function(data) {
+         $('.anno-lists').empty();
         _this.annotator.loadAnnotations(data);
     }
 
@@ -183,11 +184,11 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             '</ul>' +
             '</li>' +
 
-            '<li class="anno-keywords" ;>' +
+            /*'<li class="anno-keywords" ;>' +
             '<a href="#">' + '<i class="fa fa-bar-chart-o fa-fw">' + '</i>匯入權威檔<span class="fa arrow">' + '</span>' + '</a>' +
             '<ul class="nav nav-second-level collapse" aria-expanded="false" style="height: 0px;">' +
             '</ul>' +
-            '</li>' +
+            '</li>' +*/
 
             '<li class="anno-users" ;>' +
             '<a><i class="fa fa-child" aria-hidden="true"></i> 在此網頁標籤的人<span class="fa arrow">' + '</span>' + '</a></a>' +
@@ -227,6 +228,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             _this.annotation_show = false;
             e.target.style.color ="black";
             $('.annotator-hl-focus').removeClass('annotator-hl-focus');
+            $('.anno-lists').empty();
             $('.panel-anno-show').css('color','black');
             }
             else if(_this.annotation_show == false){
@@ -1142,7 +1144,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             _this.annotator
 
                 .subscribe("annotationsLoaded", function(annotations) {
-                $('.anno-lists').empty();
+              
                 if (_this.data.length == 0)
                     _this.data = annotations;
                 $("#anno-numer").html(annotations.length);

@@ -578,9 +578,9 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                     scope.deleteAnnotation(annotation);
                 })
                 .subscribe("annotationsLoaded", function(annotations) {
-                    $('.anno-lists').empty();
+                    
                     scope.initImgAnnotation();
-                     scope.initimgsetting();
+                    scope.initimgsetting();
                     for (var i = 0; i < annotations.length; i++) {
                         var annotation = annotations[i];
                        
