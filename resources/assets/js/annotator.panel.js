@@ -226,7 +226,6 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             _this.show_annotations();
             _this.annotation_show = false;
             e.target.style.color ="black";
-
             $('.annotator-hl-focus').removeClass('annotator-hl-focus');
             $('.panel-anno-show').css('color','black');
             }
@@ -1143,7 +1142,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             _this.annotator
 
                 .subscribe("annotationsLoaded", function(annotations) {
-                $(".anno-infos").empty();
+                $('.anno-lists').empty();
                 if (_this.data.length == 0)
                     _this.data = annotations;
                 $("#anno-numer").html(annotations.length);
@@ -1185,17 +1184,14 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 _this.autocomplete();
 
             }).subscribe("annotationCreated", function(annotation) {
-                _this.checkLoginState();
-                if (annotation.tags[0] == undefined) annotation.tags[0] = "NoTag";
-                if (annotation.id == undefined) annotation.id = "-1";
                 _this.data.push(annotation);
                 _this.addReference(annotation);
                 $("#anno-numer").html(_this.data.length);
                 $('.panel-annolist-count').html(_this.data.length);
             }).subscribe("annotationUpdated", function(annotation) {
-
                 _this.checkLoginState();
                 _this.addReference(annotation);
+                _this.annoinfos(annotation);
             }).subscribe("annotationDeleted", function(annotation) {
 
                 _this.checkLoginState();
