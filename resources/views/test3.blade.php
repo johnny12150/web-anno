@@ -238,7 +238,7 @@
                 </a>
             </div>
             <div class="col-md-4 col-sm-6">
-                <a href="portfolio-item.html">
+                <a href="#myCarousel">
                     <img class="img-responsive img-portfolio img-hover" src="http://placehold.it/700x450" alt="">
                 </a>
             </div>
@@ -318,11 +318,11 @@
 <script type="text/javascript">
 
      $(window).load(function(){
-        var uri = 'http://testing';
+        
 
         var anno = annotation('.main');
         anno.init({
-            uri : uri,
+            uri :  location.href.split('#')[0],
             imageAnnotation : true,
 
         });

@@ -41,8 +41,10 @@
 </header>
       <div class="content-wrap">
         <div class="field-content-panel">
-        <img src ="image/test1.jpg" width ="500" height = "500">
-         <img src ="http://static.ettoday.net/images/351/d351817.jpg" width ="400" height = "400">
+        <img src ="https://upload.wikimedia.org/wikipedia/commons/a/a0/Chen_Chengpo_1927d_Summer_Street.jpg" width ="500" height = "500">
+        <p>這張作品是陳澄波先生自東京美術學校圖畫師範科畢業，進入同校研究所就讀之際所作；曽入選日本第八屆帝展的作品。當年美術科系的學生都以入選帝展為榮，一般的畫家也以入選帝展提高身價。這張作品的構圖非常富有挑戰性，因為在畫面正中央竪立一根電線桿，對畫面無益，是所有畫家最忌諱的構圖。或許作者想以這根電線桿搭配樹後的電線桿，造成透視的遠近效果。青天白雲，日正當中，由畫面左邊的大樹和它的影子看來，就可判斷，太陽正直射，才會造成樹和影子面積等大，站在路當中的人，也未有長影子，可見此時是中午炎熱時刻。左側馬路盡頭有一家商店，規模不小的磚造大廈，面向馬路正面有四個拱門，門內擺設有商品的櫥窗，可見是座大商店，畫面右側也有大樓，正中央的廣場必定是交通要樞。畫面有四個小圓環，不見噴水池，卻有公告欄，圓環周邊種有七里香當圍牆，牆內是否只有一棵樹，或另有休閒設備不得知。
+
+　噴水池附近畫作共有5幅，畫於1927至1935年間。中央噴水池是嘉義市中心，幾經改建，已非原貌，噴水池中央原矗立國父銅像，毀壞後改立「管樂雞」，象徵管樂節與雞肉飯，都是嘉義市特色。旁有熱鬧的文化路夜市，各種小吃林立，最有名的雞肉飯發源於此。旁有中正公園，其音樂台是市中心重要戶外表演場所。</p>
        
           <div class="field-title">Chen Cheng-po  <a class="field-title-icon" href="http://data.asdc.tw/lod/Person/PR0001#lodlive-section"></a>
 </div>
