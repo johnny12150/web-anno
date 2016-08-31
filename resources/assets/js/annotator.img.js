@@ -277,7 +277,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         var ctx = c1.getContext("2d");
         ctx.beginPath();
         ctx.strokeStyle = "#FFFFFF";
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 3;
         ctx.clearRect(0, 0, c1.width, c1.height);
         ctx.rect(scope.x, scope.y, scope.endx - scope.x, scope.endy - scope.y);
         ctx.stroke();
@@ -361,7 +361,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
             }
             $('.anno-body #anno-info-id' + annotation.id).append(
                 '<a class="anno-collect fa fa-diamond" id ="anno-collect-'+annotation.id + '" data-id="' + annotation.id + '" style="padding-left:5px;">收藏</a>' +
-                '<a class="anno-reply fa fa-comment" data-id="' + annotation.id + '" style="padding-left:5px;">回覆</a>'
+                '<a class="anno-reply fa fa-comment" data-id="' + annotation.id + '" style="padding-left:5px;">增加本文</a>'
             );
             if($(_element).data('annotator-user') != undefined)
                 if ($(_element).data('annotator-user').id == annotation.user.id)

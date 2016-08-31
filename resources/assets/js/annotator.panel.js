@@ -862,7 +862,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             }
             $('.anno-body #anno-info-id' + annotation.id).append(
                 '<a class="anno-collect fa fa-diamond" id ="anno-collect-'+annotation.id + '" data-id="' + annotation.id + '" style="padding-left:5px;">收藏</a>' +
-                '<a class="anno-reply fa fa-comment" data-id="' + annotation.id + '" style="padding-left:5px;">回覆</a>'
+                '<a class="anno-reply fa fa-comment" data-id="' + annotation.id + '" style="padding-left:5px;">增加本文</a>'
             );
             if($(_this.element).data('annotator-user') != undefined)
                 if ($(_this.element).data('annotator-user').id == annotation.user.id)
