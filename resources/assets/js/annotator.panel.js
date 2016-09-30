@@ -70,7 +70,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         $('.annotator-hl').removeClass('annotator-hl');
         _this.loadAnnotations(_this.data);
     })
-
+   
     this.show_annotations = function() {
         $('.annotator-hl').unbind('click');
         $('.annotator-hl').removeClass('annotator-hl');
@@ -704,7 +704,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         // get user gravatar url
         gravatar_url = user.gravatar;
 
-
+        if(annotation.id == undefined) annotation.id = '-1';
 
         // check user is added to userlist
         if (_this.ui.find('#anno-user-' + user_id).length == 0 && annotation.id.indexOf('keyword') == -1) {
@@ -1215,12 +1215,21 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 $('.annotator-hl').bind('click',{annotations:annotations},handler);
             }).subscribe("annotationEditorHidden", function(editor) {
                 window.getSelection().removeAllRanges();
-            }).subscribe("annotationEditorShown", function(editor) {
+            }).subscribe("annotationEditorShown", function(editor,annotation) {
                 editor.element[0].style.position = "fixed";
                 editor.element[0].style.right = "0px";
                 editor.element[0].style.bottom = "0px";
                 editor.element[0].style.float = 'right';
-           
+                /*we add text quote when editor show*/
+                if(annotation.ranges.length >0){
+                    var prefix_node = nodeFromXPath(annotation.ranges[0].start,_this.element.children[0]);
+                    var prefix = prefix_node.innerText.substring(0,annotation.ranges[0].startOffset);
+                    var suffix_node = nodeFromXPath(annotation.ranges[0].end,_this.element.children[0]);
+                    var suffix = suffix_node.innerText.substring(annotation.ranges[0].endOffset);
+                    annotation.suffix = suffix;
+                    annotation.prefix = prefix;
+                }
+            }).subscribe("beforeAnnotationCreated",function(annotation){
             });
 
             /*annotation 註記擴充功deleteAnnotation能*/

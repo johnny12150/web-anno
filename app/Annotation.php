@@ -302,8 +302,10 @@ class Annotation extends Model {
                 ),
               
             ),array(
-            'type' =>'TextQuotePosition',
-            'exact' => $data['quote']
+            'type' =>'TextQuoteSelector',
+            'prefix' => $data['prefix'],
+            'exact' => $data['quote'],
+            'suffix' => $data['suffix']
             )];
         }
         else if ($data['type']=="image")

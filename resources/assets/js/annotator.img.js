@@ -570,8 +570,6 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                         scope.target = null;
 
                     }
-
-
                 }).subscribe("annotationDeleted", function(annotation) {
                     if (annotation.type == 'image') {
                         $('#img-anno-' + annotation.id).remove();

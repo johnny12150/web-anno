@@ -1057,6 +1057,7 @@
               }
           }
       }
+      annotation.pre_quote = annotation.quote;
       annotation.quote = [];
       annotation.ranges = [];
       annotation.highlights = [];
@@ -1069,6 +1070,56 @@
       annotation.quote = annotation.quote.join(' / ');
       $(annotation.highlights).data('annotation', annotation);
       return annotation;
+      
+    };
+
+   
+    Annotator.prototype.setupAnnotation_fixed = function(annotation) {
+      var e, normed, normedRanges, r, root, _k, _l, _len2, _len3, _ref1;
+      root = this.wrapper[0];
+      annotation.ranges || (annotation.ranges = this.selectedRanges);
+      annotation.ranges = checkranges(annotation); //use our text annotation pi
+      normedRanges = [];
+      _ref1 = annotation.ranges;
+      if( _ref1 != null ) {
+          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+              r = _ref1[_k];
+              try {
+                  normedRanges.push(Range.sniff(r).normalize(root));
+              } catch (_error) {
+                  e = _error;
+                  if (e instanceof Range.RangeError) {
+                      this.publish('rangeNormalizeFail', [annotation, r, e]);
+                  } else {
+                      throw e;
+                  }
+              }
+          }
+      }
+      annotation.quote = [];
+      annotation.ranges = [];
+      annotation.highlights = [];
+      for (_l = 0, _len3 = normedRanges.length; _l < _len3; _l++) {
+        normed = normedRanges[_l];
+        annotation.quote.push($.trim(normed.text()));
+        annotation.ranges.push(normed.serialize(this.wrapper[0], '.annotator-hl'));
+        $.merge(annotation.highlights, this.highlightRange(normed));
+      }
+      annotation.quote = annotation.quote.join(' / ');
+      $(annotation.highlights).data('annotation', annotation);
+      return annotation;
+    };
+    function getxpath(elem,relativeRoot) {
+        var idx, path, tagName;
+        path = '';
+        while ((elem != null ? elem.nodeType : void 0) === Node.ELEMENT_NODE && elem !== relativeRoot) {
+            tagName = elem.tagName.replace(":", "\\:");
+            idx = $(elem.parentNode).children(tagName).index(elem) + 1;
+            idx = "[" + idx + "]";
+            path = "/" + elem.tagName.toLowerCase() + idx + path;
+            elem = elem.parentNode;
+        }
+        return path;
     };
 
     Annotator.prototype.updateAnnotation = function(annotation) {
@@ -1096,6 +1147,7 @@
 
     Annotator.prototype.loadAnnotations = function(annotations) {
       var clone, loader;
+
       if (annotations == null) {
         annotations = [];
       }
@@ -1108,7 +1160,8 @@
           now = annList.splice(0, 10);
           for (_k = 0, _len2 = now.length; _k < _len2; _k++) {
             n = now[_k];
-            _this.setupAnnotation(n);
+            console.log(n);
+            _this.setupAnnotation_fixed(n);
           }
           if (annList.length > 0) {
             return setTimeout((function() {
@@ -1199,7 +1252,7 @@
    
       return this.publish('annotationEditorSubmit', [this.editor, annotation]);
     };
-
+    /*no longer use annotator showviewer by jonathan*/
     Annotator.prototype.showViewer = function(annotations, location) {
       
       //this.viewer.element.css(location);
@@ -1225,6 +1278,7 @@
       }
       return this.mouseIsDown = true;
     };
+    /*prevent event from dblclick by jonathan*/
     Annotator.prototype.prevent =function(event){
         function clearSelection() {
             if(document.selection && document.selection.empty) {
@@ -2267,7 +2321,6 @@
     Store.prototype.annotationCreated = function(annotation) {
       if (__indexOf.call(this.annotations, annotation) < 0) {
         this.registerAnnotation(annotation);
-  
         return this._apiRequest('create', annotation, (function(_this) {
           return function(data) {
             if (data.id == null) {
@@ -2334,6 +2387,7 @@
     };
 
     Store.prototype._onLoadAnnotations = function(data) {
+
       var a, annotation, annotationMap, newData, _k, _l, _len2, _len3, _ref2;
       if (data == null) {
         data = [];
@@ -2366,6 +2420,7 @@
       if (data == null) {
         data = {};
       }
+
       return this._onLoadAnnotations(data.rows || []);
     };
 

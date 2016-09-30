@@ -46,6 +46,8 @@ class AnnotationController extends Controller
         $ranges_end = '';
         $ranges_startOffset = '';
         $ranges_endOffset = '';
+        $prefix = '1111';
+        $suffix = '1111';
 
         if(isset(Request::input('ranges')[0]['start']))
             $ranges_start = Request::input('ranges')[0]['start'];
@@ -55,7 +57,9 @@ class AnnotationController extends Controller
             $ranges_startOffset = Request::input('ranges')[0]['startOffset'];
         if(isset(Request::input('ranges')[0]['endOffset']))
             $ranges_endOffset = Request::input('ranges')[0]['endOffset'];
-
+        
+        $prefix = Request::input('prefix');        
+        $suffix = Request::input('suffix');
         $x = ($isImage && isset(Request::input('position')['x'])) ?  Request::input('position')['x'] : 0;
         $y = ($isImage && isset(Request::input('position')['y'])) ?  Request::input('position')['y'] : 0;
         $width = ($isImage && isset(Request::input('position')['width'])) ?  Request::input('position')['width'] : 0;
@@ -87,6 +91,8 @@ class AnnotationController extends Controller
             'Xpath' => $Xpath, // image Xpath
             'ranges_startOffset' => $ranges_startOffset,
             'ranges_endOffset' => $ranges_endOffset,
+            'prefix' => $prefix,
+            'suffix' => $suffix,
             'is_public' => $is_public,
             'tags' => $tags
         ]);

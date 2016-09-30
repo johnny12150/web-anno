@@ -36,6 +36,112 @@ function getHashParam(name) {
         results = regex.exec(location.hash);
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
+/*文字註記定位的XPath get*/
+ function nodeFromXPath(xp, root) {
+        var idx, name, node, step, steps, _i, _len, _ref1;
+        steps = xp.substring(1).split("/");
+        node = root;
+        for (_i = 0, _len = steps.length; _i < _len; _i++) {
+          step = steps[_i];
+          _ref1 = step.split("["), name = _ref1[0], idx = _ref1[1];
+          idx = idx != null ? parseInt((idx != null ? idx.split("]") : void 0)[0]) : 1;
+          node = findChild(node, name.toLowerCase(), idx);
+        }
+        return node;
+    };
+function findChild(node, type, index) {
+    var child, children, found, name, _i, _len;
+        if (!node.hasChildNodes()) {
+          throw new Error("XPath error: node has no children!");
+        }
+        children = node.childNodes;
+        found = 0;
+        for (_i = 0, _len = children.length; _i < _len; _i++) {
+          child = children[_i];
+          name = getNodeName(child);
+          if (name === type) {
+            found += 1;
+            if (found === index) {
+              return child;
+            }
+          }
+        }
+        throw new Error("XPath error: wanted child not found.");
+  };
+function getNodeName(node) {
+    var nodeName;
+    nodeName = node.nodeName.toLowerCase();
+    switch (nodeName) {
+      case "#text":
+        return "text()";
+      case "#comment":
+        return "comment()";
+      case "#cdata-section":
+        return "cdata-section()";
+      default:
+        return nodeName;
+    }
+};
+ /*文字註記定位的改善*/
+    function checkranges(annotation){
+       var prefix_node = nodeFromXPath(annotation.ranges[0].start,document.getElementsByClassName("annotator-wrapper")[0]);
+       var prefix = prefix_node.innerText.substring(0,annotation.prefix.length);
+       var suffix_node = nodeFromXPath(annotation.ranges[0].end,document.getElementsByClassName("annotator-wrapper")[0]);
+       var suffix = suffix_node.innerText.substring(suffix_node.innerText.length-annotation.suffix.length,suffix_node.length);
+       var quote = suffix_node.innerText.substring(annotation.ranges[0].startOffset,annotation.ranges[0].endOffset);
+       if(quote == annotation.quote){
+            console.log('quote as same as before');
+            return annotation.ranges;
+       }
+       else{
+         if(annotation.suffix == suffix){
+            var quote = suffix_node.innerText.substring(suffix_node.innerText.length-annotation.quote.length-annotation.suffix.length,suffix_node.innerText.length-annotation.suffix.length);
+            if( quote == annotation.quote){
+                console.log('prefix is wrong');
+                annotation.ranges[0].startOffset = suffix_node.innerText.length-annotation.quote.length-annotation.suffix.length;
+                annotation.ranges[0].endOffset = suffix_node.innerText.length-annotation.suffix.length;
+                return annotation.ranges;
+            }
+         }
+         if(annotation.prefix == prefix && annotation.suffix == suffix){
+              annotation.ranges[0].startOffset = annotation.prefix.length;
+              annotation.ranges[0].endOffset = suffix_node.innerText.length-annotation.suffix.length;
+             console.log("use prefix and suffix to locate the postion");
+             return annotation.ranges;
+         }     
+      }
+      console.log('use Xpath');
+      use_XPath(annotation)
+      return annotation.ranges;
+    };
+    function use_XPath(annotation){
+             var textrange = rangy.createRange();
+             textrange.selectNodeContents(document.getElementsByClassName("annotator-wrapper")[0]);
+             var searchScopeRange = rangy.createRange();
+             var serachelement = document.getElementsByClassName("annotator-wrapper")[0];
+                 searchScopeRange.selectNodeContents(serachelement);
+             var total = annotation.prefix+annotation.quote+annotation.suffix;
+             var origin_offet =  nodeFromXPath((annotation.ranges[0].start),serachelement).offsetTop;
+             var origin_distance = 1000 ;
+             var new_Xpath = '';
+             var options = {
+                    caseSensitive: false,
+                    wholeWordsOnly: false,
+                    withinRange: searchScopeRange,
+                    direction: "forward" // This is redundant because "forward" is the default
+                };
+              while (textrange.findText(total, options)) {
+
+                var now = Math.abs(textrange.startContainer.parentElement.offsetTop - origin_offet);
+                if( now < origin_distance) {
+                    origin_distance = now ;
+                     
+                     annotation.ranges[0].start = getxpath(textrange.startContainer.parentElement,serachelement);
+                     annotation.ranges[0].end = getxpath(textrange.endContainer.parentElement,serachelement);
+                }
+                textrange.collapse(false);
+              }        
+    }
 
 var annotation = function(e) {
 
@@ -97,7 +203,7 @@ var annotation = function(e) {
 
         // init annotator
         this.annotator = $(_annotation.element).annotator();     //Use "annotator()" Setting up Annotator
-        
+
         // set richText editor options
         
         var optionsRichText = {
@@ -127,29 +233,29 @@ var annotation = function(e) {
         
         this.annotator
             .annotator('addPlugin', 'Store', {
-            prefix: '',
-            urls: {
-                create:  'http://' + this.server_host + '/api/annotations/',
-                read:    'http://' + this.server_host + '/api/annotations/:id/',
-                update:  'http://' + this.server_host + '/api/annotations/:id/',
-                destroy: 'http://' + this.server_host + '/api/annotations/:id/',
-                search:  'http://' + this.server_host + '/api/search/'
-            },
-            annotationData: {                
-                uri : location.href.split('#')[0] ,
-                domain : _annotation.host,   //var x = location.host;  >> www.w3schools.com
-                anno_token : anno_token,
-                likes: 0
-            },
-            loadFromSearch: {
-                limit: 0,
-                uri: location.href.split('#')[0],
-                domain : _annotation.host, 
-                anno_token : anno_token,
-                user :  user_id
+                prefix: '',
+                urls: {
+                    create:  'http://' + this.server_host + '/api/annotations/',
+                    read:    'http://' + this.server_host + '/api/annotations/:id/',
+                    update:  'http://' + this.server_host + '/api/annotations/:id/',
+                    destroy: 'http://' + this.server_host + '/api/annotations/:id/',
+                    search:  'http://' + this.server_host + '/api/search/'
+                },
+                annotationData: {                
+                    uri : location.href.split('#')[0] ,
+                    domain : _annotation.host,   //var x = location.host;  >> www.w3schools.com
+                    anno_token : anno_token,
+                    likes: 0
+                },
+                loadFromSearch: {
+                    limit: 0,
+                    uri: location.href.split('#')[0],
+                    domain : _annotation.host, 
+                    anno_token : anno_token,
+                    user :  user_id
 
-            }
-        })
+                }
+            })
             .annotator('addPlugin','RichText',optionsRichText)
             .annotator('addPlugin', 'Tags')
             .annotator('addPlugin', 'ViewPanel', {
@@ -161,7 +267,7 @@ var annotation = function(e) {
 				keywords : keywords
             });
 
-		this.annotator.loadannotation
+        //		this.annotator.loadannotation
         var user = this.annotator.data('annotator-user');
 
 
@@ -169,10 +275,6 @@ var annotation = function(e) {
                 showEditPermissionsCheckbox: false,
                 user: user != null ? parseInt(user.id) : 0
             });
-       
-        
-
-
     };
    
     return this;

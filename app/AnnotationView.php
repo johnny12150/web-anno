@@ -437,6 +437,8 @@ class AnnotationView extends Model
            $anno->ranges_end="";
            $anno->ranges_startOffset="";
            $anno->ranges_endOffset="";
+           $anno->prefix = '';
+           $anno->suffix = '';
            $anno->x ="";
            $anno->y ="";
            $anno->width ="";
@@ -480,6 +482,8 @@ class AnnotationView extends Model
                 {
                     $anno->src = $target->source;
                     $anno->quote = $selector[1]->exact;
+                    $anno->prefix = $selector[1]->prefix;
+                    $anno->suffix = $selector[1]->suffix;
                     $anno->type = $target->type;
                     $anno->ranges_start = $selector[0]->startSelector->value;
                     $anno->ranges_end =   $selector[0]->endSelector->value;
@@ -498,7 +502,9 @@ class AnnotationView extends Model
         return [
             'id' => $row->id,
             'text' => '不使用',
+            'prefix' => $row->prefix,
             'quote' => $row->quote,
+            'suffix' => $row->suffix,
             'uri' => $row->uri,
             'domain' => $row->domain,
             'ranges' => [
