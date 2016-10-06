@@ -19,7 +19,7 @@ class Target extends Model{
 			$new_target->selector = $data['json'];
 			$new_target->type = $data['type'];
 			$new_target->uri = $data['uri'];
-			
+			$new_target->creator = $data['creator'];
 			$new_target->save();
 
 	}

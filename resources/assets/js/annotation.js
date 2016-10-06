@@ -52,7 +52,8 @@ function getHashParam(name) {
 function findChild(node, type, index) {
     var child, children, found, name, _i, _len;
         if (!node.hasChildNodes()) {
-          throw new Error("XPath error: node has no children!");
+          return node ; 
+          throw new Error("XPath error: node has no children!"); 
         }
         children = node.childNodes;
         found = 0;
@@ -66,6 +67,7 @@ function findChild(node, type, index) {
             }
           }
         }
+        return node;
         throw new Error("XPath error: wanted child not found.");
   };
 function getNodeName(node) {

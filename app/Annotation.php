@@ -97,7 +97,8 @@ class Annotation extends Model {
                 'type' => $data['type'],
                 'anno_id' => $new_anno->id,
                 'uri' => $data['uri'],
-                'json' => $json
+                'json' => $json,
+                'creator' => $data['creator_id']
             ]);
 
 
