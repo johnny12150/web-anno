@@ -29,10 +29,8 @@ Route::get('test4', function() {
 });
 Route::get('testing/anno{id}','Apicontroller@getanno');
 
-Route::get('manifest',function(){
-    return view('manifest');
-});
-Route::post('myprocess','AnnotationController@Manifest');
+
+
 /* Annotation API routing */
 Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
 {
@@ -46,7 +44,7 @@ Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
     Route::options('check', function () {});
     Route::options('annotations', function () {});
     Route::options('annotations/{id}', function () {});
-   
+
     Route::get('/', 'AnnotationController@index');
     Route::get('user', function() {});
     Route::get('annotations', 'AnnotationController@index');
@@ -65,8 +63,8 @@ Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
         Route::delete('annotations/{id}', 'AnnotationController@delete');
         Route::get('check', 'AnnotationController@check');
         Route::post('logout', 'AnnotationController@logout');
-        Route::post('edit_target','AnnotationController@edit_target');
-        Route::post('checkcollect','collecteController@check');      
+
+        Route::post('checkcollect','collecteController@check');
     });
 
     Route::any('{all}', function($uri)
@@ -92,8 +90,7 @@ Route::group(['prefix' => '/manage', 'middleware' => 'auth'], function() {
     Route::post('/cancel' , 'collecteController@destroy');
 
 });
-
-Route::get('list/{p1}',"AnnotationController@IIIFformat");
+Route::get('api','Apicontroller@output');
 Route::get('apiget', 'Apicontroller@import');
 Route::get('gethint','AnnotationController@gethint');
 Route::get('gravatar/{email}', 'GravatarController@get');
@@ -101,5 +98,4 @@ Route::get('gravatar/{email}', 'GravatarController@get');
 Route::get('manage/profile/{name}','ManageController@index');
 Route::post('manage/profile/{name}','ManageController@index');
 Route::controller('auth', 'AuthController');
-
-
+?>
