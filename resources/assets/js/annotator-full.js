@@ -1035,7 +1035,10 @@
       this.publish('beforeAnnotationCreated', [annotation]);
       return annotation;
     };
-
+    /*賦於Annotation's quote and ranges and highlights的值
+    *@param annotation object 
+    *return annotation object
+    */
     Annotator.prototype.setupAnnotation = function(annotation) {
       var e, normed, normedRanges, r, root, _k, _l, _len2, _len3, _ref1;
       root = this.wrapper[0];
@@ -1072,30 +1075,50 @@
       return annotation;
       
     };
-
-   
+    /*透過Annotation的ranges取得ranges所代表的element object
+    *@param annotation  object
+    *@param root   搜尋的根元素
+    *@return normedRanges array(object) 
+    **/
+    function normed_range(annotation,root){
+        _ref1 = annotation.ranges;
+        normedRanges=[];
+        if( _ref1 != null ) {
+            for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+                r = _ref1[_k];
+                try {
+                    normedRanges.push(Range.sniff(r).normalize(root));
+                    return normedRanges;
+                } catch (_error) {
+                    e = _error;
+                    if (e instanceof Range.RangeError) {
+                        this.publish('rangeNormalizeFail', [annotation, r, e]);
+                    } else {
+                        throw e;
+                    }
+                }
+            }
+        }
+    }
+    /*
+    *賦於Annotation's quote and ranges and highlights的值
+    *@param annotation 
+    *return annotation
+    */
     Annotator.prototype.setupAnnotation_fixed = function(annotation) {
       var e, normed, normedRanges, r, root, _k, _l, _len2, _len3, _ref1;
       root = this.wrapper[0];
-      annotation.ranges || (annotation.ranges = this.selectedRanges);
-      annotation.ranges = checkranges(annotation); //use our text annotation pi
-      normedRanges = [];
-      _ref1 = annotation.ranges;
-      if( _ref1 != null ) {
-          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-              r = _ref1[_k];
-              try {
-                  normedRanges.push(Range.sniff(r).normalize(root));
-              } catch (_error) {
-                  e = _error;
-                  if (e instanceof Range.RangeError) {
-                      this.publish('rangeNormalizeFail', [annotation, r, e]);
-                  } else {
-                      throw e;
-                  }
-              }
-          }
-      }
+      annotation.ranges || (annotation.ranges = this.selectedRanges);//DB取出的ranges
+      
+      /**/
+      var normedRanges_old = normed_range(annotation,root);//取得網頁上相對應的element 的物件
+      var quote =  [];
+      quote.push($.trim(normedRanges_old[0].text()));//取出quote
+      quote = quote.join(' / ');
+
+      annotation.ranges = checkranges(annotation,quote); //更正後的ranges Function checkranges from annotation.js. return right ranges
+      if(annotation.ranges[0].fix != undefined) annotation.fix =annotation.ranges[0].fix;
+      normedRanges = normed_range(annotation,root);
       annotation.quote = [];
       annotation.ranges = [];
       annotation.highlights = [];
@@ -1103,25 +1126,16 @@
         normed = normedRanges[_l];
         annotation.quote.push($.trim(normed.text()));
         annotation.ranges.push(normed.serialize(this.wrapper[0], '.annotator-hl'));
-        $.merge(annotation.highlights, this.highlightRange(normed));
+        /*給annotation's highlights相對應的class*/
+        if(annotation.fix =='level2')  //level2 為更動的class
+        $.merge(annotation.highlights, this.highlightRange(normed,'annotator-hl annotator-hl-level2'));
+        else
+         $.merge(annotation.highlights, this.highlightRange(normed));  
       }
       annotation.quote = annotation.quote.join(' / ');
       $(annotation.highlights).data('annotation', annotation);
       return annotation;
     };
-    function getxpath(elem,relativeRoot) {
-        var idx, path, tagName;
-        path = '';
-        while ((elem != null ? elem.nodeType : void 0) === Node.ELEMENT_NODE && elem !== relativeRoot) {
-            tagName = elem.tagName.replace(":", "\\:");
-            idx = $(elem.parentNode).children(tagName).index(elem) + 1;
-            idx = "[" + idx + "]";
-            path = "/" + elem.tagName.toLowerCase() + idx + path;
-            elem = elem.parentNode;
-        }
-        return path;
-    };
-
     Annotator.prototype.updateAnnotation = function(annotation) {
       this.publish('beforeAnnotationUpdated', [annotation]);
       this.publish('annotationUpdated', [annotation]);
@@ -1161,7 +1175,7 @@
           for (_k = 0, _len2 = now.length; _k < _len2; _k++) {
             n = now[_k];
             console.log(n);
-            _this.setupAnnotation_fixed(n);
+            _this.setupAnnotation_fixed(n);//當loading 註記時，註記顯示可能位移，走這支
           }
           if (annList.length > 0) {
             return setTimeout((function() {
@@ -1252,7 +1266,10 @@
    
       return this.publish('annotationEditorSubmit', [this.editor, annotation]);
     };
-    /*no longer use annotator showviewer by jonathan*/
+    /*註記的呈現目前不使用原本的viewer 、改為顯示在panel上
+    *@param annotations  該顯示在Viewer上的註記
+    *@param location   viewr出現地方
+    */
     Annotator.prototype.showViewer = function(annotations, location) {
       
       //this.viewer.element.css(location);
@@ -1278,17 +1295,18 @@
       }
       return this.mouseIsDown = true;
     };
-    /*prevent event from dblclick by jonathan*/
+    /*prevent event from dblclick by jonathan
+    *@param event double click event
+    *如果dbclick圖片時，將html 預設選取的部份移除
+    */
     Annotator.prototype.prevent =function(event){
-        function clearSelection() {
-            if(document.selection && document.selection.empty) {
-                document.selection.empty();
-            } else if(window.getSelection) {
-                var sel = window.getSelection();
-                sel.removeAllRanges();
-            }
+
+        if(document.selection && document.selection.empty) {
+            document.selection.empty();
+        } else if(window.getSelection) {
+            var sel = window.getSelection();
+            sel.removeAllRanges();
         }
-        clearSelection();
         this.adder.css('top', 100000)
                   .css('left',100000);
     };
@@ -1351,7 +1369,7 @@
       }
       position = this.adder.position();
       this.adder.hide();
-      annotation = this.setupAnnotation(this.createAnnotation());
+      annotation = this.setupAnnotation(this.createAnnotation()); //建立create註記時，不需定位改善，因此走原本AnnotatorJs提供的function
       $(annotation.highlights).addClass('annotator-hl-temporary');
       save = (function(_this) {
         return function() {

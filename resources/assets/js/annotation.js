@@ -52,6 +52,7 @@ function getHashParam(name) {
 function findChild(node, type, index) {
     var child, children, found, name, _i, _len;
         if (!node.hasChildNodes()) {
+          /*當原先的XPath已經不存在，用父節點當做比較位置*/
           return node ; 
           throw new Error("XPath error: node has no children!"); 
         }
@@ -67,7 +68,7 @@ function findChild(node, type, index) {
             }
           }
         }
-        return node;
+        return node;/*當原先的XPath已經不存在，用父節點當做比較位置*/
         throw new Error("XPath error: wanted child not found.");
   };
 function getNodeName(node) {
@@ -84,13 +85,13 @@ function getNodeName(node) {
         return nodeName;
     }
 };
- /*文字註記定位的改善*/
-    function checkranges(annotation){
+ /*文字註記定位的改善1  when XPath is right*/
+    function checkranges(annotation,quote){
        var prefix_node = nodeFromXPath(annotation.ranges[0].start,document.getElementsByClassName("annotator-wrapper")[0]);
        var prefix = prefix_node.innerText.substring(0,annotation.prefix.length);
        var suffix_node = nodeFromXPath(annotation.ranges[0].end,document.getElementsByClassName("annotator-wrapper")[0]);
        var suffix = suffix_node.innerText.substring(suffix_node.innerText.length-annotation.suffix.length,suffix_node.length);
-       var quote = suffix_node.innerText.substring(annotation.ranges[0].startOffset,annotation.ranges[0].endOffset);
+       var quote = quote
        if(quote == annotation.quote){
             console.log('quote as same as before');
             return annotation.ranges;
@@ -102,6 +103,7 @@ function getNodeName(node) {
                 console.log('prefix is wrong');
                 annotation.ranges[0].startOffset = suffix_node.innerText.length-annotation.quote.length-annotation.suffix.length;
                 annotation.ranges[0].endOffset = suffix_node.innerText.length-annotation.suffix.length;
+                annotation.ranges[0].fix = 'level2';
                 return annotation.ranges;
             }
          }
@@ -109,13 +111,16 @@ function getNodeName(node) {
               annotation.ranges[0].startOffset = annotation.prefix.length;
               annotation.ranges[0].endOffset = suffix_node.innerText.length-annotation.suffix.length;
              console.log("use prefix and suffix to locate the postion");
+             annotation.ranges[0].fix = 'level2';
              return annotation.ranges;
          }     
       }
       console.log('use Xpath');
-      use_XPath(annotation)
+      use_XPath(annotation);
+      annotation.ranges[0].fix = 'level2';
       return annotation.ranges;
     };
+    /*文字註記定位的改善1  when XPath is wrong*/
     function use_XPath(annotation){
              var textrange = rangy.createRange();
              textrange.selectNodeContents(document.getElementsByClassName("annotator-wrapper")[0]);
@@ -147,20 +152,23 @@ function getNodeName(node) {
 
 var annotation = function(e) {
 
-    //from setting.js
-    this.server_host = server_host;    
+    
+    this.server_host = server_host;//參數 server_host來自 setting.js
 
     this.element = e;
     this.annotator = null;   
     this.host = location.host;
     var _annotation = this;  
     
-
+    /*初始化設定參數
+    * @param setting 網頁URL、keyword匯入、圖片註記是否開啟
+    * return annotation 
+    */
     this.init = function(setting) {
 
         if( setting.uri == null ) {
             console.error('[Annotation Init Error]', 'uri undefined');
-            return;
+            return ;
         }
         _annotation.uri = setting.uri
 
@@ -198,11 +206,6 @@ var annotation = function(e) {
 
         var keywords=keywordInit(_annotation.element, setting.keywords);
 
-
-        //keywordInit(_annotation.element, { host: 'http://140.109.18.158/api/annotation.jsp'});
-       
-
-
         // init annotator
         this.annotator = $(_annotation.element).annotator();     //Use "annotator()" Setting up Annotator
 
@@ -231,7 +234,7 @@ var annotation = function(e) {
            
         // set user's permission options(delete,edit)
         var permissionsOptions = {};
-        permissionsOptions['showEditPermissionsCheckbox'] =  false ; //public and unpublic
+        permissionsOptions['showEditPermissionsCheckbox'] =  false ;
         
         this.annotator
             .annotator('addPlugin', 'Store', {
@@ -263,10 +266,21 @@ var annotation = function(e) {
             .annotator('addPlugin', 'ViewPanel', {
                 target_anno : target_anno,
                 anno_token : anno_token,
-                uri: _annotation.uri,
+                uri: location.href.split('#')[0] ,
                 server : _annotation.server_host,
                 domain : _annotation.host,
-				keywords : keywords
+				        keywords : keywords,
+                urls:{
+                  postlikeUrl : 'http://' + _annotation.server_host + '/api/likes',
+                  authCheckurl : 'http://' + _annotation.server_host + '/api/check',
+                  logoutUrl : 'http://' + _annotation.server_host+ '/api/logout',
+                  postreplyurl : 'http://' +_annotation.server_host + '/api/addbody',
+                  postdeleteurl : 'http://' + _annotation.server_host + '/api/body',
+                  postupdateurl : 'http://' + _annotation.server_host + '/api/updatebody',
+                  collecturl : 'http://' + _annotation.server_host + '/api/collect',
+                  delete_anno_url : 'http://' + _annotation.server_host + '/api/delete_anno',
+                  edit_target_url : 'http://' + _annotation.server_host + '/api/edit_target'
+                }
             });
 
         //		this.annotator.loadannotation

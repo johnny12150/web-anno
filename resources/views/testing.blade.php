@@ -41,19 +41,20 @@
 </header>
       <div class="content-wrap">
         <div class="field-content-panel">
-        <img src ="https://upload.wikimedia.org/wikipedia/commons/a/a0/Chen_Chengpo_1927d_Summer_Street.jpg" width ="500" height = "500">
+        <a href='http://ascdc.sinica.edu.tw/anno_list.jsp?newsId=&nowPage=6'><img src ="http://stacks.stanford.edu/image/jr903ng8662/T0000007" width ="500" height = "500"></a>
 
-        <p>工作內容: 協助執行「數位人文」專案計畫</p>
+        <p>陳澄波這張作品是陳澄波自東京美術學校圖畫師範科畢業</p>
         
 
           <div class="field-title">Chen Cheng-po  <a class="field-title-icon" href="http://data.asdc.tw/lod/Person/PR0001#lodlive-section"></a>
 </div>
 
-          <div class="field-section">  
+<div class="field-section">  
 
   <span class="field-label">Also known as</span>
-  <span class="field-value field-scroll-value">新加入的內容xxxxxxxxxxxxx</span>
+  <span class="field-value field-scroll-value">asdasdffff新加入的內容xxxxxxxxxxxxx</span>
 </div>
+
 <div class="field-section">
   <span class="field-label">Also known as</span>
   <span class="field-value field-scroll-value">ChenCheng Po, Chen XXXQinglan, Cheng-po chen, 陳慶ddddddaaaa瀾, XXXChen Chengbo, Tan Ting-pho, 陳澄波</span>

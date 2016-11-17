@@ -272,7 +272,7 @@
                 method: "get",
                 success: function (data) {
                     /*easy-complete for tags  by tokenize*/
-                   
+                    console.log(data.uri);
                     
                      for(var i in data.tags ){
                         $('#tokenize').append('<option value="' + data.tags[i] + '">'+ data.tags[i]+'</option>');

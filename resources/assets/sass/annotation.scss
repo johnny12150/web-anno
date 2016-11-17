@@ -442,7 +442,14 @@ $alpha : ",0.3)";
 .annotator-hl-focus{
   background-color: #99BBFF;
 }
-
+/*when XPath changed*/
+.annotator-hl-level2{
+  background-color:#DDC5EC ;
+}
+/*when prefix or exact changed*/
+.annotator-hl-level1{
+  background-color: #66FF66;
+}
 #editorDiv{
 
     margin: 0;

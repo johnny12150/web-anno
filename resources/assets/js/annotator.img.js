@@ -16,12 +16,9 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
     this.inselection = false;
     this.Xpath = "";
     this.annotator = $(element).annotator().data('annotator');
-    this.init = function() {
-        $('.annotator-wrapper') //可使用Annotator的element範圍
-            .append($('<div>').attr('id', 'img-anno-list'));
-
-    };
-    /* 判斷選取的是否回字串*/
+    /* 判斷選取的是否回字串
+    *return text 滑鼠反白的字串
+    */
     this.getSelectionText = function() {
         var text = "";
         if (window.getSelection) {
@@ -31,6 +28,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         }
         return text;
     };
+    /*初始化圖片註記之值*/
     this.initimgsetting  =function(){
         if(scope.inEdit == false)
             {
@@ -45,9 +43,10 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         }
         $(".annotator-adder").css('left',0).css('top',0).hide();
     }
+
     this.addHook = function() {
-        /*當離開圖片時  初始化沒使用的值*/
-        $('.annotator-wrapper')
+     
+    $('.annotator-wrapper')
             .on('mousemove', function(e) {
 
                 if(scope.getSelectionText() == '') {
@@ -55,11 +54,14 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                     var curY = e.pageY;
                     var target = $(scope.target);
                     if (scope.target != null && !(scope.target != null && (curX >= target.offset().left && curX <= target.offset().left + target.width() && curY >= target.offset().top && curY <= target.offset().top + target.height()))) {
-
                         scope.initimgsetting();
                     }
                 }
     });
+    /*取得節點相對應的XPath
+    *@elem   html element
+    *@root   搜尋的根元素  
+    */
     function getxpath(elem,relativeRoot) {
         var idx, path, tagName;
         path = '';
@@ -72,8 +74,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         }
         return path;
     };   
-        /*圖片hook,將網頁要使用註記範圍時，對圖片作控制，產生兩個canvas以及一些控制的事件*/
-
+    /*圖片hook,將網頁要使用註記範圍時，對圖片作控制，產生兩個canvas以及一些控制的事件*/
     $(window).resize(function(e){
          var canvas = $(_element).find('canvas');        
         for (var i = 0 ;i< canvas.length; i++)
@@ -252,9 +253,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
             });
         }
 
-        /*adder點選事件
-            1、出現Editor
-            2、設定出現位置*/
+        /*annotator-adder出現位置*/
         $('.annotator-adder')
             .on('click', function(e) {
                 var offset = $('.annotator-wrapper').offset();
@@ -270,8 +269,9 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
     };
     
 
-    /*function selelct 跟 clear 功能為拉取註記選擇範圍
-    對象為 canvas's select 暫時的canvas*/
+    /*使用者對圖片選擇範圍的呈現
+    *@param element img element
+    */
     function select(element) {
         var c1 = element.parentElement.children[2];
         var ctx = c1.getContext("2d");
@@ -282,7 +282,10 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         ctx.rect(scope.x, scope.y, scope.endx - scope.x, scope.endy - scope.y);
         ctx.stroke();
     };
-
+    /**將註記資訊顯示在panel上
+    *@param annotations annotation's array
+    *
+    */
     function showAnnoOnpanel(annotations) {
         var id = [];
         var collect_text = "收藏";
@@ -292,15 +295,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
 
         for (var i in annotations) {
             var annotation = annotations[i];
-           
-            /*$.post('api/checkcollect',{anno_id : annotation.id, anno_token :settings.anno_token ,domain: settings.domain })
-            .success(function(data){
-                if(data == "true")
-                collect_text="取消收藏";
-            }); 
-            */
-
-             $('.anno-body').append('<li id="anno-info-id' + annotation.id + '" class="anno-infos-item" style="z-index:50">' +
+            $('.anno-body').append('<li id="anno-info-id' + annotation.id + '" class="anno-infos-item" style="z-index:50">' +
                 '<p><b>註記建立者:' + annotation.user.name + '</b></p>');
 
             $('.anno-body #anno-info-id' + annotation.id).data('annotation',annotation);
@@ -314,7 +309,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
 
                 id.push(annotation.otherbodys[j].bid);
                 $('.anno-body #anno-info-id' + annotation.id).append('<div id ="anno-body' + annotation.otherbodys[j].bid + '" class = "anno-body-item">' +
-                    '<a href=manage/' + annotation.otherbodys[j].creator + ' class="anno-user-name">' + annotation.otherbodys[j].creator + '</a>' +
+                    '<a href=manage/profile/' + annotation.otherbodys[j].creator + ' class="anno-user-name">' + annotation.otherbodys[j].creator + '</a>' +
                     '<span class="anno-body-time">' + annotation.otherbodys[j].created_time + '</span>' +
                     '<div class="anno-body-text">' + annotation.otherbodys[j].text[0] + '</div>' +
                     tags +
@@ -371,12 +366,19 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
 
 
     };
+    /*清除繪畫層的註記
+    *@param element: select canvas
+    */
     function clear(element) {
         var c1 = element.parentElement.children[2];
         var ctx = c1.getContext("2d");
         ctx.clearRect(0, 0, c1.width, c1.height);
     };
-    /*繪製註記範圍在canvas's draw之上*/
+    /*註記層 顯示註記在該圖上
+    *@param element img element
+    *@position      selection part 
+    *@strokeStyle   line color
+    */
     function show(element, position, strokeStyle) {
         var c = element.parentElement.children[1];
         var ctx = c.getContext("2d");
@@ -386,7 +388,9 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         ctx.rect(position.x /100 * element.width , position.y /100 *element.height, position.width /100 *element.width, position.height /100 *element.height);
         ctx.stroke();
     };
-    /*重新繪製*/
+    /*將圖片註記顯視白線
+    *@param element    img element
+    */
     this.reshow = function(element) {
         var c1 = element.parentElement.children[1];
         var ctx = c1.getContext("2d");
@@ -398,7 +402,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         }
 
     };
-     $(document).on('mouseenter','.anno-infos-item',function(e){
+    $(document).on('mouseenter','.anno-infos-item',function(e){
         var annotation  = $(e.target).data('annotation');
         if(annotation != undefined)
             if(annotation.type =='image'){
@@ -413,12 +417,14 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                $(annotation.img.parentElement.children[1]).attr("class", "annoitem-unfocus draw");}
 
     });
+    /*當 loading 時，每筆註記以條列的方式顯示在panel上
+    *@param  annotation 
+    *
+    */
     this.annoinfos = function(annotation) {
-
-
         $(".anno-lists").append('<li id="anno-info-id' + annotation.id + '" class="anno-infos-item" style="z-index:50">' +
                 '<p><b>註記建立者:' + annotation.user.name + '</b></p>');
-
+        $('.anno-lists #anno-info-id' + annotation.id).data('annotation',annotation);        
         var tags = "";
         if (annotation.otherbodys.length > 0) {
             for (var i = 0; i <= annotation.otherbodys[0].tags.length - 1; i++) {
@@ -426,7 +432,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
             }
 
             $('.anno-lists #anno-info-id' + annotation.id).append('<div id ="anno-body' + annotation.otherbodys[0].bid + '" class = "anno-body-item">' +
-                '<a href=manage/' + annotation.otherbodys[0].creator + ' class="anno-user-name">' + annotation.otherbodys[0].creator + '</a>' +
+                '<a href=manage/profile/' + annotation.otherbodys[0].creator + ' class="anno-user-name">' + annotation.otherbodys[0].creator + '</a>' +
                 '<span class="anno-body-time">' + annotation.otherbodys[0].created_time + '</span>' +
                 '<div class="anno-body-text">' + annotation.otherbodys[0].text[0] + '</div>' +
                 tags);
@@ -451,31 +457,17 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
             }
         }
         annotation.img = img;
-       
-        $('#anno-info-id' + annotation.id).mouseenter(function() {
-            if (annotation.type == "image") {
-                $(img.parentElement.children[1]).attr("class", "annoitem-focus draw");
-
-                show(img, annotation.position, "blue");
-            }
-        });
-        $('#anno-info-id' + annotation.id).mouseleave(function() {
-            if (annotation.type == "image") {
-                scope.reshow(img);
-                $(img.parentElement.children[1]).attr("class", "annoitem-unfocus draw");
-            }
-        });
         $('#anno-info-id' + annotation.id).click(function() {
             if (annotation.type == "image")
                 show(img, annotation.position, "blue");
                  $('html,body').animate({ scrollTop: scrollTop - 100 }, 800);
                 showAnnoOnpanel(new Array(annotation));
         });
-      
-
-
     };
-
+    /* let x1 < x2 and y1 <y2
+    *@param x1,y1,x2,y2   startx,starty,endx,endy 
+    *@return  xa,ya,xb,yb                
+    */
     function flipCoords(x1, y1, x2, y2) {
         var xa = x1,
             xb = x2,
@@ -496,10 +488,13 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         return [xa, ya, xb, yb];
     }
 
-    /*取得圖片上的註記*/
+    /*取得圖片上的註記
+    *@param element // img element
+    *return annotations;
+    */
     function getImgAnnotation(element) {
         return $(element).data("annotation") !== undefined ? $(element).data("annotation") : [];
-    }
+    };
     /*當Annotation 執行Delete時，將所屬圖片上把該資料刪除，並且重繪*/
     this.deleteAnnotation = function(annotation) {
         var img = document.getElementById(annotation.src);
@@ -511,13 +506,14 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         };
 
     };
-    /*當Annotation 執行load或是created時，將資料存在所屬的圖片中，並且顯示在canvas上*/
+    /*讀取到註記時，顯示該註記在圖片上*/
     this.addImgAnnotation = function(annotation) {
         var img =  $(_element).find('img');
 
         for (var i = 0 ;i< img.length ; i++){
             var range = document.createRange();
             range.selectNodeContents(img[i]);
+            /*以XPath區分註記該屬於何圖*/
             var Xpath = getxpath(range.startContainer.parentElement,document.getElementsByClassName("annotator-wrapper")[0]);
             if(Xpath == annotation.Xpath)
             {
@@ -530,10 +526,8 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
       
     };
 
-    /*當panel checkbox執行時，先去除圖片element所有關於
-    annotation註記，並且重繪*/
+    /*清除圖片上的註記*/
     this.initImgAnnotation = function() {
-
         var img1 = $(_element).find('img');
         for (var i = 0; i < img1.length; i++) {
             $(img1[i]).removeData("annotation");
@@ -547,9 +541,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
     return {
         pluginInit: function() {
 
-            scope.init();
             scope.addHook();
-
             this.annotator
                 .subscribe("annotationCreated", function(annotation) {
                     if (scope.target != null) {

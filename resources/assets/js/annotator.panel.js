@@ -3,14 +3,6 @@
  */
 Annotator.Plugin.ViewPanel = function(element, settings) {
 
-    // storing object scope
-    /* settings:
-    target_anno : target_anno,
-    anno_token : anno_token,
-    uri: _annotation.uri,
-    server : _annotation.server_host,
-    domain : _annotation.host
-    */
     var _this = this;
     this.settings = settings;
     this.annotator = $(element).annotator().data('annotator');
@@ -18,45 +10,35 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
     this.uri = settings.uri;
     this.keywords = settings.keywords;
     this.hide_keywords = "";
-    // if uri not set , use web url in default
-    if (this.uri == null)
-        this.uri = location.href.split('#')[0];
-    this.userlike;
     this.anno_token = settings.anno_token;
-    this.target_anno = settings.target_anno;
+    this.target_anno = settings.target_anno; //當後台蒐尋特定anno的id
     this.server = settings.server;
-    this.condition = "";
+    this.condition = ""; //過濾條件
     this.domain = settings.domain;
     this.callback_url = location.href.split('#')[0];
     this.allTags = [];
-    // Storing entire data;
-    this.data = [];
-    // Storing data that only showed;`
-    this.showing = [];
-    // Mapping hights elements by id;
-    this.maptoid = {};
+    this.data = [];// Storing entire data;
+    this.showing = []; // Storing data that only showed;`
     this.autocompleteData = [];
-    // Authed variable
     this.is_authed = false;
     this.conditionData = [];
     // Panel Object
     this.ui = null;
-
-    this.editaction = false;
     // API URLS
-    this.postlikeUrl = 'http://' + this.server + '/api/likes';
-    this.authCheckurl = 'http://' + this.server + '/api/check';
+    this.postlikeUrl = settings.urls.postlikeUrl ;
+    this.authCheckurl = settings.urls.authCheckurl;
     this.loginUrl = 'http://' + this.server + '/auth/login?callback_url=' + encodeURIComponent(this.callback_url) + '&uri=' + this.uri + '&domain=' + this.domain;
-    this.logoutUrl = 'http://' + this.server + '/api/logout';
-    this.postreplyurl = 'http://' + this.server + '/api/addbody';
-    this.postdeleteurl = 'http://' + this.server + '/api/body';
-    this.postupdateurl = 'http://' + this.server + '/api/updatebody';
-    this.collecturl = 'http://' + this.server + '/api/collect';
-    this.delete_anno_url = 'http://' + this.server + '/api/delete_anno';
+    this.logoutUrl =  settings.urls.authCheckurl;
+    this.postreplyurl =  settings.urls.postreplyurl;
+    this.postdeleteurl =  settings.urls.postdeleteurl;
+    this.postupdateurl =  settings.urls.postupdateurl;
+    this.collecturl =  settings.urls.collecturl;
+    this.delete_anno_url = settings.urls.delete_anno_url;
+    this.edit_target_url = settings.urls.edit_target_url;
     this.showUI = true;
     this.annotation_show = true;
     this.user = null;
-
+    this.maptoid = {};
     this.loadAnnotations = function(data) {
          $('.anno-lists').empty();
         _this.annotator.loadAnnotations(data);
@@ -65,6 +47,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
     this.initkeyword = function() {
         _this.show_annotations();
     }
+
     $(window).resize(function(e){
         $('.annotator-hl').unbind('click');
         $('.annotator-hl').removeClass('annotator-hl');
@@ -142,7 +125,12 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
     };
 
 
-    /*panel 主體*/
+    /*增加panel以及動化程式
+    *
+    *
+    *
+    *
+    */
     this.insertPanelUI = function() {
 
         $('body').append(
@@ -221,6 +209,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             '</div>'
         );
         _this.ui = $('.anno-panel');
+        /*控制註記的顯示*/
         $('.btn-show').click(function(e){
            if(_this.annotation_show == true){
             _this.showing = [];
@@ -240,6 +229,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                  $('.panel-anno-show').css('color','blue');
             }
         });
+        /*搜尋過濾功能介面*/
         $('.panel-main').click(function(e) {
             $(e.target).css({ 'color': "blue" })
             $('.panel-message').css({ 'color': 'black' });
@@ -251,6 +241,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             $('.anno-body').hide();
             $('.anno-lists').hide();
         });
+        /*註記列表*/
         $('.panel-annolist').click(function(e) {
             $(e.target).css({ 'color': "blue" });
             $('.panel-main').css({ 'color': 'black' });
@@ -262,6 +253,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             $('.anno-body').hide();
             $('.anno-lists').show();
         });
+        /*註記內容的顯示*/
         $('.panel-message').click(function(e) {
             $(e.target).css({ 'color': "blue" });
             $('.panel-main').css({ 'color': 'black' });
@@ -273,6 +265,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             $('.anno-body').show();
             $('.anno-lists').hide();
         });
+        //目前沒用到
         /*if (_this.target_anno == 0) {
             $('.anno-viewall').hide();
         } else {
@@ -281,8 +274,8 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             $('.anno-tags').hide();
             $('.anno-search-list').hide();
             $('.btn-appear').hide();
-        }*/
-        /*The action After we click the view all button */
+        }
+      
         $('#btn-viewall').click(function(e) {
             _this.target_anno = 0;
             $('.anno-tags').remove();
@@ -296,7 +289,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             $('.anno-viewall').hide();
 
         });
-
+        */
         //綁定搜尋按鈕事件
         $('#anno-search-submit').click(function(e) {
             e.preventDefault(); //prevent from getting empty input 
@@ -313,8 +306,6 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 _this.condition += condition + ",";
             }
 
-
-            data.search = _this.ui.find('#anno-search-input').val();
             data.search = _this.condition;
             $.ajax({
                 url: url_search,
@@ -322,11 +313,11 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 dataType: 'json',
                 success: function(data) {
                     if (data.total == 0) {
-                        alert("查詢不到相關結果");
+                        alert("查詢不到相關結果,顯示全部註記");
                     }
                     $('.annotator-hl').unbind('click')
                     $('.anno-users ul li').remove();
-                    _this.conditionData = data.rows;
+                    //_this.conditionData = data.rows;
                     _this.showing = data.rows;
                     _this.show_annotations();
                 }
@@ -339,7 +330,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
            
             var data = _this.annotator.plugins.Store.options.loadFromSearch;
             var anno_id =   $(e.target).attr('data-id');
-
+            console.log(_this.delete_anno_url);
             $.ajax({
                 url: _this.delete_anno_url +'/'+ $(e.target).attr('data-id') ,
                 data: data,
@@ -347,7 +338,8 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 method :'POST',
                 success: function(data) {
                      $('.annotator-hl').unbind('click')
-                     $('.annotator-hl-focus').removeClass('annotator-hl-focus');
+                     $('.annotator-hl-focus').removeClass('annotator-hl-focus annotator-hl-level2');
+
                      $('.panel-annolist').click();
 
                      var tem_data = _this.data;
@@ -374,7 +366,6 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                         enabled: true
                     }
                 }
-
             };
             $('#anno-search-input').easyAutocomplete(options);
         };
@@ -405,8 +396,9 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 like: state
             }).success(function(likes) {
 
-                var count = 0
+                var count = 0 //
                 for (var i in $(element).data('annotator-user').like) {
+                   /*更新前台like資料*/
                     if ($(element).data('annotator-user').like[i].bg_id == aid) {
                         $(element).data('annotator-user').like[i].like = state;
                         count++;
@@ -675,9 +667,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 
             }
         }
-
         _this.show_annotations();
-
     };
 
     this.addReference = function(annotation) {
@@ -749,46 +739,10 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         }
         return '';
     };
-    this.replyViewer = function(field, annotation) {
-
-        if (annotation.otherbodys.length != 0) {
-
-            for (var j = 0; j < annotation.otherbodys.length; j++) {
-                var tags = "";
-                for (var i = 0; i < annotation.otherbodys[j].tags.length; i++) {
-                    tags += '<span class="annotator-tag">' + annotation.otherbodys[j].tags[i] + ' </span>';
-
-                }
-                $(field)
-                    .addClass('annotator-replyViewer');
-                $('.annotator-replyViewer').append(
-                        '<span class="annotator-controls"><a class="anno-body-edit fa fa-pencil-square-o" style="background-position: 0 -60px;" data-id=' + annotation.otherbodys[j].bid + '></a>' +
-                        '<a class="anno-body-delete fa fa-times" style="background-position: 0 -75px;" data-id=' + annotation.otherbodys[j].bid + '></a></span')
-                    .append('<div class="richText-annotation" style="padding-top:22px";>' + annotation.otherbodys[j].text[0] + '</div>');
-                if (tags != "") {
-                    $('.annotator-replyViewer').append('<div class="annotator-tags">' + tags + '</div>');
-                }
-
-                $('.annotator-replyViewer').append('<div class="annotator-user"><strong>建立者: <span>' + annotation.otherbodys[j].creator + '</span></strong></div>' +
-                    '<div class="annotator-date"><strong>建立時間: <span>' + annotation.otherbodys[j].created_time + '</span></strong></div>');
-                $('.annotator-replyViewer').append('<div class="annotator-mark"><strong>評分: </strong>' +
-                    '<span class="annotator-likes">' +
-                    '<span class="annotator-likes-total">' + annotation.otherbodys[j].like + '</span>' +
-                    '<a href="#" data-id="' + annotation.id + '"data-bid="' + annotation.otherbodys[j].bid + '" class="anno-like fa fa-thumbs-up"></a>' +
-                    '<a href="#" data-id="' + annotation.id + '"data-bid="' + annotation.otherbodys[j].bid + '" class="anno-dislike fa fa-thumbs-down"></a>' +
-                    '</span>');
-            }
-        } else {
-            $(field).hide();
-        }
-        return '';
-    };
-    this.reply = function(field, annotation) {
-        $(field)
-            .addClass('annotator-reply')
-            .append('<a class="anno-reply" data-id=' + annotation.id + '>留言</a>');
-    }
-
+    /*call when user want to see the annotation body
+     *@param annotations  註記物件的array
+     *return null
+    */
     function showAnnoOnpanel(annotations) {
         var id = [];
         var collect_text = "收藏";
@@ -816,7 +770,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 
                 id.push(annotation.otherbodys[j].bid);
                 $('.anno-body #anno-info-id' + annotation.id).append('<div id ="anno-body' + annotation.otherbodys[j].bid + '" class = "anno-body-item">' +
-                    '<a href=manage/' + annotation.otherbodys[j].creator + ' class="anno-user-name">' + annotation.otherbodys[j].creator + '</a>' +
+                    '<a href=manage/profile/' + annotation.otherbodys[j].creator + ' class="anno-user-name">' + annotation.otherbodys[j].creator + '</a>' +
                     '<span class="anno-body-time">' + annotation.otherbodys[j].created_time + '</span>' +
                     '<div class="anno-body-text">' + annotation.otherbodys[j].text[0] + '</div>' +
                     tags +
@@ -870,12 +824,49 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                        '<a class="anno-delete fa fa-trash-o" data-id="' + annotation.id + '" style="padding-left:5px;">刪除</a>');
         }
 
-
-
+        /*詢問使用者改善註記的部份*/
+        if(annotation.fix != undefined && annotation.user.id == getCookie('user_id')){
+            var a = confirm('是否要保存該註記');
+            if(a ==true){
+                edit_target(annotation);
+            }else{
+                $('.anno-delete').click();
+            }
+        }
     }
+    /*when user confirm the text's target change,update postion info
+    *@param annotation 被本工具改善定位的註記]
+    */
+    function edit_target(annotation){
+        $.ajax({
+            crossDomain: true,
+            url: _this.edit_target_url,
+            method: "POST",
+            data: {
+                id: annotation.id,
+                uri: location.href.split('#')[0],
+                start:annotation.ranges[0].start,
+                end: annotation.ranges[0].end,
+                startOffset: annotation.ranges[0].startOffset,
+                endOffset:annotation.ranges[0].endOffset,
+                anno_token: _this.anno_token,
+                domain: _this.domain
+            },
+            success: function(data) {
+                console.log(data);
+                 $('.annotator-hl-focus').removeClass('annotator-hl-level2');
+                annotation.fix = undefined;
+            },
+            error: function(xhr, status, error) {
+                alert("xhr:" + xhr + '\n' + "status:" + status + '\n' + "error:" + error);
+            }
+        });
+    }
+    /*使用者新增評論回覆的輸入介面與相關事件
+    */
     this.insertReply = function() {
-        var action;
-        $('.annotator-wrapper')
+        var action;  //body修改與新增共用同一個view 因此用此區分
+            $('.annotator-wrapper')
             .append('<div id="editorDiv" style="position:fixed;right:0px;bottom:0px;z-index:1800;width:300px;display:none">' +
                 '<input type="hidden" id="editor_anno_id">' +
                 '<textarea name="editor" id="editor" cols="30" rows="10"></textarea>' +
@@ -910,7 +901,6 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 
                     var content = tinyMCE.activeEditor.getContent();
                     var tags = $('#tags').val();
-                    console.log($('input[name=anno-body-public]')[0].checked);
                     $.ajax({
                         crossDomain: true,
                         url: _this.postreplyurl,
@@ -928,11 +918,13 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                             // editor hide and clean
                             $('#editorDiv').hide();
                             $('.annotator-hl').unbind('click')
+                            //clean the tinymce's value
                             tinyMCE.activeEditor.setContent('');
                             $('#tags').val('');
                             //update this_data
                             _this.data = data[0].rows;
                             _this.show_annotations();
+                            //update the showing data
                             $('#anno-search-submit').click();
                             //show on right panel
                             for (var i in _this.data) {
@@ -940,7 +932,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                                 if (_this.data[i].id == aid) {
                                     var anno = new Array();
                                     anno.push(_this.data[i]);
-                                    showAnnoOnpanel(anno);
+                                    showAnnoOnpanel(anno); // @param anno is array data
                                 }
                             };
 
@@ -1000,7 +992,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 bid = $(e.target).attr('data-id');
             })
             .on('click', '.anno-body-delete', function(e) {
-                var id = $(e.target).attr('data-id');
+                var id = $(e.target).attr('data-id'); // body's id 
                 $.ajax({
                     crossDomain: true,
                     url: _this.postdeleteurl + "/" + id,
@@ -1013,7 +1005,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                     },
                     success: function(data) {
                         $('.annotator-hl').unbind('click')
-                        _this.data = data.rows;
+                        _this.data = data.rows;  //更新data
                         _this.show_annotations();
                         $('#anno-body' + id).remove();
                         $('#anno-search-submit').click();
@@ -1028,20 +1020,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 
             });
     }
-    this.updateLikeViewer = function(field, annotation) {
-        if (annotation.likes != undefined) {
-            $(field)
-                .addClass('annotator-mark')
-                .html('<strong>評分: </strong>' +
-                    '<span class="annotator-likes">' +
-                    '<span class="annotator-likes-total">' + annotation.likes + '</span>' +
-                    '<a href="#" data-id="' + annotation.id + '"data-bid="' + annotation.bid + '" class="anno-like fa fa-thumbs-up"></a>' +
-                    '<a href="#" data-id="' + annotation.id + '"data-bid="' + annotation.bid + '" class="anno-dislike fa fa-thumbs-down"></a>' +
-                    '</span>');
-        }
-
-        return '';
-    };
+    
     $(document).on('mouseenter','.anno-infos-item',function(e){
         var annotation  = $(e.target).data('annotation');
         if(annotation != undefined)
@@ -1049,6 +1028,14 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             $(annotation.highlights).addClass('annotator-hl-focus');
 
     });
+    $(document).on('mouseleave','.anno-infos-item',function(e)
+    {
+        var annotation  = $(e.target).data('annotation');
+
+        for (var i = 0 ; i < annotation.highlights.length;i++)
+        $(annotation.highlights[i]).removeClass('annotator-hl-focus');
+    });
+    /*從右手邊panel對應到頁面上的註記 img and text都會使用到 */ 
     this.annoinfos = function(annotation) {
 
         $(".anno-lists").html();
@@ -1056,14 +1043,14 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 '<p><b>註記建立者:' + annotation.user.name + '</b></p>');
 
         var tags = "";
-
+        $('.anno-lists #anno-info-id' + annotation.id).data('annotation',annotation);
         if (annotation.otherbodys.length > 0) {
             for (var i = 0; i <= annotation.otherbodys[0].tags.length - 1; i++) {
                 tags += '<span class="anno-body-tag">' + annotation.otherbodys[0].tags[i] + ' </span>';
             }
 
             $('.anno-lists #anno-info-id' + annotation.id).append('<div id ="anno-body' + annotation.otherbodys[0].bid + '" class = "anno-body-item">' +
-                '<a href=manage/' + annotation.otherbodys[0].creator + ' class="anno-user-name">' + annotation.otherbodys[0].creator + '</a>' +
+                '<a href=manage/profile/' + annotation.otherbodys[0].creator + ' class="anno-user-name">' + annotation.otherbodys[0].creator + '</a>' +
                 '<span class="anno-body-time">' + annotation.otherbodys[0].created_time + '</span>' +
                 '<div class="anno-body-text">' + annotation.otherbodys[0].text[0] + '</div>' +
                 tags);
@@ -1078,31 +1065,15 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         $('.anno-lists #anno-info-id' + annotation.id).append('<div ><a style="text-align:right">readmore</a></div>');
         if(annotation.type == 'text')
         var scrollTop = $(annotation.highlights).offset().top;
-        $('#anno-info-id' + annotation.id).mouseenter(function() {
-          
-            $(annotation.highlights).addClass('annotator-hl-focus');
-        });
-        $('#anno-info-id' + annotation.id).mouseleave(function() {
-            $(annotation.highlights).removeClass('annotator-hl-focus');
-        });
+
         $('#anno-info-id' + annotation.id).click(function() {
              $('html,body').animate({ scrollTop: scrollTop - 100 }, 800);
-              showAnnoOnpanel(new Array(annotation));
+              showAnnoOnpanel(new Array(annotation)); 
         });
-        
-
     };
-    function RemoveHTML(strText) {
-
-        var regEx = /<[^>]*>/g;
-
-        return strText.replace(regEx, "");
-
-    }
-
-
+    /* autocomplete 過濾重複的字詞
+    */
     function unique1(array) {
-
         var n = [];
         for (var i = 0; i < array.length; i++) {
             if ($.inArray(array[i], n) == -1) {
@@ -1115,9 +1086,8 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         }
         return n1;
     }
-
+    /*當annotation-hl被點即，呈現註記在panel上 */
     function handler(event) {
-
         var annotations = event.data.annotations;
         $('.annotator-hl-focus').removeClass('annotator-hl-focus');
         showAnnoOnpanel(annotations);
@@ -1128,7 +1098,6 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         $(".btn-appear").stop().animate({
             'right': '300px'
         }, 1000, 'linear');
-
         $(".btn-appear").html('<i class="fa fa-chevron-right " aria-hidden="true"></i>');
         _this.showUI = true;
     }
@@ -1163,28 +1132,23 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                         }
                     }
 
-                    //建立 id以及被標記元素的map
+                    /*建立 id以及被標記元素的map
                     if (annotation.highlights != null) {
                         _this.maptoid[annotation.id] = annotation.highlights;
-                    }
+                    }*/
                     // 當要顯示特定標記時，刪除其他標記的高亮
                     if (_this.target_anno != 0 && annotation.id.toString() != _this.target_anno) {
                         if (annotation.id.toString() != _this.target_anno && annotation.highlights != null) {
                             annotation.highlights.forEach(function(highlight, index, highlights) {
                                 $(highlight).removeClass('annotator-hl');
-
-
                             });
-
                         }
-
                     }
-
+                  
                 });
                 /*for search easy-autocomplete*/
                 _this.autocompleteData = unique1(_this.allTags);
                 _this.autocomplete();
-
             }).subscribe("annotationCreated", function(annotation) {
                 _this.data.push(annotation);
                 _this.addReference(annotation);
@@ -1199,7 +1163,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 _this.checkLoginState();
                 var index = -1;
                 for (var i in _this.data) {
-
+                    /*keyword*/
                     if (annotation.id == _this.data[i].id) {
                         index = i;
                         break;
@@ -1212,15 +1176,17 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 
             }).subscribe('annotationViewerShown', function(viewer, annotations) {
                 $('.annotator-hl').unbind('click');
+                /*我們隱藏viewer 用panel秀出多筆annotaiton*/
                 $('.annotator-hl').bind('click',{annotations:annotations},handler);
             }).subscribe("annotationEditorHidden", function(editor) {
                 window.getSelection().removeAllRanges();
             }).subscribe("annotationEditorShown", function(editor,annotation) {
+                /*決定編即視窗的位置*/
                 editor.element[0].style.position = "fixed";
                 editor.element[0].style.right = "0px";
                 editor.element[0].style.bottom = "0px";
                 editor.element[0].style.float = 'right';
-                /*we add text quote when editor show*/
+                /*we 取得前後文 when editor show*/
                 if(annotation.ranges.length >0){
                     var prefix_node = nodeFromXPath(annotation.ranges[0].start,_this.element.children[0]);
                     var prefix = prefix_node.innerText.substring(0,annotation.ranges[0].startOffset);
@@ -1229,11 +1195,10 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                     annotation.suffix = suffix;
                     annotation.prefix = prefix;
                 }
-            }).subscribe("beforeAnnotationCreated",function(annotation){
             });
 
-            /*annotation 註記擴充功deleteAnnotation能*/
-            /*_this.annotator.viewer.addField({
+            /*原先AnnotatorJs浮動顯示
+            _this.annotator.viewer.addField({
                 load: _this.updateCreatorViewer
             });
 

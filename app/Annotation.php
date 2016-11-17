@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Validator;
 use App\BodyMember;
 use App\Target;
 use App\bodygroup;
+use App\follow;
 use Carbon\Carbon;
 use Thomaswelton\LaravelGravatar\Facades\Gravatar;
 
@@ -13,6 +14,9 @@ use Thomaswelton\LaravelGravatar\Facades\Gravatar;
  * Class Annotation
  * @package App
  */
+class object{
+
+};
 class Annotation extends Model {
 
     /**
@@ -22,9 +26,9 @@ class Annotation extends Model {
      */
     protected $table = 'annotation';
     public $timestamps = false;
-    /**
+    /** 驗證要求儲存的資料是否符合
      * @param $data the data that will be verified
-     * @return bool result of validation
+     * @return 如果驗證success 回傳true ;如果驗證fail return false
      */
     public static function validator($data)
     {
@@ -52,10 +56,10 @@ class Annotation extends Model {
     }
       
     /**
-     * Check Annotation exists
+     * 檢查該註記 是否屬於該使用者
      * @param $uid User ID
      * @param $id  Annotation ID
-     * @return bool
+     * @return 如果是 回傳true
      */
     public static function checkOwner($uid, $id)
     {
@@ -66,12 +70,10 @@ class Annotation extends Model {
             return True;
     }
 
-
     /**
-     * Add Annotation
-     *
-     * @param $data
-     * @return array|bool
+     * Add Annotation to DB
+     * @param $data  from AnnotationController.php 76
+     * @return 新增成功 回傳annotation's id ;新增失敗 回傳false 
      */
  
     public static function add($data)
@@ -83,15 +85,13 @@ class Annotation extends Model {
             //1.annotation
             $new_anno = new Annotation();
             $new_anno->creator_id = $data['creator_id'];
-            //$new_anno->uri = $data['uri'];
-            $new_anno->domain = $data['domain'];
             $new_anno->is_public  = $data['is_public'];
-            $new_anno->state = "exist";
+            $new_anno->state = "exist"; //未來可能用於軟刪除  目前還沒用到
             $new_anno->edited_time = Carbon::now();
             $new_anno->save();
 
             //2.target
-            $json = self::CreatSelectorArray($data);
+            $json = self::CreatSelectorArray($data);//WA selector
             Target::add([
                 'source' => $data['src'],
                 'type' => $data['type'],
@@ -105,22 +105,23 @@ class Annotation extends Model {
             //3.body_group
             $bg_id = bodygroup::add($new_anno->id);
         
-            $tags = $data['tags'];
-            if(!$tags)
+            $tags = $data['tags']; //$data['tags'] = array
+             if(!$tags)
                 $tags = [];
             $tags = array_unique($tags);
 
             foreach( $tags as $tagName) {
-                $data['tags']= $tagName;
+                //$data['tags']= $tagName;
                 $Bodymember = Bodymember::add([
-                'creator_id' => $data['creator_id'],
-                'text' => $data['tags'],
-                'purpose' => "tagging",
-                'bg_id' => $bg_id,
-                'public' => $data['is_public'],
-                'type' =>'TextualBody'
-            ]);
-            $new_anno->tags = $data['tags'];
+                    'creator_id' => $data['creator_id'],
+                    //'text' => $data['tags'],
+                    'text' => $tagName,
+                    'purpose' => "tagging",
+                    'bg_id' => $bg_id,
+                    'public' => $data['is_public'],
+                    'type' =>'TextualBody'
+                ]);
+                //$new_anno->tags = $data['tags'];
             }
             Bodymember::add([
                 'creator_id' => $data['creator_id'],
@@ -159,125 +160,37 @@ class Annotation extends Model {
             return false;
         }
     }
-    public static function getAnnos($uid){
+    /*取得註記
+    *@param uid  user's id
+    *@param $front 分辨前後台
+    *return 用於前台 可取得當前使用者的註記與公開的註記
+    *        用於後台 可取得當前使用者的註記
+    */
+    public static function getAnnos($uid,$front = 'front',$super ='false'){
+        if($super =='true') return self::lists('anno_id');
+        if($front == 'front')
+        return self::where('creator_id',$uid)->orWhere('is_public',1)->lists('anno_id');
+        else
         return self::where('creator_id',$uid)->lists('anno_id');
+
     }
-    public static function editText($uid, $id, $text,$tags)
-    {
-        if(self::checkOwner($uid, $id))
-        {
-           Annotation::updateaction($id,$uid,$text,$tags);
-                
-           $res = Bodymember::getupdate([
-                'creator_id' => $uid,
-                'purpose' => "tagging",
-                'anno_id' => $id,
-                'text' => $text,
-                'tags' => $tags
-                ]); 
-        
-            return $res;
-        } else {
-            return false;
-        }
+    public static function anno_id_get_from_reply($uid){
+        $anno_id = bodygroup::get_annoid_from_bgid($uid);
+        return $anno_id;
     }
-
-    /**
-     * @param $uid
-     * @param $id
-     * @param $data
-     * @return bool|string
-     */
-    public static function edit($uid, $id, $data)
-    {
-        if(self::checkOwner($uid, $id)) {
-            $check = self::validator($data);
-            if( $check == true ) {
-                $anno = self::whereRaw('anno_id = ? and creator_id = ?',array($id, $uid))->update(array(
-                    'is_public' => $data['is_public']
-                ));
-            $tags = $data['tags'];
-
-            if(!$tags)
-                $tags = [];
-            $tags = array_unique($tags);
-            
-            Bodymember::deleteBody($data['bg_id']);
-
-            foreach( $tags as $tagName) {
-                $data['tags']= $tagName;
-                $Bodymember = Bodymember::add([
-                'creator_id' => $data['creator_id'],
-                'text' => $data['tags'],
-                'purpose' => "tagging",
-                'bg_id' => $data['bg_id'],
-                'type' =>'TextualBody'
-            ]);
-            }
-            Bodymember::add([
-                'creator_id' => $data['creator_id'],
-                'text' => $data['text'],
-                'purpose' => "describing",
-                'bg_id' => $data['bg_id'],
-                'type' =>'TextualBody'
-            ]);
-                return $data;
-
-            }
-            else {
-                return $check;
-            }
-        } 
-        else {
-            return 'anootation does not exist';
-        }
+    public static function anno_id_get_from_like($uid){
+        $anno_id = bodygroup::get_annoid_from_like($uid);
+        return $anno_id;
     }
-
-    /**
-     * @param $anno
-     * @return array
-     */
-
-    public static function format($anno)
-    {
-     
-        $creator = User::get($anno->creator_id);
-        // Refact object
-        return [
-            'id' => $anno->id,
-            'text' => $anno->text,
-            'quote' => $anno->quote,
-            'uri' => $anno->uri,
-            'ranges' => [
-                [
-                    'start' => $anno->ranges_start,
-                    'end' => $anno->ranges_end,
-                    'startOffset' => $anno->ranges_startOffset,
-                    'endOffset' => $anno->ranges_endOffset
-                ]
-            ],
-            'tags' => $anno->tags,
-            'permissions' => [
-                "read" => $anno->is_public ? [] :[(int)$anno->creator_id],
-                "admin" => [(int)$anno->creator_id],
-                "update" => [(int)$anno->creator_id],
-                "delete" => [(int)$anno->creator_id]
-            ],
-            'type' => $anno->type,
-            'position' => [
-                'x' => $anno->x,
-                'y' => $anno->y,
-                'width' => $anno->w,
-                'height' => $anno->h
-            ],
-            'src' => $anno->src,
-            'user' => [
-                'id' => $creator->id ,
-                'gravatar' => Gravatar::src($creator->email)
-            ]
-        ];
+    public static  function anno_id_get_from_follow_user($uid){
+        $users = follow::getfid($uid);
+        return self::whereIn('creator_id',$users)->lists('anno_id');
     }
-  
+    /*把selector儲存成json  並回傳該 json
+    *@param $data
+    *return json_encode($tempArray)
+    *
+    */
     public static function CreatSelectorArray($data)
     {
         if($data['type']== "text"){
@@ -303,10 +216,10 @@ class Annotation extends Model {
                 ),
               
             ),array(
-            'type' =>'TextQuoteSelector',
-            'prefix' => $data['prefix'],
-            'exact' => $data['quote'],
-            'suffix' => $data['suffix']
+                'type' =>'TextQuoteSelector',
+                'prefix' => $data['prefix'],
+                'exact' => $data['quote'],
+                'suffix' => $data['suffix']
             )];
         }
         else if ($data['type']=="image")
@@ -315,13 +228,14 @@ class Annotation extends Model {
             $y = sprintf("%f",$data['position']['y']);
             $w = sprintf("%f",$data['position']['width']);
             $h = sprintf("%f",$data['position']['height']);
-            $tempArray = array(
+            $tempArray =[array(
                 'type' =>"FragmentSelector",
                 'conformsTo' =>"http://www.w3.org/TR/media-frags/",
-                'value'=>  $x.','.$y.','.$w.','.$h,
-                'Xpath' => $data['Xpath']
-            
-            );
+                'value'=>  $x.','.$y.','.$w.','.$h
+            ),array(
+                'type' =>"XPathSelector",
+                'value' => $data['Xpath']
+            )];
         }
         return json_encode($tempArray);
     }
@@ -379,100 +293,201 @@ class Annotation extends Model {
             return false;
         }
     }
-    public static function import($data)
+    public static function get_anno_by_id($anno_id){
+        return self::where('anno_id',$anno_id)->get();
+    } 
+    /*取得annotation's id 後 從body與target資料表 找出屬於他的資訊
+    *$result  annotations set 
+    *return   annotations set (include body and taget)
+    */
+    public static function annotation($result, $bsort ="time",$priority = "false")
     {
-        $domain =  explode("/",$data->id);
-        $uri = preg_replace('|[0-9]+|', '', $data->id);
-        $new_anno = new Annotation();
-        $new_anno->creator_id = '0';
-        $new_anno->uri = $uri;
-        $new_anno->domain = $domain [2];
-        $new_anno->is_public  = '1';
-        $new_anno->state = "exist";
-        if(array_key_exists("creator", get_object_vars($data)))
-        $new_anno->import= $data->creator;
-        $new_anno->save();
+        $front_array=[];
+        foreach ( $result as $anno_id ) {
+           $annotation = self::get_anno_by_id($anno_id)[0];
+           if($bsort =='likes')
+              $otherbodys_id = bodygroup::getohtergroup($anno_id,$priority);
+           elseif($bsort =='time')
+              $otherbodys_id = bodygroup::getohtergroupbytime($anno_id,$priority);
+           
+           $others = [];
+        
+           if($otherbodys_id != null)
+            {
+                foreach ( $otherbodys_id as $id) {
+                  
+                   $others[] = BodyMember::getothers($id);
+                }
+            }
+           $front_anno_object = new object();
+           $front_anno_object->otherbodys = $others ;
+           $targets = Target::getTarget($anno_id);
+           $front_anno_object->creator_id = $annotation->creator_id;
+           $front_anno_object->is_public = $annotation->is_public;
+           $front_anno_object->created_at =$annotation->created_time;
+           $front_anno_object->id = $anno_id;
+           $front_anno_object->quote ="";
+           $front_anno_object->ranges_start="";
+           $front_anno_object->ranges_end="";
+           $front_anno_object->ranges_startOffset="";
+           $front_anno_object->ranges_endOffset="";
+           $front_anno_object->prefix = '';
+           $front_anno_object->suffix = '';
+           $front_anno_object->x ="";
+           $front_anno_object->y ="";
+           $front_anno_object->width ="";
+           $front_anno_object->height = "";
+           $front_anno_object->Xpath = "";
+          
+           $front_anno_object->tags = array();
 
-        if(gettype($data->body)== 'string')
-        {
-            $new_anno->body = $data->body;
-            $new_anno->purpose = 'null';
-            $new_anno->type = 'null';
-        }
-        else
-        {
-            $array = get_object_vars($data->body);
-            if(array_key_exists("puropose", $array))
-            {
-                $new_anno->purpose = $data->body->purpose;
+            foreach ($targets as $target ) {
+                $front_anno_object ->selector  = json_decode($target->selector);
+                $front_anno_object ->src = $target->source;
+                $selector = json_decode($target->selector);
+                $front_anno_object->uri = $target->uri;
+                if($target->type =='image')
+                {
+                    $front_anno_object->src = $target->source;
+                    $img = explode(",", $selector[0]->value);
+                    $front_anno_object->x = $img [0];
+                    $front_anno_object->y = $img [1];
+                    $front_anno_object->width =$img [2];
+                    $front_anno_object->height =$img [3];
+                    $front_anno_object->type = $target->type;
+                    $front_anno_object->Xpath = $selector[1]->value;
+                    $front_anno_object->selector =  $selector[0]->value;
+                }
+                else if ($target->type =="text")
+                {
+                    $front_anno_object->src = $target->source;
+                    $front_anno_object->quote = $selector[1]->exact;
+                    $front_anno_object->prefix = $selector[1]->prefix;
+                    $front_anno_object->suffix = $selector[1]->suffix;
+                    $front_anno_object->type = $target->type;
+                    $front_anno_object->ranges_start = $selector[0]->startSelector->value;
+                    $front_anno_object->ranges_end =   $selector[0]->endSelector->value;
+                    $front_anno_object->ranges_startOffset = $selector[0]->startSelector->refinedBy->start;
+                    $front_anno_object->ranges_endOffset  = $selector[0]->endSelector->refinedBy->end;  
+                } 
+              
             }
-            else {
-                $new_anno->purpose = 'null';
-            }
-            if(array_key_exists("value", $array))
-            {
-                $new_anno->body = $data->body->value;
-            }
-            else{
-                 $new_anno->body = $data->body->id;
-            }
-            if (array_key_exists("type", $array)) {
-                $new_anno->type = $data->body->type;
-            }
-            else
-            {
-                $new_anno->type = 'null';
-            }
-        }
 
-
-        if(gettype($data->target)== 'string')
-        {
-            $new_anno->ttype = 'null';
-            $new_anno->tselector = 'null';
-           $new_anno->tsource =  $data->target;
+            $ret = self::format($front_anno_object);
+            array_push($front_array,$ret);
         }
-        else
-        {
-            $array = get_object_vars($data->target);
-            if(array_key_exists("type", $array))
-            {
-                $new_anno->ttype = $data->target->type;
-            }
-            else {
-                $new_anno->ttype = 'null';
-            }
-            if(array_key_exists("source", $array))
-            {
-                $new_anno->tsource = $data->target->source;
-            }
-            else if(array_key_exists("id", $array))  {
-                $new_anno->tsource = $data->target->id;
-            }
-            if(array_key_exists("selector", $array))
-            {
-                $new_anno->tselector = json_encode($data->target->selector);
-            }
-            else {
-               $new_anno->tselector = 'null';
-            }
-       
-       
-        }
-        Bodymember::add([
-                'creator_id' => '0',
-                'text' => $new_anno->body,
-                'purpose' => $new_anno->purpose,
-                'anno_id' => $new_anno->id,
-                'type' => $new_anno->type 
-            ]);
-        Target::add([
-                'source' => $new_anno->tsource,
-                'type' => $new_anno->ttype,
-                'anno_id' => $new_anno->id,
-                'json' => $new_anno->tselector
-            ]);
-
-        return $new_anno->id;
+        return $front_array;
     }
+    public static function annotation_IIIF($anno_id)
+    {
+         $otherbodys_id = bodygroup::getohtergroup($anno_id, "false");
+         $others = BodyMember::getothers($otherbodys_id[0]);
+         $targets = Target::getTarget($anno_id);
+       
+         $selector = json_decode($targets[0]->selector);
+         return [
+            '@id' => $anno_id,
+            '@type' => "oa:Annotation",
+            'motivation' => "sc:painting",
+            'resource'=>[
+                 'type' => 'cnt:ContentAsText',
+                 'format'=>'text/plan',
+                 'chars' =>  $others['text'][0]
+                ],
+            'on' => "canvas#xywh=".$selector[0]->value
+        ];
+    }
+
+    /*將後台資訊轉為前端所要求的格式
+    *@param $row annotation object
+    *return annotation object
+    **/
+
+    private static function format($row)
+    {
+        $creator = User::get($row->creator_id);
+        // Refact object
+        return [
+            'id' => $row->id,
+            'text' => '不使用',
+            'prefix' => $row->prefix,
+            'quote' => $row->quote,
+            'suffix' => $row->suffix,
+            'uri' => $row->uri,
+            'domain' => explode('/',$row->uri)[2],
+            'ranges' => [
+                [
+                    'start' => $row->ranges_start,
+                    'end' => $row->ranges_end,
+                    'startOffset' => $row->ranges_startOffset,
+                    'endOffset' => $row->ranges_endOffset
+                ]
+            ],
+            'tags' => '不使用',
+            'permissions' => [
+                "read" => $row->is_public ? [] :[(int)$row->creator_id],
+                "admin" => [(int)$row->creator_id],
+                "update" => [(int)$row->creator_id],
+                "delete" => [(int)$row->creator_id]
+            ],
+            'type' => $row->type,
+            'position' => [
+                'x' => $row->x,
+                'y' => $row->y,
+                'width' => $row->width,
+                'height' => $row->height
+            ],
+            'src' => $row->src,
+            'created_at' => $row->created_at,
+            'user' => [
+                'id' => $creator->id ,
+                'name' => $creator->name,
+                'gravatar' => Gravatar::src($creator->email)
+            ],
+            'otherbodys' => $row->otherbodys,
+            'Xpath' => $row->Xpath
+
+        ];
+    }
+
+      
+
+
+    /*尚未完整的程式 將DB資訊匯出Web Annotation Data Model所規範的格式
+    *$param $rows annotation object
+    *return temarray array
+    */
+    private static function oacformat($row)
+    {   
+        $creator = User::get($row->creator_id);
+        $temparray = array(
+            '@context' => 'http://www.w3.org/ns/anno.jsonld',
+             'id' => $row->uri.'/anno'.$row->id,
+             'type' => "annotation",
+             'created_at' => $row->created_at,
+             'creator' => array(
+                'id' => $row->uri.$creator->id,
+                'name'=> $creator->name,
+                ),
+             'body' => [array(
+                    'type' => $row->bodytype,
+                    'value'=> $row->text,
+                    'format'=> "text/html",
+                    'purpose' => $row->purpose,
+                ),
+                 array(
+                    'type' => $row->bodytype,
+                    'value'=> $row->tags,
+                    'format'=> "text/html",
+                    'purpose' => 'tagging',
+                )],
+             'target'=> array(
+                'type'=>'SpecificResource',
+                'source' => $row->src,
+                'selector'=> $row->selector,
+                )
+            );
+        return ($temparray);
+    }
+   
 }

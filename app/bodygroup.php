@@ -2,7 +2,8 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Collection;
-use App\BodyMemeber;
+use App\BodyMember;
+use App\Like;
 use Illuminate\Support\Facades\DB;
 class bodygroup extends Model{
 	
@@ -30,6 +31,14 @@ class bodygroup extends Model{
 	{
 		return self::where('anno_id',$anno_id)->first();
 
+	}
+	public static function get_annoid_from_bgid($uid){
+		$bg_id = BodyMember::get_bg_id_from_userid($uid);
+		return self::whereIn('bg_id',$bg_id)->lists('anno_id');
+	}
+	public static function get_annoid_from_like($uid){
+		$bg_id = Like::get_bg_id_from_like($uid);
+		return self::whereIn('bg_id',$bg_id)->lists('anno_id');
 	}
 	public static function getohtergroup($anno_id)
 	{

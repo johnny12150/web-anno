@@ -1,7 +1,6 @@
 <?php namespace App\Http\Controllers;
 
 use App\Annotation;
-use App\AnnotationView;
 use App\AuthTable;
 use App\Http\Requests;
 use App\Like;
@@ -9,6 +8,8 @@ use App\bodygroup;
 use App\Tag;
 use App\User;
 use App\BodyMember;
+use App\Target;
+use App\canvas;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use OAuth\Common\Exception\Exception;
@@ -29,14 +30,16 @@ class AnnotationController extends Controller
             "version" => "2.0.0"
         ];
     }
-
+    /*將前端新增的註記資訊存入DB，成功後便回傳該筆註記
+    *@pararm $request 前端產生的註記資訊
+    *return annotation object
+    */
     public function add(Request $request)
     {
         
         $text = Request::input('text');
         $quote = Request::input('quote');
         $uri = Request::input('uri');
-        $domain = Request::input('domain');
         $isImage = Request::input('type') == 'image';
         $image_src = Request::input('src');
         $type = Request::input('type');
@@ -46,8 +49,6 @@ class AnnotationController extends Controller
         $ranges_end = '';
         $ranges_startOffset = '';
         $ranges_endOffset = '';
-        $prefix = '1111';
-        $suffix = '1111';
 
         if(isset(Request::input('ranges')[0]['start']))
             $ranges_start = Request::input('ranges')[0]['start'];
@@ -58,8 +59,8 @@ class AnnotationController extends Controller
         if(isset(Request::input('ranges')[0]['endOffset']))
             $ranges_endOffset = Request::input('ranges')[0]['endOffset'];
         
-        $prefix = Request::input('prefix');        
-        $suffix = Request::input('suffix');
+        $prefix = Request::input('prefix','');        
+        $suffix = Request::input('suffix','');
         $x = ($isImage && isset(Request::input('position')['x'])) ?  Request::input('position')['x'] : 0;
         $y = ($isImage && isset(Request::input('position')['y'])) ?  Request::input('position')['y'] : 0;
         $width = ($isImage && isset(Request::input('position')['width'])) ?  Request::input('position')['width'] : 0;
@@ -67,17 +68,13 @@ class AnnotationController extends Controller
         $Xpath = Request::input('Xpath');
         $permissions = Request::input('permissions');
         $is_public = count($permissions['read']) == 0;
-
         $user = Session::get('user');
-        $content_type= Request::getContentType();
         /* 新增標記 */
-       
         $anno = Annotation::add([
             'creator_id' => $user->id,
             'text' => $text,
             'quote' => $quote,
             'uri' => $uri,
-            'domain' => $domain,
             'ranges_start' =>  $ranges_start,
             'ranges_end' => $ranges_end,
             'type' => $isImage ? $type : 'text',
@@ -98,69 +95,38 @@ class AnnotationController extends Controller
         ]);
          
         //回傳該標記
-        return self::get($anno);
+        if($anno != false)
+            return self::get($anno);
+        else
+            abort(303);
 
     }
     /*Update the annotator*/
-    public function update($id)
-    {
-
-        //標籤
-        $tags = Request::input('tags');
-        $text = Request::input('text');
-        $quote = Request::input('quote');
-        $uri = Request::input('uri');
-        $domain = Request::input('domain');
-        $ranges_start = '';
-        $ranges_end = '';
-        $ranges_startOffset = '';
-        $ranges_endOffset = '';
-        $bid = Request::input('bid');
-        if(isset(Request::input('ranges')[0]['start']))
-            $ranges_start = Request::input('ranges')[0]['start'];
-        if(isset(Request::input('ranges')[0]['end']))
-            $ranges_end = Request::input('ranges')[0]['end'];
-        if(isset(Request::input('ranges')[0]['startOffset']))
-            $ranges_startOffset = Request::input('ranges')[0]['startOffset'];
-        if(isset(Request::input('ranges')[0]['endOffset']))
-            $ranges_endOffset = Request::input('ranges')[0]['endOffset'];
-
-        $permissions = Request::input('permissions');
-        $is_public = count($permissions['read']) == 0;
-
-        $user = Session::get('user');
-        /* 編輯標記 */
-        $result = Annotation::edit($user->id, $id, [
-            'creator_id' => $user->id,
-            'text' => $text,
-            'quote' => $quote,
-            'domain' => $domain,
-            'uri' => $uri,
-            'ranges_start' => $ranges_start,
-            'ranges_end' => $ranges_end,
-            'ranges_startOffset' => $ranges_startOffset,
-            'ranges_endOffset' => $ranges_endOffset,
-            'is_public' => $is_public,
-            'tags' => $tags,
-            'bg_id' => $bid,
+   
+    public function edit_target(){
+        $start = Request::input('start');
+        $end = Request::input('end');
+        $anno_id = Request::input('id');
+        $a = Target::edit([
+            'start' => $start,
+            'end' => $end,
+            'startOffset'=> Request::input('startOffset'),
+            'endOffset' => Request::input('endOffset'),
+            'anno_id' => $anno_id
         ]);
-
-
-        // 儲存失敗則回傳Http 500
-        if (!$result)
-            abort(500);
-
-        //成功則返回該標記
-        return self::get($id); // self is static, can't replace with this .
-
+        return $a;
     }
-
+    /*
+    *透過annotation的id 取得該註記
+    *@param $id annotation's id
+    *return $anno[0]  該id的註記
+    */
     public function get($id)
     {
         // Find tags
-        $anno = AnnotationView::search(array(
-            'id' => $id
-        ), 1, 0);
+        $array=[];
+        array_push($array,$id);
+        $anno = Annotation::annotation($array);
 
         return (isset($anno[0]) ? $anno[0] : []);
     }
@@ -198,11 +164,49 @@ class AnnotationController extends Controller
     }
     public function deletebody($bg_id){
         bodygroup::deletebody($bg_id);
-        
-        $uri = Request::input('uri');
-
         return self::search();
     }
+    public function Manifest(){
+        $Manifest = Request::input('json');
+        $handle = fopen($Manifest,"rb");
+        $content = "";
+        while (!feof($handle)) {
+                $content .= fread($handle, 10000);
+        }
+        fclose($handle);
+        $content = json_decode($content);
+        $var = '@id';
+        foreach ($content->sequences[0]->canvases as $canvas ){
+            $img_url = $canvas->images[0]->resource->$var; 
+            $canvas_id = canvas::add($img_url,$canvas->$var);
+            $temp = array(
+                '@id'=> "http://annotation.ipicbox.tw/list/".$canvas_id,
+                '@type' =>'sc:AnnotationList',
+            );
+            $canvas->otherContent[0] = $temp;
+           
+        }
+        return json_encode($content);
+    }
+    public function IIIFformat($id){
+        $img = canvas::get_img_by_annolistid($id)->img_src;
+
+        $anno_ids = Target::get_by_src($img);
+        $resources =[];
+        foreach ($anno_ids as $anno_id)
+        {
+            $resource = Annotation::annotation_IIIF($anno_id);
+            array_push($resources,$resource);
+        }
+
+        return [
+            '@id' => "http://annotation.ipicbox.tw/list/".$id,
+            'context' => "http://www.shared-canvas.org/ns/context.json",
+            '@type' =>'AnnotationList',
+            'resources' => $resources
+            ];
+    }
+
     public function updatebody(){
 
         $text = Request::input('text');
@@ -233,7 +237,7 @@ class AnnotationController extends Controller
             'type' =>'TextualBody'
         ]);
 
-        $annotations = AnnotationView::search([
+        $annotations = self::search_front([
             'uri' => $uri
         ]);
         $result = [
@@ -289,7 +293,7 @@ class AnnotationController extends Controller
         $searchText = Request::input('search');
         
         $offset = intval(Request::input('offset'));
-        $annotations = AnnotationView::search([
+        $annotations = self::search_front([
             'uri' => $uri,
             'quote' => $searchText,
             'text' => $searchText,
@@ -308,7 +312,7 @@ class AnnotationController extends Controller
 
         return $result;
     }
-
+    
     public function like($id)
     {
         $like = Request::input('like');
@@ -374,4 +378,37 @@ class AnnotationController extends Controller
         // Output "no suggestion" if no hint was found or output correct values 
         echo $hint === "" ? "no suggestion" : $hint;
     }
+    /*前端取得註記用
+   *@$conditions  tag,uri,id,public
+   *@$ret  annotations set
+   */
+    public static function search_front($conditions , $orderBy = 'created_time', $sort='desc')
+    {
+        
+        $temp =[];
+         if(isset($conditions['uri']) && $conditions['uri'] != '')
+        {
+            $anno_ids = Target::getannobyuri($conditions['uri']);
+            $temp = $anno_ids;
+        }
+        if(isset($conditions['text']) && $conditions['text'] != '')
+        {
+            $bg_ids = BodyMember::search($conditions['text']);
+            $anno_ids=[];
+            foreach ($bg_ids as $bg_id) {
+                array_push($anno_ids, bodygroup::getanno_id($bg_id->bg_id)->anno_id);
+            } 
+            $temp = array_intersect($temp, $anno_ids); 
+        }        
+        if(isset($conditions['public']) && $conditions['public'] != '')
+        {
+            $anno_ids = Annotation::getAnnos($conditions['public']['creator_id']);
+            $temp = array_intersect($temp, $anno_ids);
+        }
+        $annos = Annotation::annotation($temp);
+
+        return  $annos;
+
+    }
+  
 }

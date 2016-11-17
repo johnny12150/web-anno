@@ -115,6 +115,9 @@ class BodyMember extends Model{
 		$texts = DB::table('body_member')->where('purpose','describing')->where('text', 'like' , '%'.$texts. '%')->get();
 		return $texts;
 	}
+	public static function get_bg_id_from_userid($uid){
+		return self::where('creator',$uid)->lists('bg_id');
+	}
 	public static function search_with_like($data){
 		$body = DB::table('body_member')->select('bg_id');
 
