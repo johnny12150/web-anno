@@ -178,7 +178,7 @@ class AnnotationController extends Controller
         $var = '@id';
         foreach ($content->sequences[0]->canvases as $canvas ){
             $img_url = $canvas->images[0]->resource->$var; 
-            $canvas_id = canvas::add($img_url,$canvas->$var);
+            $canvas_id = canvas::add($img_url,$canvas->$var,$canvas->height,$canvas->width);
             $temp = array(
                 '@id'=> "http://annotation.ipicbox.tw/list/".$canvas_id,
                 '@type' =>'sc:AnnotationList',
@@ -189,13 +189,13 @@ class AnnotationController extends Controller
         return json_encode($content);
     }
     public function IIIFformat($id){
-        $img = canvas::get_img_by_annolistid($id)->img_src;
+        $canvas = canvas::get_canvas_by_annolistid($id);
 
-        $anno_ids = Target::get_by_src($img);
+        $anno_ids = Target::get_by_src($canvas->img_src);
         $resources =[];
         foreach ($anno_ids as $anno_id)
         {
-            $resource = Annotation::annotation_IIIF($anno_id);
+            $resource = Annotation::annotation_IIIF($anno_id,$canvas);
             array_push($resources,$resource);
         }
 

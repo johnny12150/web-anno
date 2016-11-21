@@ -378,14 +378,21 @@ class Annotation extends Model {
         }
         return $front_array;
     }
-    public static function annotation_IIIF($anno_id)
+    public static function annotation_IIIF($anno_id,$canvas)
     {
          $otherbodys_id = bodygroup::getohtergroup($anno_id, "false");
          $others = BodyMember::getothers($otherbodys_id[0]);
          $targets = Target::getTarget($anno_id);
-       
-         $selector = json_decode($targets[0]->selector);
-         return [
+
+
+ 
+        $selector = json_decode($targets[0]->selector);
+        $img = explode(",", $selector[0]->value);
+        $x = $img[0]*$canvas->width/100;
+        $y = $img[1]*$canvas->height/100;
+        $width = $img[2]*$canvas->width/100;
+        $height = $img[3]*$canvas->height/100;
+         return ([
             '@id' => $anno_id,
             '@type' => "oa:Annotation",
             'motivation' => "sc:painting",
@@ -394,8 +401,8 @@ class Annotation extends Model {
                  'format'=>'text/plan',
                  'chars' =>  $others['text'][0]
                 ],
-            'on' => "canvas#xywh=".$selector[0]->value
-        ];
+            'on' => $canvas->canvas."#xywh=".$x.",".$y.",".$width.",".$height
+        ]);
     }
 
     /*將後台資訊轉為前端所要求的格式

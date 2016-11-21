@@ -6,12 +6,14 @@ class canvas extends Model{
 	public $timestamps = false;
 
 
-	public static function add($url,$canvas)
+	public static function add($url,$canvas,$height,$width)
 	{
 		if(self::where('img_src',$url)->count() == 0){   
 			$new_canvas = new canvas();
 			$new_canvas->img_src = $url;
 			$new_canvas->canvas = $canvas;
+			$new_canvas->width = $width;
+			$new_canvas->height = $height;
 			$new_canvas->save();
 			return $new_canvas->id;
 		}
@@ -20,7 +22,7 @@ class canvas extends Model{
 			return DB::table('canvas')->where('img_src',$url)->pluck('id');
 		}
 	}
-	public static function get_img_by_annolistid($id){
+	public static function get_canvas_by_annolistid($id){
 		return self::where('id',$id)->first();
 	}
 }
