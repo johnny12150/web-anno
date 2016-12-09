@@ -33,7 +33,7 @@ class Target extends Model{
      * @return target
 	*/
 	public static function get_by_src($src){
-		return self::where('source',$src)->lists('anno_id');
+		return self::where('source',$src)->lists('anno_id')->all();
 	}
 	public static function getTarget($anno_id)
 	{
@@ -51,7 +51,7 @@ class Target extends Model{
  	*/
 	public static function getannobyuri($uri)
 	{
-			$target = self::where('uri',$uri)->lists('anno_id');
+			$target = self::where('uri',$uri)->lists('anno_id')->all();
 			$ids =[];
 			foreach ($target as $id ) {
 				array_push($ids,$id);
@@ -79,8 +79,14 @@ class Target extends Model{
 	               	$query = $query->orWhere('uri','like' , '%'.$searchuri.'%');           
 	            }
 	        }
+
 	    $array = $query->lists('anno_id');
-	    if(empty($array)==true) $array = [];
+	    foreach ($array as $key ) {
+	    	echo $key.',';
+	    }
+	    if(empty($array) === true) 
+	    	$array = [];
+
 	    return $array;
 	}
 

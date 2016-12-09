@@ -1,0 +1,119 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "dom-anchor-text-position@^2.0.0",
+        "scope": null,
+        "escapedName": "dom-anchor-text-position",
+        "name": "dom-anchor-text-position",
+        "rawSpec": "^2.0.0",
+        "spec": ">=2.0.0 <3.0.0",
+        "type": "range"
+      },
+      "/Users/shrak/Documents/dhtool/annotator/node_modules/dom-anchor-text-quote"
+    ]
+  ],
+  "_from": "dom-anchor-text-position@>=2.0.0 <3.0.0",
+  "_id": "dom-anchor-text-position@2.0.1",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/dom-anchor-text-position",
+  "_nodeVersion": "0.12.7",
+  "_npmUser": {
+    "name": "tilgovi",
+    "email": "randall.leeds@gmail.com"
+  },
+  "_npmVersion": "2.11.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "dom-anchor-text-position@^2.0.0",
+    "scope": null,
+    "escapedName": "dom-anchor-text-position",
+    "name": "dom-anchor-text-position",
+    "rawSpec": "^2.0.0",
+    "spec": ">=2.0.0 <3.0.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "/dom-anchor-text-quote"
+  ],
+  "_resolved": "https://registry.npmjs.org/dom-anchor-text-position/-/dom-anchor-text-position-2.0.1.tgz",
+  "_shasum": "4d464afb90914f8e8e25ad8fdf44f7014c80d9e3",
+  "_shrinkwrap": null,
+  "_spec": "dom-anchor-text-position@^2.0.0",
+  "_where": "/Users/shrak/Documents/dhtool/annotator/node_modules/dom-anchor-text-quote",
+  "author": {
+    "name": "Randall Leeds",
+    "email": "randall@bleeds.info"
+  },
+  "browser": "TextPositionAnchor.js",
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/tilgovi/dom-anchor-text-position/issues"
+  },
+  "dependencies": {
+    "dom-seek": "^1.0.1",
+    "node-iterator-shim": "^2.0.1"
+  },
+  "description": "Convert between DOM Range instances and text positions.",
+  "devDependencies": {
+    "babel": "^5.4.3",
+    "babelify": "^6.1.1",
+    "browserify": "^10.2.4",
+    "browserify-istanbul": "^0.2.1",
+    "chai": "^2.3.0",
+    "gulp": "^3.9.0",
+    "gulp-babel": "^5.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-uglify": "^1.2.0",
+    "karma": "^0.12.32",
+    "karma-browserify": "^4.2.1",
+    "karma-chai": "^0.1.0",
+    "karma-coverage": "^0.3.1",
+    "karma-fixture": "^0.2.4",
+    "karma-html2js-preprocessor": "^0.1.0",
+    "karma-mocha": "^0.1.10",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-sauce-launcher": "^0.2.11",
+    "karma-source-map-support": "^1.0.0",
+    "mocha": "^2.2.5"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "4d464afb90914f8e8e25ad8fdf44f7014c80d9e3",
+    "tarball": "https://registry.npmjs.org/dom-anchor-text-position/-/dom-anchor-text-position-2.0.1.tgz"
+  },
+  "gitHead": "d110756ff00702f642daae570752be9595fc2a52",
+  "homepage": "https://github.com/tilgovi/dom-anchor-text-position",
+  "keywords": [
+    "dom",
+    "anchor",
+    "range",
+    "text",
+    "position"
+  ],
+  "license": "MIT",
+  "main": "dist/TextPositionAnchor.js",
+  "maintainers": [
+    {
+      "name": "tilgovi",
+      "email": "randall.leeds@gmail.com"
+    }
+  ],
+  "name": "dom-anchor-text-position",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tilgovi/dom-anchor-text-position.git"
+  },
+  "scripts": {
+    "test": "karma start"
+  },
+  "version": "2.0.1"
+}

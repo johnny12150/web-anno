@@ -34,11 +34,11 @@ class bodygroup extends Model{
 	}
 	public static function get_annoid_from_bgid($uid){
 		$bg_id = BodyMember::get_bg_id_from_userid($uid);
-		return self::whereIn('bg_id',$bg_id)->lists('anno_id');
+		return self::whereIn('bg_id',$bg_id)->lists('anno_id')->all();
 	}
 	public static function get_annoid_from_like($uid){
 		$bg_id = Like::get_bg_id_from_like($uid);
-		return self::whereIn('bg_id',$bg_id)->lists('anno_id');
+		return self::whereIn('bg_id',$bg_id)->lists('anno_id')->all();
 	}
 	public static function getohtergroup($anno_id)
 	{

@@ -116,7 +116,7 @@ class BodyMember extends Model{
 		return $texts;
 	}
 	public static function get_bg_id_from_userid($uid){
-		return self::where('creator',$uid)->lists('bg_id');
+		return self::where('creator',$uid)->lists('bg_id')->all();
 	}
 	public static function search_with_like($data){
 		$body = DB::table('body_member')->select('bg_id');

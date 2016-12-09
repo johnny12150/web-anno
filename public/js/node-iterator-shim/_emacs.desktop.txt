@@ -1,0 +1,52 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Fri May  8 14:49:51 2015
+;; Desktop file format version 206
+;; Emacs version 24.4.1
+
+;; Global section:
+(setq desktop-saved-frameset [frameset 1 (21837 12159 813162 634000) (desktop . "206") "tilgovi@elpis" nil nil ((((font-backend xft x) (font . "-unknown-M+ 1mn-normal-normal-normal-*-20-*-*-*-d-0-iso10646-1") (font-parameter) (border-width . 0) (internal-border-width . 0) (right-divider-width . 0) (bottom-divider-width . 0) (vertical-scroll-bars) (foreground-color . "#DCDCCC") (background-color . "#3F3F3F") (mouse-color . "black") (border-color . "black") (screen-gamma) (line-spacing) (left-fringe . 5) (right-fringe . 5) (scroll-bar-foreground . "#31363b") (scroll-bar-background . "#eff0f1") (menu-bar-lines . 0) (tool-bar-lines . 0) (title) (wait-for-wm . t) (fullscreen . maximized) (tool-bar-position . top) (icon-type . t) (auto-raise) (auto-lower) (cursor-type . box) (scroll-bar-width . 0) (alpha) (horizontal-scroll-bars . t) (display-type . color) (background-mode . dark) (cursor-color . "#FFFFEF") (sticky) (environment) (frameset--id . "D250-D1EB-2597-C939") (frameset--mini t . t) (modeline . t) (minibuffer . t) (unsplittable) (icon-name) (display . ":0") (explicit-name) (visibility . t) (height . 47) (width . 246) (left . 88) (top . 0)) ((min-height . 4) (min-width . 10) (min-height-ignore . 2) (min-width-ignore . 3) (min-height-safe . 1) (min-width-safe . 2) (min-pixel-height . 116) (min-pixel-width . 100) (min-pixel-height-ignore . 58) (min-pixel-width-ignore . 30) (min-pixel-height-safe . 29) (min-pixel-width-safe . 20)) leaf (pixel-width . 2472) (pixel-height . 1346) (total-width . 247) (total-height . 46) (normal-height . 1.0) (normal-width . 1.0) (buffer "index.js" (selected . t) (hscroll . 0) (fringes 2 5 nil) (margins 84) (scroll-bars 0 0 t nil) (vscroll . 0) (dedicated) (point . 3395) (start . 2262))))])
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list "~/src/dom-seek/")
+(setq search-ring '("Node" "index.js" "dist" "after" "debugger" "dub" "the root nodes" "`" "always" "traversed" "Travers" "domseek" "window" "var " "seek_node" "var"))
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("/home/tilgovi/src/dom-seek/package.json" "/home/tilgovi/src/dom-seek/index.js" "/home/tilgovi/src/dom-seek/package.json" "/home/tilgovi/src/dom-seek/README.md" "/home/tilgovi/src/dom-seek/package.json" "/home/tilgovi/src/dom-seek/index.js" "/home/tilgovi/src/dom-text-walker/README.md" "/home/tilgovi/src/dom-text-walker/package.json" "/home/tilgovi/src/dom-text-walker/README.md" "/home/tilgovi/src/dom-text-walker/.babelrc" "/home/tilgovi/src/dom-text-walker/package.json" "/home/tilgovi/src/dom-text-walker/README.md" "/home/tilgovi/src/dom-text-walker/conf.json" "/home/tilgovi/src/dom-text-walker/package.json" "/home/tilgovi/src/dom-text-walker/conf.json" "/home/tilgovi/src/dom-text-walker/README.md" "/home/tilgovi/src/dom-text-walker/index.js" "/home/tilgovi/src/dom-text-walker/_src/text-walker.js" "/home/tilgovi/src/dom-text-walker/index.js" "/home/tilgovi/src/dom-text-walker/src/text-walker.es6" "~/src/dom-text-walker/jsdoc.json" "~/src/dom-text-walker/conf.json" "/home/tilgovi/src/dom-text-walker/jsdocconf.json" "/home/tilgovi/src/dom-text-walker/.gitignore" "/home/tilgovi/src/dom-text-walker/LICENSE" "/home/tilgovi/src/dom-text-walker/package.json" "/home/tilgovi/src/dom-text-walker/index.js" "~/src/dom-text-walker/text-walker.js" "/home/tilgovi/src/dom-text-walker/index.es6.js" "/home/tilgovi/src/dom-text-walker/README.md"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/home/tilgovi/src/dom-seek/index.js"
+  "index.js"
+  'js-mode
+  '(prelude-mode global-auto-revert-mode volatile-highlights-mode flyspell-mode projectile-mode anzu-mode whitespace-mode undo-tree-mode diff-hl-mode flx-ido-mode company-mode guru-mode)
+  3395
+  '(1 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (truncate-lines . t)))
+
+(desktop-create-buffer 206
+  "/home/tilgovi/src/dom-seek/package.json"
+  "package.json"
+  'js-mode
+  '(prelude-mode global-auto-revert-mode volatile-highlights-mode flyspell-mode projectile-mode anzu-mode whitespace-mode undo-tree-mode diff-hl-mode flx-ido-mode company-mode guru-mode)
+  541
+  '(65 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (truncate-lines . t)))
+
+(desktop-create-buffer 206
+  "/home/tilgovi/src/dom-seek/README.md"
+  "README.md"
+  'markdown-mode
+  '(abbrev-mode prelude-mode global-auto-revert-mode volatile-highlights-mode flyspell-mode projectile-mode anzu-mode whitespace-mode undo-tree-mode diff-hl-mode flx-ido-mode company-mode)
+  491
+  '(329 nil)
+  nil
+  nil
+  '((tab-width . 4) (buffer-file-coding-system . undecided-unix) (truncate-lines . t)))
+

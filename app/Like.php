@@ -19,7 +19,7 @@ class Like extends Model {
         return self::where('uid', $uid)->get();
     }
     public static function get_bg_id_from_like($uid){
-        return self::where('uid',$uid)->where('like','1')->lists('bg_id');
+        return self::where('uid',$uid)->where('like','1')->lists('bg_id')->all();
     }
  
     public static function setLike($uid, $bg_id, $value)

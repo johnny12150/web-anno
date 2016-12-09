@@ -41,7 +41,7 @@
 </header>
       <div class="content-wrap">
         <div class="field-content-panel">
-        <a href='http://ascdc.sinica.edu.tw/anno_list.jsp?newsId=&nowPage=6'><img src ="http://stacks.stanford.edu/image/jr903ng8662/T0000007" width ="500" height = "500"></a>
+       
 
         <p>陳澄波這張作品是陳澄波自東京美術學校圖畫師範科畢業</p>
         
@@ -211,29 +211,29 @@
 <script src="{{ asset('js/tinymce/tinymce.min.js')}}"></script>
 <script src="{{ asset('js/annotation.full.js')}}"></script>
 <script type="text/javascript">
+    window.onload =function(){
+      var uri = 'http://testing';
 
-    var uri = 'http://testing';
+      var anno = annotation('.field-content-panel');
+      anno.init({
+          uri : uri,
+          imageAnnotation : true,
+  		keywords:[{
+  				host: 'http://140.109.18.158/api/annotation.jsp',
+  				data:{tagType:'00ff00'},
+  				name: '本草綱目',
+  				color: 'lime'},
+  				{
+  				host: 'http://140.109.18.158/api/annotation.jsp',
+  				data:{tagType:'00ff00'},
+  				name: '資源網',
+  				color: 'red'},
+  				{
+  				host: 'http://140.109.18.158/api/annotation.jsp',
+  				name: '資源網test',
+  				color: 'blue'}]
+      });
 
-    var anno = annotation('.field-content-panel');
-    anno.init({
-        uri : uri,
-        imageAnnotation : true,
-		keywords:[{
-				host: 'http://140.109.18.158/api/annotation.jsp',
-				data:{tagType:'00ff00'},
-				name: '本草綱目',
-				color: 'lime'},
-				{
-				host: 'http://140.109.18.158/api/annotation.jsp',
-				data:{tagType:'00ff00'},
-				name: '資源網',
-				color: 'red'},
-				{
-				host: 'http://140.109.18.158/api/annotation.jsp',
-				name: '資源網test',
-				color: 'blue'}]
-    });
-
-
+    }
 </script>
 </html>

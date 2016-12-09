@@ -11,10 +11,16 @@
 /**
  * The default email message class.
  *
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_Mime_SimpleMessage extends Swift_Mime_MimePart implements Swift_Mime_Message
 {
+    const PRIORITY_HIGHEST = 1;
+    const PRIORITY_HIGH = 2;
+    const PRIORITY_NORMAL = 3;
+    const PRIORITY_LOW = 4;
+    const PRIORITY_LOWEST = 5;
+
     /**
      * Create a new SimpleMessage with $headers, $encoder and $cache.
      *
@@ -91,7 +97,7 @@ class Swift_Mime_SimpleMessage extends Swift_Mime_MimePart implements Swift_Mime
     /**
      * Set the date at which this message was created.
      *
-     * @param int     $date
+     * @param int $date
      *
      * @return Swift_Mime_SimpleMessage
      */
@@ -200,7 +206,7 @@ class Swift_Mime_SimpleMessage extends Swift_Mime_MimePart implements Swift_Mime
      * associated with the address.
      *
      * @param string|array $addresses
-     * @param string $name      optional
+     * @param string       $name      optional
      *
      * @return Swift_Mime_SimpleMessage
      */
@@ -253,7 +259,7 @@ class Swift_Mime_SimpleMessage extends Swift_Mime_MimePart implements Swift_Mime
      * If $name is passed and the first parameter is a string, this name will be
      * associated with the address.
      *
-     * @param string $addresses
+     * @param mixed  $addresses
      * @param string $name      optional
      *
      * @return Swift_Mime_SimpleMessage
@@ -445,18 +451,18 @@ class Swift_Mime_SimpleMessage extends Swift_Mime_MimePart implements Swift_Mime
      *
      * The value is an integer where 1 is the highest priority and 5 is the lowest.
      *
-     * @param int     $priority
+     * @param int $priority
      *
      * @return Swift_Mime_SimpleMessage
      */
     public function setPriority($priority)
     {
         $priorityMap = array(
-            1 => 'Highest',
-            2 => 'High',
-            3 => 'Normal',
-            4 => 'Low',
-            5 => 'Lowest',
+            self::PRIORITY_HIGHEST => 'Highest',
+            self::PRIORITY_HIGH => 'High',
+            self::PRIORITY_NORMAL => 'Normal',
+            self::PRIORITY_LOW => 'Low',
+            self::PRIORITY_LOWEST => 'Lowest',
             );
         $pMapKeys = array_keys($priorityMap);
         if ($priority > max($pMapKeys)) {
@@ -491,7 +497,7 @@ class Swift_Mime_SimpleMessage extends Swift_Mime_MimePart implements Swift_Mime
     }
 
     /**
-     * Ask for a delivery receipt from the recipient to be sent to $addresses
+     * Ask for a delivery receipt from the recipient to be sent to $addresses.
      *
      * @param array $addresses
      *

@@ -345,10 +345,11 @@ class AnnotationController extends Controller
     public function logout() {
         $domain = Request::input('domain');
         $token = Request::input('anno_token');
+
         Auth::logout();
-        AuthTable::remove($domain, $token);
+        $state = AuthTable::remove($domain, $token);
         return [
-            'response' => true
+            'response' => $state
         ];
     }
 

@@ -1,0 +1,119 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "dom-anchor-text-quote",
+        "scope": null,
+        "escapedName": "dom-anchor-text-quote",
+        "name": "dom-anchor-text-quote",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "/Users/shrak/Documents/dhtool/annotator"
+    ]
+  ],
+  "_from": "dom-anchor-text-quote@latest",
+  "_id": "dom-anchor-text-quote@2.0.1",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/dom-anchor-text-quote",
+  "_nodeVersion": "0.12.7",
+  "_npmUser": {
+    "name": "tilgovi",
+    "email": "randall.leeds@gmail.com"
+  },
+  "_npmVersion": "2.11.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "dom-anchor-text-quote",
+    "scope": null,
+    "escapedName": "dom-anchor-text-quote",
+    "name": "dom-anchor-text-quote",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/dom-anchor-text-quote/-/dom-anchor-text-quote-2.0.1.tgz",
+  "_shasum": "b8622660be395e75b26704c86d65f327c0c0bd7f",
+  "_shrinkwrap": null,
+  "_spec": "dom-anchor-text-quote",
+  "_where": "/Users/shrak/Documents/dhtool/annotator",
+  "author": {
+    "name": "Randall Leeds",
+    "email": "randall@bleeds.info"
+  },
+  "browser": "TextQuoteAnchor.js",
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/tilgovi/dom-anchor-text-quote/issues"
+  },
+  "dependencies": {
+    "diff-match-patch": "^1.0.0",
+    "dom-anchor-text-position": "^2.0.0"
+  },
+  "description": "Convert between DOM Range instances and text quotes.",
+  "devDependencies": {
+    "babel": "^5.4.3",
+    "babelify": "^6.1.1",
+    "browserify": "^10.2.4",
+    "browserify-istanbul": "^0.2.1",
+    "chai": "^2.3.0",
+    "gulp": "^3.9.0",
+    "gulp-babel": "^5.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-uglify": "^1.2.0",
+    "karma": "^0.12.32",
+    "karma-browserify": "^4.2.1",
+    "karma-chai": "^0.1.0",
+    "karma-coverage": "^0.3.1",
+    "karma-fixture": "^0.2.4",
+    "karma-html2js-preprocessor": "^0.1.0",
+    "karma-mocha": "^0.1.10",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-sauce-launcher": "^0.2.11",
+    "karma-source-map-support": "^1.0.0",
+    "mocha": "^2.2.5"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "b8622660be395e75b26704c86d65f327c0c0bd7f",
+    "tarball": "https://registry.npmjs.org/dom-anchor-text-quote/-/dom-anchor-text-quote-2.0.1.tgz"
+  },
+  "gitHead": "9e54552ac1d732b7b78bdd3446eda3a4707c11f6",
+  "homepage": "https://github.com/tilgovi/dom-anchor-text-quote",
+  "keywords": [
+    "dom",
+    "anchor",
+    "range",
+    "text",
+    "quote"
+  ],
+  "license": "MIT",
+  "main": "dist/TextQuoteAnchor.js",
+  "maintainers": [
+    {
+      "name": "tilgovi",
+      "email": "randall.leeds@gmail.com"
+    }
+  ],
+  "name": "dom-anchor-text-quote",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tilgovi/dom-anchor-text-quote.git"
+  },
+  "scripts": {
+    "test": "karma start"
+  },
+  "version": "2.0.1"
+}

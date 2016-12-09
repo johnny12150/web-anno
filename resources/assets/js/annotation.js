@@ -93,14 +93,14 @@ function getNodeName(node) {
        var suffix = suffix_node.innerText.substring(suffix_node.innerText.length-annotation.suffix.length,suffix_node.length);
        var quote = quote
        if(quote == annotation.quote){
-            console.log('quote as same as before');
+    
             return annotation.ranges;
        }
        else{
          if(annotation.suffix == suffix){
             var quote = suffix_node.innerText.substring(suffix_node.innerText.length-annotation.quote.length-annotation.suffix.length,suffix_node.innerText.length-annotation.suffix.length);
             if( quote == annotation.quote){
-                console.log('prefix is wrong');
+                
                 annotation.ranges[0].startOffset = suffix_node.innerText.length-annotation.quote.length-annotation.suffix.length;
                 annotation.ranges[0].endOffset = suffix_node.innerText.length-annotation.suffix.length;
                 annotation.ranges[0].fix = 'level2';
@@ -110,12 +110,12 @@ function getNodeName(node) {
          if(annotation.prefix == prefix && annotation.suffix == suffix){
               annotation.ranges[0].startOffset = annotation.prefix.length;
               annotation.ranges[0].endOffset = suffix_node.innerText.length-annotation.suffix.length;
-             console.log("use prefix and suffix to locate the postion");
+             
              annotation.ranges[0].fix = 'level2';
              return annotation.ranges;
          }     
       }
-      console.log('use Xpath');
+      
       use_XPath(annotation);
       annotation.ranges[0].fix = 'level2';
       return annotation.ranges;

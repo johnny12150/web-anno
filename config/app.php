@@ -135,7 +135,7 @@ return [
 		'Illuminate\Translation\TranslationServiceProvider',
 		'Illuminate\Validation\ValidationServiceProvider',
 		'Illuminate\View\ViewServiceProvider',
-
+		'Illuminate\Broadcasting\BroadcastServiceProvider',
 		/*
 		 * Application Service Providers...
 		 */
@@ -199,6 +199,7 @@ return [
         'Gravatar' => 'Thomaswelton\LaravelGravatar\Facades\Gravatar',
         'Recaptcha' => 'Greggilbert\Recaptcha\Facades\Recaptcha',
         'Socialite' => 'Laravel\Socialite\Facades\Socialite',
+        'Gate' => 'Illuminate\Support\Facades\Gate::class',
 	],
 
 ];

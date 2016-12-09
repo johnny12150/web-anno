@@ -27,7 +27,9 @@ Route::get('test3', function() {
 Route::get('test4', function() {
     return view('test3');
 });
-
+Route::get('mongodb',function(){
+    phpinfo();
+});
 Route::get('manifest',function(){
     return view('manifest');
 });

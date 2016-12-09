@@ -28,7 +28,7 @@ class collect extends Model{
 	}
 	public static function get($user)
 	{
-		return self::where('id',$user)->lists('anno_id');
+		return self::where('id',$user)->lists('anno_id')->all();
 	}
 	public static function del($anno_id,$user)
 	{

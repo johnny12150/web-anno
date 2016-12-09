@@ -167,11 +167,11 @@ class Annotation extends Model {
     *        用於後台 可取得當前使用者的註記
     */
     public static function getAnnos($uid,$front = 'front',$super ='false'){
-        if($super =='true') return self::lists('anno_id');
+        if($super =='true')  return self::lists('anno_id')->all();
         if($front == 'front')
-        return self::where('creator_id',$uid)->orWhere('is_public',1)->lists('anno_id');
+        return self::where('creator_id',$uid)->orWhere('is_public',1)->lists('anno_id')->all();
         else
-        return self::where('creator_id',$uid)->lists('anno_id');
+        return self::where('creator_id',$uid)->lists('anno_id')->all();
 
     }
     public static function anno_id_get_from_reply($uid){
@@ -184,7 +184,7 @@ class Annotation extends Model {
     }
     public static  function anno_id_get_from_follow_user($uid){
         $users = follow::getfid($uid);
-        return self::whereIn('creator_id',$users)->lists('anno_id');
+        return self::whereIn('creator_id',$users)->lists('anno_id')->all();
     }
     /*把selector儲存成json  並回傳該 json
     *@param $data

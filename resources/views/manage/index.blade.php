@@ -36,16 +36,16 @@
                             </div>
                         </div>
                         <div class="form-group  detail">
-                            <label for="search_tag" class="col-sm-3 control-label" >標籤</label>
+                            <label for="search_tag" class="col-sm-3 control-label" >標籤(新增後請用tag鍵)</label>
                             <div class="col-sm-9">
-                                <select id="tokenize" multiple="multiple" class="tokenize-sample" style="width: 100%">
+                                <select id="tokenize" multiple="multiple" class="tokenize-sample" style="width: 100%"   >
                                 </select>
                             </div>
                         </div>
                         <div class="form-group " style="display: none">
                             <label for="search_tag" class="col-sm-3 control-label" >標籤</label>
                             <div class="col-sm-9">
-                                <input type="text" name="search_tag" class="form-control" id="search_tag"  placeholder="uri" >
+                                <input type="text" name="search_tag" class="form-control" id="search_tag"  >
                             </div>
                         </div>
                         <div class="form-group detail">
@@ -92,11 +92,12 @@
 
                 </div>
                 <div class ="anno-sort">
-                    <label>使用者優先</label>
+                    <!--<label>使用者優先</label>
                     <select >
                         <option value="true" >true</option>
                         <option value="false">false</option>      
                     </select>
+                    -->
                     <label>排序方式</label>
                     <select id ="sorting" onchange="sorting()">
                         <option value="time" {{ $old['search_sort'] == 'time' ? 'selected' :'' }}>Time</option>

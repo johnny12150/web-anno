@@ -33,6 +33,6 @@ class follow extends Model {
 	}
 	public static function getfid($uid)
 	{
-		return self::where('uid',$uid)->lists('fid');
+		return self::where('uid',$uid)->lists('fid')->all();
 	}
 }

@@ -1174,7 +1174,6 @@
           now = annList.splice(0, 10);
           for (_k = 0, _len2 = now.length; _k < _len2; _k++) {
             n = now[_k];
-            console.log(n);
             _this.setupAnnotation_fixed(n);//當loading 註記時，註記顯示可能位移，走這支
           }
           if (annList.length > 0) {

@@ -31,7 +31,7 @@ class ManageController extends Controller {
             $tags =  BodyMember::getTags($user->id);
             $texts =  BodyMember::getTexts($user->id);
             $uri_array =[];
-            $anno_ids = Annotation::getAnnos($user->id);
+            $anno_ids = Annotation::getAnnos($user->id,'backend');
             foreach ($anno_ids as $anno_id) {
                  array_push($uri_array, Target::geturi($anno_id));
             }
@@ -229,7 +229,7 @@ class ManageController extends Controller {
             ], 10, ($page-1)*10, 'created_time');
             }
         }
-   
+
         $pagesCount = intval($annos['count'] / 10 + 1);
         $urilist =[];
 
@@ -497,8 +497,9 @@ class ManageController extends Controller {
     public static function beckendbriefsearch($conditions,$limit, $offset, $orderBy = 'created_time', $sort='desc'){
         
         if( isset($conditions['creator_id']) && $conditions['creator_id'] != ''){
-            $anno_ids = Annotation::getAnnos($conditions['creator_id']);
+            $anno_ids = Annotation::getAnnos($conditions['creator_id'],'backend');
             $temp = $anno_ids;    
+            echo 'normal user';
          }
          else{
             $anno_ids = Annotation::getAnnos('0','backend','true');
@@ -526,8 +527,8 @@ class ManageController extends Controller {
         //$count = $annos->count();
         //$result = $annos->skip($offset)->take($limit)->orderBy($orderBy,$sort)->get();
         $annos = Annotation::annotation($temp);
-
-        return  ['annos' =>$annos, 'count' => count($temp)];
+        $output = array_splice($annos,$offset,$limit);
+        return  ['annos' =>$output, 'count' => count($temp)];
     }
     /*第一次進後台與進皆搜尋走的程式
     *過濾URI或TAGS或公開與否給使用者
@@ -571,7 +572,7 @@ class ManageController extends Controller {
              $temp = array_intersect($temp, $uri);
         }
        
-        
+        /*對標記內容的篩選*/
         if(isset($conditions['text']) && $conditions['text'] != '')
         {
             $bg_ids = BodyMember::backsearchtext($conditions['text']);
@@ -580,11 +581,13 @@ class ManageController extends Controller {
              foreach ($bg_ids as $bg_id ) {                 
                  array_push($anno_ids, bodygroup::getanno_id($bg_id->bg_id)->anno_id);
              }
+
             $temp = array_intersect($temp, $anno_ids);
         }        
 
         if(isset($conditions['tag']) && $conditions['tag'] != '')
         {
+
              $bg_ids = BodyMember::backgettags($conditions['tag']);
              
              $anno_ids = [];
@@ -592,11 +595,12 @@ class ManageController extends Controller {
                  array_push($anno_ids, bodygroup::getanno_id($bg_id->bg_id)->anno_id);
 
              }
+
             $temp = array_intersect($temp, $anno_ids);
         }  
         $annos = Annotation::annotation($temp);
-
-        return  ['annos' =>$annos, 'count' => count($temp)];
+        $output = array_splice($annos,$offset,$limit);
+        return  ['annos' =>$output, 'count' => count($temp)];
 
     }
     /*收藏頁面使用,統一搜尋
@@ -627,7 +631,8 @@ class ManageController extends Controller {
             }  
         }*/
         $annos = Annotation::annotation($result);
-        return  ['annos' =>$annos, 'count' => count($annos)];
+        $output = array_splice($annos,$offset,$limit);
+        return  ['annos' =>$output, 'count' => count($temp)];
     }
      /*收藏頁面使用,各別搜尋
     *過濾URI或TAGS或公開與否給使用者
@@ -677,25 +682,12 @@ class ManageController extends Controller {
             $temp = array_intersect($temp, $anno_ids);
         }  
         $annos = Annotation::annotation($temp);
-
-        return  ['annos' =>$annos, 'count' => count($temp)];
+        $output = array_splice($annos,$offset,$limit);
+        return  ['annos' =>$output, 'count' => count($temp)];
 
     }
-    /*
-    *$annos = self::backendsearch([
-                'uri' => $uri,
-                'text' => $searchText,
-                'creator_id' => $buser->id,
-                'tag' => $searchTag,
-                'sort' => $searchsort,
-                'user_first' => $search_user_first,
-                'public' => $searchPublic == '' ? [] :[
-                    'is_public' => $searchPublic == '1',
-                    'creator_id' => $buser->id,
-                ],
-    *
-    *
-    */
+
+   
   
 
 }

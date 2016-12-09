@@ -28,7 +28,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
     this.postlikeUrl = settings.urls.postlikeUrl ;
     this.authCheckurl = settings.urls.authCheckurl;
     this.loginUrl = 'http://' + this.server + '/auth/login?callback_url=' + encodeURIComponent(this.callback_url) + '&uri=' + this.uri + '&domain=' + this.domain;
-    this.logoutUrl =  settings.urls.authCheckurl;
+    this.logoutUrl =  settings.urls.logoutUrl;
     this.postreplyurl =  settings.urls.postreplyurl;
     this.postdeleteurl =  settings.urls.postdeleteurl;
     this.postupdateurl =  settings.urls.postupdateurl;
@@ -70,8 +70,9 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         /*if (_this.showing.length == 0) {
             _this.showing = _this.data;
         }*/
-        var tmp = JSON.parse(JSON.stringify(_this.showing));
-        _this.loadAnnotations(tmp);
+        //var tmp = JSON.parse(JSON.stringify(_this.showing));
+        //console.log(tmp);
+        _this.loadAnnotations(_this.showing);
       
     }
 
@@ -289,7 +290,9 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             $('.anno-viewall').hide();
 
         });
+
         */
+        $('#side-menu').metisMenu();
         //綁定搜尋按鈕事件
         $('#anno-search-submit').click(function(e) {
             e.preventDefault(); //prevent from getting empty input 
@@ -330,7 +333,6 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
            
             var data = _this.annotator.plugins.Store.options.loadFromSearch;
             var anno_id =   $(e.target).attr('data-id');
-            console.log(_this.delete_anno_url);
             $.ajax({
                 url: _this.delete_anno_url +'/'+ $(e.target).attr('data-id') ,
                 data: data,
@@ -485,25 +487,21 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         //登出事件
         $(document).on('click', '#btn-anno-logout', function(e) {
             e.preventDefault();
+           
+             $.post(_this.logoutUrl, {
+                anno_token: _this.anno_token,
+                domain: _this.domain,
+            })
+             .success(function(e) {
+                setCookie('anno_token', '');
+                setCookie('user_id', 0);
+                _this.is_authed = false;
+                _this.anno_token = '';
 
-            $.ajax({
-                method: 'POST',
-                cookies: true,
-                async: false,
-                data: {
-                    'anno_token': _this.anno_token,
-                    'domain': _this.domain
-                },
-                url: _this.logoutUrl
-            });
-            setCookie('anno_token', '');
-            setCookie('user_id', 0);
-            _this.is_authed = false;
-            _this.anno_token = '';
-
-            _this.checkLoginState(false);
-            location.reload();
-            return false;
+                _this.checkLoginState(false);
+                location.reload();
+            })
+            
         });
         $('.panel-anno-show').bind('click',function(e){
             $('.btn-show').click();
@@ -760,6 +758,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             $('.anno-body').append('<li id="anno-info-id' + annotation.id + '" class="anno-infos-item" style="z-index:50">' +
                 '<p><b>註記建立者:' + annotation.user.name + '</b></p>');
             $('.anno-body #anno-info-id' + annotation.id).data('annotation',annotation);
+      
             for (var j = 0; j < annotation.otherbodys.length; j++) {
 
                 var tags = "";
@@ -767,7 +766,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 for (var i = 0; i <= annotation.otherbodys[j].tags.length - 1; i++) {
                     tags += '<span class="anno-body-tag">' + annotation.otherbodys[j].tags[i] + ' </span>';
                 }
-
+                if(annotation.otherbodys[j].text[0] =='') annotation.otherbodys[j].text[0] = 'No Comment';
                 id.push(annotation.otherbodys[j].bid);
                 $('.anno-body #anno-info-id' + annotation.id).append('<div id ="anno-body' + annotation.otherbodys[j].bid + '" class = "anno-body-item">' +
                     '<a href=manage/profile/' + annotation.otherbodys[j].creator + ' class="anno-user-name">' + annotation.otherbodys[j].creator + '</a>' +
@@ -788,6 +787,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                             '<a class="anno-body-delete fa fa-times" style="background-position: 0 -75px;" data-id=' + annotation.otherbodys[j].bid + '></a></span></div>');
                     }
             }
+            
 
             if ($(_this.element).data('annotator-user') != undefined) {
                 var likes = $(_this.element).data('annotator-user').like
@@ -853,7 +853,6 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 domain: _this.domain
             },
             success: function(data) {
-                console.log(data);
                  $('.annotator-hl-focus').removeClass('annotator-hl-level2');
                 annotation.fix = undefined;
             },
@@ -1044,23 +1043,18 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 
         var tags = "";
         $('.anno-lists #anno-info-id' + annotation.id).data('annotation',annotation);
-        if (annotation.otherbodys.length > 0) {
-            for (var i = 0; i <= annotation.otherbodys[0].tags.length - 1; i++) {
-                tags += '<span class="anno-body-tag">' + annotation.otherbodys[0].tags[i] + ' </span>';
-            }
+        if(annotation.otherbodys[0].text[0] =='') annotation.otherbodys[0].text[0] = 'No Comment';
+        for (var i = 0; i <= annotation.otherbodys[0].tags.length - 1; i++) {
+            tags += '<span class="anno-body-tag">' + annotation.otherbodys[0].tags[i] + ' </span>';
+        }
 
-            $('.anno-lists #anno-info-id' + annotation.id).append('<div id ="anno-body' + annotation.otherbodys[0].bid + '" class = "anno-body-item">' +
-                '<a href=manage/profile/' + annotation.otherbodys[0].creator + ' class="anno-user-name">' + annotation.otherbodys[0].creator + '</a>' +
-                '<span class="anno-body-time">' + annotation.otherbodys[0].created_time + '</span>' +
-                '<div class="anno-body-text">' + annotation.otherbodys[0].text[0] + '</div>' +
-                tags);
-        }
-        else{
-             $('.anno-lists #anno-info-id' + annotation.id).append('<div class = "anno-body-item">' +
-                    '<a href=manage/' + annotation.user.name + ' class="anno-user-name">' + annotation.user.name + '</a>' +
-                    '<span class="anno-body-time">' + annotation.created_at + '</span>' 
-                       );
-        }
+        $('.anno-lists #anno-info-id' + annotation.id).append('<div id ="anno-body' + annotation.otherbodys[0].bid + '" class = "anno-body-item">' +
+            '<a href=manage/profile/' + annotation.otherbodys[0].creator + ' class="anno-user-name">' + annotation.otherbodys[0].creator + '</a>' +
+            '<span class="anno-body-time">' + annotation.otherbodys[0].created_time + '</span>' +
+            '<div class="anno-body-text">' + annotation.otherbodys[0].text[0] + '</div>' +
+            tags);
+        
+    
        
         $('.anno-lists #anno-info-id' + annotation.id).append('<div ><a style="text-align:right">readmore</a></div>');
         if(annotation.type == 'text')

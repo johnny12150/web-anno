@@ -1,0 +1,63 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Tue Jun 30 14:59:53 2015
+;; Desktop file format version 206
+;; Emacs version 24.4.1
+
+;; Global section:
+(setq desktop-saved-frameset [frameset 1 (21907 4441 256179 553000) (desktop . "206") "tilgovi@elpis" nil nil ((((font-backend xft x) (font . "-unknown-M+ 1mn-normal-normal-normal-*-20-*-*-*-d-0-iso10646-1") (font-parameter) (border-width . 0) (internal-border-width . 0) (right-divider-width . 0) (bottom-divider-width . 0) (vertical-scroll-bars) (foreground-color . "#657b83") (background-color . "#fdf6e3") (mouse-color . "black") (border-color . "black") (screen-gamma) (line-spacing) (left-fringe . 10) (right-fringe . 10) (scroll-bar-foreground . "#31363b") (scroll-bar-background . "#eff0f1") (menu-bar-lines . 0) (tool-bar-lines . 0) (title) (wait-for-wm . t) (fullscreen . maximized) (tool-bar-position . top) (icon-type . t) (auto-raise) (auto-lower) (cursor-type . box) (scroll-bar-width . 0) (alpha) (horizontal-scroll-bars . t) (display-type . color) (background-mode . light) (cursor-color . "#657b83") (sticky) (environment) (frameset--id . "4AE9-1662-3861-58E4") (frameset--mini t . t) (modeline . t) (minibuffer . t) (unsplittable) (icon-name) (display . ":0") (explicit-name) (visibility . t) (height . 49) (width . 254) (left . 0) (top . 0)) ((min-height . 4) (min-width . 20) (min-height-ignore . 3) (min-width-ignore . 8) (min-height-safe . 1) (min-width-safe . 4) (min-pixel-height . 116) (min-pixel-width . 200) (min-pixel-height-ignore . 87) (min-pixel-width-ignore . 80) (min-pixel-height-safe . 29) (min-pixel-width-safe . 40)) hc (pixel-width . 2560) (pixel-height . 1392) (total-width . 256) (total-height . 48) (normal-height . 1.0) (normal-width . 1.0) (combination-limit) (leaf (pixel-width . 1280) (pixel-height . 1392) (total-width . 128) (total-height . 48) (normal-height . 1.0) (normal-width . 0.5) (buffer "README.md" (selected) (hscroll . 0) (fringes 2 10 nil) (margins 24) (scroll-bars 0 0 t nil) (vscroll . 0) (dedicated) (point . 1029) (start . 1))) (leaf (last . t) (pixel-width . 1280) (pixel-height . 1392) (total-width . 128) (total-height . 48) (normal-height . 1.0) (normal-width . 0.5) (buffer "package.json" (selected . t) (hscroll . 0) (fringes 2 10 nil) (margins 24) (scroll-bars 0 0 t nil) (vscroll . 0) (dedicated) (point . 520) (start . 1)))))])
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring '("node" "main" "browserify" "karma-babelify" "babelify" "require" "browserify"))
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("~/src/dom-seek/gulpfile.js" "~/src/dom-seek/test/index.spec.js" "~/src/dom-seek/karma.conf.js" "~/src/dom-seek/package.json" "~/src/dom-seek/.travis.yml" "~/src/hypothesis/h/h/static/scripts/app-controller.coffee" "~/src/dom-seek/index.js" "~/.emacs.d/personal/tilgovi.el" "~/src/hypothesis/h/h/templates/client/thread.html" "~/src/hypothesis/h/h/templates/client/annotation.html" "~/src/hypothesis/h/h/templates/client/viewer.html" "~/src/hypothesis/h/h/static/scripts/cross-frame.coffee" "~/src/hypothesis/h/h/static/scripts/annotator/highlighter.coffee" "~/src/hypothesis/h/h/static/scripts/annotator/guest.coffee" "~/src/hypothesis/h/h/static/scripts/annotator/plugin/bucket-bar.coffee" "~/src/hypothesis/h/h/static/scripts/annotator/anchoring/html.coffee" "~/src/hypothesis/h/h/static/scripts/annotator/anchoring/types.coffee" "~/src/hypothesis/h/h/static/styles/pdfjs-overrides.scss" "~/src/hypothesis/h/h/static/scripts/annotator/anchoring/pdf.coffee" "~/src/hypothesis/h/h/static/scripts/annotator/plugin/pdf.coffee" "~/src/hypothesis/h/h/static/styles/annotator/pdfjs-overrides.scss" "~/src/hypothesis/h/h/static/styles/app.scss" "~/src/hypothesis/h/h/static/styles/reset.scss" "~/src/hypothesis/h/h/static/styles/base.scss" "~/src/hypothesis/h/h/static/styles/annotator/bucket-bar.scss" "~/src/hypothesis/h/h/static/styles/annotator/inject.scss" "~/src/hypothesis/h/h/assets.yaml" "~/src/hypothesis/h/h/accounts/views.py" "~/src/hypothesis/h/h/assets.py" "~/src/hypothesis/h/gunicorn.conf.py"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/home/tilgovi/src/dom-seek/package.json"
+  "package.json"
+  'js-mode
+  '(prelude-mode global-auto-revert-mode volatile-highlights-mode flyspell-mode projectile-mode anzu-mode whitespace-mode undo-tree-mode diff-hl-mode flx-ido-mode helm-mode company-mode override-global-mode guru-mode)
+  520
+  '(594 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (truncate-lines . t)))
+
+(desktop-create-buffer 206
+  "/home/tilgovi/src/dom-seek/README.md"
+  "README.md"
+  'gfm-mode
+  '(abbrev-mode visual-line-mode prelude-mode global-auto-revert-mode volatile-highlights-mode flyspell-mode projectile-mode anzu-mode whitespace-mode undo-tree-mode diff-hl-mode flx-ido-mode helm-mode company-mode override-global-mode)
+  1029
+  '(1029 nil)
+  nil
+  nil
+  '((tab-width . 4) (buffer-file-coding-system . undecided-unix) (truncate-lines . t)))
+
+(desktop-create-buffer 206
+  "/home/tilgovi/src/dom-seek/gulpfile.js"
+  "gulpfile.js"
+  'js-mode
+  '(prelude-mode global-auto-revert-mode volatile-highlights-mode flyspell-mode projectile-mode anzu-mode whitespace-mode undo-tree-mode diff-hl-mode flx-ido-mode helm-mode company-mode override-global-mode guru-mode)
+  337
+  '(307 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (truncate-lines . t)))
+
+(desktop-create-buffer 206
+  "/home/tilgovi/src/dom-seek/karma.conf.js"
+  "karma.conf.js"
+  'js-mode
+  '(prelude-mode global-auto-revert-mode volatile-highlights-mode flyspell-mode projectile-mode anzu-mode whitespace-mode undo-tree-mode diff-hl-mode flx-ido-mode helm-mode company-mode override-global-mode guru-mode)
+  515
+  '(565 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (truncate-lines . t)))
+

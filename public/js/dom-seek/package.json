@@ -1,0 +1,115 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "dom-seek@^1.0.1",
+        "scope": null,
+        "escapedName": "dom-seek",
+        "name": "dom-seek",
+        "rawSpec": "^1.0.1",
+        "spec": ">=1.0.1 <2.0.0",
+        "type": "range"
+      },
+      "/Users/shrak/Documents/dhtool/annotator/node_modules/dom-anchor-text-position"
+    ]
+  ],
+  "_from": "dom-seek@>=1.0.1 <2.0.0",
+  "_id": "dom-seek@1.0.1",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/dom-seek",
+  "_nodeVersion": "0.12.7",
+  "_npmUser": {
+    "name": "tilgovi",
+    "email": "randall.leeds@gmail.com"
+  },
+  "_npmVersion": "2.11.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "dom-seek@^1.0.1",
+    "scope": null,
+    "escapedName": "dom-seek",
+    "name": "dom-seek",
+    "rawSpec": "^1.0.1",
+    "spec": ">=1.0.1 <2.0.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "/dom-anchor-text-position"
+  ],
+  "_resolved": "https://registry.npmjs.org/dom-seek/-/dom-seek-1.0.1.tgz",
+  "_shasum": "7311112487e775f45c0acf7f336b2d58d0c232ba",
+  "_shrinkwrap": null,
+  "_spec": "dom-seek@^1.0.1",
+  "_where": "/Users/shrak/Documents/dhtool/annotator/node_modules/dom-anchor-text-position",
+  "author": {
+    "name": "Randall Leeds",
+    "email": "randall@bleeds.info"
+  },
+  "browser": "seek.js",
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/tilgovi/dom-seek/issues"
+  },
+  "dependencies": {},
+  "description": "Text traversal for HTML documents.",
+  "devDependencies": {
+    "babel": "^5.4.3",
+    "babelify": "^6.1.1",
+    "browserify": "^10.2.4",
+    "browserify-istanbul": "^0.2.1",
+    "chai": "^2.3.0",
+    "gulp": "^3.9.0",
+    "gulp-babel": "^5.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-uglify": "^1.2.0",
+    "karma": "^0.12.32",
+    "karma-browserify": "^4.2.1",
+    "karma-chai": "^0.1.0",
+    "karma-coverage": "^0.3.1",
+    "karma-fixture": "^0.2.4",
+    "karma-html2js-preprocessor": "^0.1.0",
+    "karma-mocha": "^0.1.10",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-sauce-launcher": "^0.2.11",
+    "karma-source-map-support": "^1.0.0",
+    "mocha": "^2.2.5",
+    "node-iterator-shim": "^1.0.0"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "7311112487e775f45c0acf7f336b2d58d0c232ba",
+    "tarball": "https://registry.npmjs.org/dom-seek/-/dom-seek-1.0.1.tgz"
+  },
+  "gitHead": "b3f9d16eddba044c94fb47eac9edfa36122dcd70",
+  "homepage": "https://github.com/tilgovi/dom-seek",
+  "keywords": [
+    "dom",
+    "text",
+    "seek"
+  ],
+  "license": "MIT",
+  "main": "dist/seek.js",
+  "maintainers": [
+    {
+      "name": "tilgovi",
+      "email": "randall.leeds@gmail.com"
+    }
+  ],
+  "name": "dom-seek",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tilgovi/dom-seek.git"
+  },
+  "scripts": {
+    "test": "karma start"
+  },
+  "version": "1.0.1"
+}
