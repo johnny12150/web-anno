@@ -33,7 +33,7 @@ class ManifestController extends Controller
 			if(target::checkimg($img_url)){
 				$canvas_id = canvas::add($img_url,$canvas->$var,$canvas->height,$canvas->width);
 				$temp = array(
-					'@id'=> "http://dev.annotation.taieol.tw/list/".$canvas_id,
+					'@id'=> "http://".$_SERVER['HTTP_HOST']."/list/".$canvas_id,
 					'@type' =>'sc:AnnotationList',
 				);
 				$canvas->otherContent[0] = $temp;
@@ -41,7 +41,7 @@ class ManifestController extends Controller
            
         }
 		$new_id = manifest::add($content);
-		return 'http://dev.annotation.taieol.tw/manifest/'.$new_id.'.json';
+		return 'http://'.$_SERVER['HTTP_HOST'].'/manifest/'.$new_id.'.json';
         //return json_encode($content);
     }
     public function IIIFformat($id){
@@ -56,7 +56,7 @@ class ManifestController extends Controller
         }
 
         return [
-            '@id' => "http://dev.annotation.taieol.tw/list/".$id,
+            '@id' => "http://".$_SERVER['HTTP_HOST']."list/".$id,
             'context' => "http://www.shared-canvas.org/ns/context.json",
             '@type' =>'AnnotationList',
             'resources' => $resources
