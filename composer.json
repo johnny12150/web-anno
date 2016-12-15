@@ -9,7 +9,9 @@
         "greggilbert/recaptcha": "dev-master",
 		"thomaswelton/laravel-gravatar": "~1.0",
 		"laravel/socialite": "^2.0",
-		"onokumus/metismenu": "dev-master"
+		"onokumus/metismenu": "dev-master",
+		"mongodb/mongodb": "^1.0.0",
+		"jenssegers/mongodb": "^3.0.1"
     }
     ,
 	"require-dev": {

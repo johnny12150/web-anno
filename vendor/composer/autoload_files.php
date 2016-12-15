@@ -16,6 +16,7 @@ return array(
     '65fec9ebcfbb3cbb4fd0d519687aea01' => $vendorDir . '/danielstjules/stringy/src/Create.php',
     'e7223560d890eab89cda23685e711e2c' => $vendorDir . '/psy/psysh/src/Psy/functions.php',
     '5255c38a0faeba867671b61dfda6d864' => $vendorDir . '/paragonie/random_compat/lib/random.php',
+    '3a37ebac017bc098e9a86b35401e7a68' => $vendorDir . '/mongodb/mongodb/src/functions.php',
     'f0906e6318348a765ffb6eb24e0d0938' => $vendorDir . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
     '58571171fd5812e6e447dce228f52f4d' => $vendorDir . '/laravel/framework/src/Illuminate/Support/helpers.php',
 );

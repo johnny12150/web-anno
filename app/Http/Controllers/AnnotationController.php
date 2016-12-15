@@ -9,7 +9,7 @@ use App\Tag;
 use App\User;
 use App\BodyMember;
 use App\Target;
-use App\canvas;
+use App\manifest;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use OAuth\Common\Exception\Exception;
@@ -166,46 +166,7 @@ class AnnotationController extends Controller
         bodygroup::deletebody($bg_id);
         return self::search();
     }
-    public function Manifest(){
-        $Manifest = Request::input('json');
-        $handle = fopen($Manifest,"rb");
-        $content = "";
-        while (!feof($handle)) {
-                $content .= fread($handle, 10000);
-        }
-        fclose($handle);
-        $content = json_decode($content);
-        $var = '@id';
-        foreach ($content->sequences[0]->canvases as $canvas ){
-            $img_url = $canvas->images[0]->resource->$var; 
-            $canvas_id = canvas::add($img_url,$canvas->$var,$canvas->height,$canvas->width);
-            $temp = array(
-                '@id'=> "http://annotation.ipicbox.tw/list/".$canvas_id,
-                '@type' =>'sc:AnnotationList',
-            );
-            $canvas->otherContent[0] = $temp;
-           
-        }
-        return json_encode($content);
-    }
-    public function IIIFformat($id){
-        $canvas = canvas::get_canvas_by_annolistid($id);
 
-        $anno_ids = Target::get_by_src($canvas->img_src);
-        $resources =[];
-        foreach ($anno_ids as $anno_id)
-        {
-            $resource = Annotation::annotation_IIIF($anno_id,$canvas);
-            array_push($resources,$resource);
-        }
-
-        return [
-            '@id' => "http://annotation.ipicbox.tw/list/".$id,
-            'context' => "http://www.shared-canvas.org/ns/context.json",
-            '@type' =>'AnnotationList',
-            'resources' => $resources
-            ];
-    }
 
     public function updatebody(){
 

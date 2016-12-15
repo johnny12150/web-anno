@@ -80,7 +80,7 @@ return [
 
 	'key' => env('APP_KEY', 'SomeRandomString'),
 
-	'cipher' => MCRYPT_RIJNDAEL_128,
+	'cipher' => 'AES-256-CBC',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -150,6 +150,7 @@ return [
         'Greggilbert\Recaptcha\RecaptchaServiceProvider',
 
         'Laravel\Socialite\SocialiteServiceProvider',
+		'Jenssegers\Mongodb\MongodbServiceProvider',
 	],
 
 	/*

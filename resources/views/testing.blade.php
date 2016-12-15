@@ -44,7 +44,7 @@
        
 
         <p>陳澄波這張作品是陳澄波自東京美術學校圖畫師範科畢業</p>
-        
+        <img src = "http://stacks.stanford.edu/image/jr903ng8662/T0000007" height='500px' width='500px'></img>
 
           <div class="field-title">Chen Cheng-po  <a class="field-title-icon" href="http://data.asdc.tw/lod/Person/PR0001#lodlive-section"></a>
 </div>

@@ -105,5 +105,14 @@ class Target extends Model{
 		$new_selector = json_encode($origin_selector);
 		DB::table('target')->where('anno_id',$data['anno_id'])->update(array('selector' =>$new_selector));
 	}
+	
+	public static function checkimg($img_url)
+	{
+		$number = self::where('source',$img_url)->count();
+		if($number > 0)
+			return true;
+		else 
+			return false;
+	}
 }
 ?>

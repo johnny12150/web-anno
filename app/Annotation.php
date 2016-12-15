@@ -380,9 +380,11 @@ class Annotation extends Model {
     }
     public static function annotation_IIIF($anno_id,$canvas)
     {
-         $otherbodys_id = bodygroup::getohtergroup($anno_id, "false");
-         $others = BodyMember::getothers($otherbodys_id[0]);
-         $targets = Target::getTarget($anno_id);
+        $otherbodys_id = bodygroup::getohtergroup($anno_id, "false");
+        //print(count($otherbodys_id) === 0 );
+		if(count($otherbodys_id) === 0 )  return 'null';
+		$others = BodyMember::getothers($otherbodys_id[0]);
+        $targets = Target::getTarget($anno_id);
 
 
  

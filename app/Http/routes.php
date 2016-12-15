@@ -12,7 +12,7 @@
 */
 
 use Illuminate\Support\Facades\Response;
-
+use App\manifest;
 Route::get('/', function() { return redirect('/manage');});
 
 Route::get('testing', function() {
@@ -29,11 +29,13 @@ Route::get('test4', function() {
 });
 Route::get('mongodb',function(){
     phpinfo();
+	$test = manifest::all();
+	print_r($test);
 });
 Route::get('manifest',function(){
     return view('manifest');
 });
-Route::post('myprocess','AnnotationController@Manifest');
+
 /* Annotation API routing */
 Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
 {
@@ -93,10 +95,12 @@ Route::group(['prefix' => '/manage', 'middleware' => 'auth'], function() {
 
 });
 
-Route::get('list/{p1}',"AnnotationController@IIIFformat");
+Route::get('list/{p1}',"ManifestController@IIIFformat");
+Route::get('manifest/{id}.json', 'ManifestController@output_manifest');
+Route::post('myprocess','ManifestController@Manifest');
+
 Route::get('gethint','AnnotationController@gethint');
 Route::get('gravatar/{email}', 'GravatarController@get');
-
 Route::get('manage/profile/{name}','ManageController@index');
 Route::post('manage/profile/{name}','ManageController@index');
 Route::controller('auth', 'AuthController');

@@ -83,7 +83,17 @@ return [
 			'password' => env('DB_PASSWORD', ''),
 			'prefix'   => '',
 		],
-
+		'mongodb' => [
+			'driver'   => 'mongodb',
+			'host'     => env('mongodb_HOST', '172.16.10.213'),
+			'port'     => env('mongodb_PORT', 27001),
+			'database' => env('mongodb_DATABASE'),
+			'username' => env('mongodb_USERNAME'),
+			'password' => env('mongodb_PASSWORD'),
+			'options' => [
+				'database' => 'admin' // sets the authentication database required by mongo 3
+			]
+		],
 	],
 
 	/*
