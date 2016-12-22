@@ -28,6 +28,14 @@ class Manifest extends Eloquent {
 		
 		return  DB::connection('mongodb')->collection('manifest')->where('_id',$id)->first();
 	}
+	public static function update_manifest($id,$manifest){
+		$new_manifest = self::where('_id',$id)->first();
+
+	    $new_manifest['manifest'] = $manifest;
+		$result = $new_manifest->save();
+		return $new_manifest;
+		
+	}
 }
 
 ?>

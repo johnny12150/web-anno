@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 
 use Illuminate\Support\Facades\Request;
+
+use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\manifest;
@@ -18,7 +20,20 @@ class ManifestController extends Controller
 		return  $result;
 		
 	}
-	public  function Manifest(){
+	public function save(){
+		$id = Request::input('id');
+		$manifest = Request::input('manifest');
+		
+		$res = manifest::update_manifest($id,$manifest);
+		return $res['_id'];
+		/*$arr= [];
+		foreach($data as $key =>$value){
+			array_push($arr,$key);
+			array_push($arr,$value);
+		}
+		return $arr;*/
+	}
+	public function Manifest(){
         $Manifest = Request::input('json');
         $handle = fopen($Manifest,"rb");
         $content = "";
@@ -41,8 +56,12 @@ class ManifestController extends Controller
            
         }
 		$new_id = manifest::add($content);
-		return 'http://'.$_SERVER['HTTP_HOST'].'/manifest/'.$new_id.'.json';
-        //return json_encode($content);
+		$new_url = 'http://edit.annotation.taieol.tw/#/myprocess?manifest='.$new_id ;
+		
+		//return 'http://edit.annotation.taieol.tw/#/myprocess?manifest='.$new_id;
+		//return json_encode($content);
+		return redirect($new_url);
+      
     }
     public function IIIFformat($id){
         $canvas = canvas::get_canvas_by_annolistid($id);

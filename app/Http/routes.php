@@ -96,8 +96,10 @@ Route::group(['prefix' => '/manage', 'middleware' => 'auth'], function() {
 });
 
 Route::get('list/{p1}',"ManifestController@IIIFformat");
+Route::post('manifest/save', 'ManifestController@save');
 Route::get('manifest/{id}.json', 'ManifestController@output_manifest');
 Route::post('myprocess','ManifestController@Manifest');
+
 
 Route::get('gethint','AnnotationController@gethint');
 Route::get('gravatar/{email}', 'GravatarController@get');
