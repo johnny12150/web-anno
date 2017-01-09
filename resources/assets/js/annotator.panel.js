@@ -695,7 +695,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         if(annotation.id == undefined) annotation.id = '-1';
 
         // check user is added to userlist
-        if (_this.ui.find('#anno-user-' + user_id).length == 0 && annotation.id.indexOf('keyword') == -1) {
+        if (_this.ui.find('#anno-user-' + user_id).length == 0 && annotation.id.toString().indexOf('keyword') == -1) {
 
             //add user list item and bind to user list
             this.ui.find('.anno-users ul')

@@ -41,6 +41,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                 clear(document.getElementsByClassName("annoitem select")[i]);
             }
         }
+
         $(".annotator-adder").css('left',0).css('top',0).hide();
     }
 
@@ -62,6 +63,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
     *@elem   html element
     *@root   搜尋的根元素  
     */
+
     function getxpath(elem,relativeRoot) {
         var idx, path, tagName;
         path = '';
@@ -392,13 +394,14 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
     *@param element    img element
     */
     this.reshow = function(element) {
-        var c1 = element.parentElement.children[1];
-        var ctx = c1.getContext("2d");
-        ctx.clearRect(0, 0, c1.width, c1.height);
-        if ($(element).data("annotation") !== undefined) {
-            var annotation = $(element).data("annotation");
-            for (var i in annotation)
-                show(element, annotation[i].position, "#FFFFFF");
+
+		var c1 = element.parentElement.children[1];
+		var ctx = c1.getContext("2d");
+		ctx.clearRect(0, 0, c1.width, c1.height);
+	    if($(element).data("annotation") !== undefined) {
+				var annotation = $(element).data("annotation");
+				for (var i in annotation)
+					show(element, annotation[i].position, "#FFFFFF");
         }
 
     };
@@ -422,47 +425,57 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
     *
     */
     this.annoinfos = function(annotation) {
-        $(".anno-lists").append('<li id="anno-info-id' + annotation.id + '" class="anno-infos-item" style="z-index:50">' +
-                '<p><b>註記建立者:' + annotation.user.name + '</b></p>');
-        $('.anno-lists #anno-info-id' + annotation.id).data('annotation',annotation);        
-        var tags = "";
-        if (annotation.otherbodys.length > 0) {
-            for (var i = 0; i <= annotation.otherbodys[0].tags.length - 1; i++) {
-                tags += '<span class="anno-body-tag">' + annotation.otherbodys[0].tags[i] + ' </span>';
-            }
+		var img =  $(_element).find('img');
 
-            $('.anno-lists #anno-info-id' + annotation.id).append('<div id ="anno-body' + annotation.otherbodys[0].bid + '" class = "anno-body-item">' +
-                '<a href=manage/profile/' + annotation.otherbodys[0].creator + ' class="anno-user-name">' + annotation.otherbodys[0].creator + '</a>' +
-                '<span class="anno-body-time">' + annotation.otherbodys[0].created_time + '</span>' +
-                '<div class="anno-body-text">' + annotation.otherbodys[0].text[0] + '</div>' +
-                tags);
-        }
-        else{
-             $('.anno-lists #anno-info-id' + annotation.id).append('<div class = "anno-body-item">' +
-                    '<a href=manage/' + annotation.user.name + ' class="anno-user-name">' + annotation.user.name + '</a>' +
-                    '<span class="anno-body-time">' + annotation.created_at + '</span>' 
-                       );
-        }
-        $('.anno-lists #anno-info-id' + annotation.id).append('<div><a style="text-align:right">readmore</a></div>');
-        var scrollTop;
-        var img1 =  $(_element).find('img');
-        var img
-        for (var i = 0 ;i< img1.length ; i++){
-            var range = document.createRange();
-            range.selectNodeContents(img1[i]);
-            var Xpath = getxpath(range.startContainer.parentElement,document.getElementsByClassName("annotator-wrapper")[0]);
-            if(Xpath == annotation.Xpath){
-            scrollTop = $(img1[i]).offset().top;
-            img =img1[i];
-            }
-        }
-        annotation.img = img;
-        $('#anno-info-id' + annotation.id).click(function() {
-            if (annotation.type == "image")
-                show(img, annotation.position, "blue");
-                 $('html,body').animate({ scrollTop: scrollTop - 100 }, 800);
-                showAnnoOnpanel(new Array(annotation));
-        });
+        for (var i = 0 ;i< img.length ; i++){
+			var range = document.createRange();
+			range.selectNodeContents(img[i]);
+			/*以XPath區分註記該屬於何圖*/
+			var Xpath = getxpath(range.startContainer.parentElement,document.getElementsByClassName("annotator-wrapper")[0]);
+		   if(Xpath == annotation.Xpath && img[0].src == annotation.src){
+				$(".anno-lists").append('<li id="anno-info-id' + annotation.id + '" class="anno-infos-item" style="z-index:50">' +
+						'<p><b>註記建立者:' + annotation.user.name + '</b></p>');
+				$('.anno-lists #anno-info-id' + annotation.id).data('annotation',annotation);        
+				var tags = "";
+				if (annotation.otherbodys.length > 0) {
+					for (var i = 0; i <= annotation.otherbodys[0].tags.length - 1; i++) {
+						tags += '<span class="anno-body-tag">' + annotation.otherbodys[0].tags[i] + ' </span>';
+					}
+
+					$('.anno-lists #anno-info-id' + annotation.id).append('<div id ="anno-body' + annotation.otherbodys[0].bid + '" class = "anno-body-item">' +
+						'<a href=manage/profile/' + annotation.otherbodys[0].creator + ' class="anno-user-name">' + annotation.otherbodys[0].creator + '</a>' +
+						'<span class="anno-body-time">' + annotation.otherbodys[0].created_time + '</span>' +
+						'<div class="anno-body-text">' + annotation.otherbodys[0].text[0] + '</div>' +
+						tags);
+				}
+				else{
+					 $('.anno-lists #anno-info-id' + annotation.id).append('<div class = "anno-body-item">' +
+							'<a href=manage/' + annotation.user.name + ' class="anno-user-name">' + annotation.user.name + '</a>' +
+							'<span class="anno-body-time">' + annotation.created_at + '</span>' 
+							   );
+				}
+				$('.anno-lists #anno-info-id' + annotation.id).append('<div><a style="text-align:right">readmore</a></div>');
+				var scrollTop;
+				var img1 =  $(_element).find('img');
+				var img
+				for (var i = 0 ;i< img1.length ; i++){
+					var range = document.createRange();
+					range.selectNodeContents(img1[i]);
+					var Xpath = getxpath(range.startContainer.parentElement,document.getElementsByClassName("annotator-wrapper")[0]);
+					if(Xpath == annotation.Xpath){
+					scrollTop = $(img1[i]).offset().top;
+					img =img1[i];
+					}
+				}
+				annotation.img = img;
+				$('#anno-info-id' + annotation.id).click(function() {
+					if (annotation.type == "image")
+						show(img, annotation.position, "blue");
+						 $('html,body').animate({ scrollTop: scrollTop - 100 }, 800);
+						showAnnoOnpanel(new Array(annotation));
+				});
+			}
+		}
     };
     /* let x1 < x2 and y1 <y2
     *@param x1,y1,x2,y2   startx,starty,endx,endy 
@@ -487,6 +500,14 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         scope.endy = yb;
         return [xa, ya, xb, yb];
     }
+
+
+
+
+
+
+
+
 
     /*取得圖片上的註記
     *@param element // img element
@@ -515,7 +536,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
             range.selectNodeContents(img[i]);
             /*以XPath區分註記該屬於何圖*/
             var Xpath = getxpath(range.startContainer.parentElement,document.getElementsByClassName("annotator-wrapper")[0]);
-            if(Xpath == annotation.Xpath)
+             if(Xpath == annotation.Xpath && img[0].src == annotation.src)
             {
                 var annotations = getImgAnnotation(img[i]);
                 annotations.push(annotation);
@@ -528,10 +549,11 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
 
     /*清除圖片上的註記*/
     this.initImgAnnotation = function() {
-        var img1 = $(_element).find('img');
-        for (var i = 0; i < img1.length; i++) {
-            $(img1[i]).removeData("annotation");
-            scope.reshow($(img1)[i]);
+        var img1 = $('.annotator-wrapper').find('img');
+
+		for (var i = 0; i < img1.length; i++) {
+			$(img1[i]).removeData("annotation");
+			scope.reshow($(img1)[i]);
         }
     };
 
@@ -576,7 +598,8 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                         var annotation = annotations[i];
                        
                         if (annotation.type == 'image') {
-                            scope.annoinfos(annotation);
+                            
+							scope.annoinfos(annotation);
                             now = annotation.id;
                             scope.addImgAnnotation(annotation);
 

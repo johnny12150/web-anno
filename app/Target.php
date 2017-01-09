@@ -114,5 +114,10 @@ class Target extends Model{
 		else 
 			return false;
 	}
+	public static function count_annotation($img_url)
+	{
+		$number = self::where('source',$img_url)->count();
+		return $number;
+	}
 }
 ?>

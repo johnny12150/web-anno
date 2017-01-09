@@ -372,5 +372,32 @@ class AnnotationController extends Controller
         return  $annos;
 
     }
-  
+	public static function modified_for_sophy(Request $request){
+		$url = Request::input('json');
+		if($url != '')  Session::put('img_url',$url);
+		else  $url = Session::get('img_url');
+		return view('test3',['url' => $url]);
+
+	}
+	public static function digital_island(){
+		$url = 'http://dev.annotation.taieol.tw/test.json';
+		$handle = fopen($url,"rb");
+		$content = "";
+        while (!feof($handle)) {
+                $content .= fread($handle, 10000);
+			
+        }
+        fclose($handle);
+		$json = json_decode( preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $content), true );
+		foreach($json['record'] as $key => $img){
+		    $img_url = $img['url'];
+			$img_count = Target::count_annotation($img_url);
+
+			$json['record'][$key]['count'] =  (string)$img_count;
+		}
+		return $json['record'];
+
+		
+		
+	}
 }

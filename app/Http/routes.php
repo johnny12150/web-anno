@@ -18,23 +18,15 @@ Route::get('/', function() { return redirect('/manage');});
 Route::get('testing', function() {
     return view('testing');
 });
-Route::get('test2', function() {
-    return view('test2');
-});
-Route::get('test3', function() {
-    return view('demo');
-});
-Route::get('test4', function() {
-    return view('test3');
-});
+
+
+
 Route::get('mongodb',function(){
     phpinfo();
 	$test = manifest::all();
 	print_r($test);
 });
-Route::get('manifest',function(){
-    return view('manifest');
-});
+
 
 /* Annotation API routing */
 Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
@@ -53,6 +45,8 @@ Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
     Route::get('/', 'AnnotationController@index');
     Route::get('annotations', 'AnnotationController@index');
     Route::get('search', 'AnnotationController@search');
+	
+	
 
     Route::group(['middleware' => ['crossdomain', 'api_auth'] ], function() {
         Route::post('likes/{id}', 'AnnotationController@like');
@@ -69,6 +63,9 @@ Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
         Route::post('logout', 'AnnotationController@logout');
         Route::post('edit_target','AnnotationController@edit_target');
         Route::post('checkcollect','collecteController@check');      
+		
+		
+		
     });
 
     Route::any('{all}', function($uri)
@@ -93,6 +90,18 @@ Route::group(['prefix' => '/manage', 'middleware' => 'auth'], function() {
     Route::post('/delfollow','UserController@delfollow');
     Route::post('/cancel' , 'collecteController@destroy');
 
+});
+Route::get('manifest', function(){
+			$user = Auth::user();
+			print($user->name);
+			return view('manifest');
+})->middleware('auth');
+Route::group(['prefix' => '/digital'],function(){
+	Route::get('digital_island', function() {
+		return view('0105_1');
+	});
+	Route::any('digital_island_api','AnnotationController@digital_island');
+	Route::any('modified_annotation','AnnotationController@modified_for_sophy');
 });
 
 Route::get('list/{p1}',"ManifestController@IIIFformat");

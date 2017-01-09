@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+  <meta charset="UTF-8"/>
+  <title>testing</title>
+</head>
+
+<body>
+	<button onclick='abc()'>123123</button>
+</body>
+<script>
+	var emptyManifest = {
+      "@context": "http://iiif.io/api/presentation/2/context.json",
+  	  "@id": "http://" + '123123',
+  	  "@type": "sc:Manifest",
+  	  "label": "[Click to edit label]",
+      "metadata": [],
+  	  "description": [
+        {
+          "@value": "[Click to edit description]",
+          "@language": "en"
+        }
+      ],
+  	  "license": "https://creativecommons.org/licenses/by/3.0/",
+  	  "attribution": "[Click to edit attribution]",
+  	  "sequences": [
+  		  {
+          "@id": "http://" +'123123',
+          "@type": "sc:Sequence",
+          "label": [
+            {
+              "@value": "Normal Sequence",
+              "@language": "en"
+            }
+          ],
+          "canvases": []
+        }
+  	  ],
+  	  "structures": []
+    };
+	var abcd = {"manifest":{"@context":"http://www.shared-canvas.org/ns/context.json","@id":"http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/manifest.json","@type":"sc:Manifest","label":"Bibliotheque nationale de France, NAF 6221","description":"displayLabelSummarycontentMelanges. II Recueil de 154 lais, ballades, rondeaux et serventois, dont 71 au moins sont dEustache DESCHAMPS","attribution":"Provided by the Stanford University Libraries","seeAlso":{"@id":"http://purl.stanford.edu/jr903ng8662.mods","dcterms:format":"application/mods+xml"},"sequences":[{"@id":"http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/normal","@type":"sc:Sequence","label":"Current page order","canvases":[{"@id":"http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/canvas/canvas-7","@type":"sc:Canvas","label":"Ar","height":"4785","width":"3760","images":[{"@id":"http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/imageanno/anno-7","@type":"oa:Annotation","motivation":"sc:painting","resource":{"@id":"http://stacks.stanford.edu/image/jr903ng8662/T0000007","@type":"dctypes:Image","format":"image/jpeg","height":"4785","width":"3760","service":{"@id":"https://stacks.stanford.edu/image/iiif/jr903ng8662%252FT0000007","@context":"http://iiif.io/api/image/2/context.json","profile":"http://iiif.io/api/image/2/level1.json"}},"on":"http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/canvas/canvas-7"}],"otherContent":[{"@id":"http://dev.annotation.taieol.tw/list/3","@type":"sc:AnnotationList"}]},{"@id":"http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/canvas/canvas-86","@type":"sc:Canvas","label":"tranche inferieure","height":"3912","width":"480","images":[{"@id":"http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/imageanno/anno-86","@type":"oa:Annotation","motivation":"sc:painting","resource":{"@id":"http://stacks.stanford.edu/image/jr903ng8662/T0000086","@type":"dctypes:Image","format":"image/jpeg","height":"3912","width":"480","service":{"@id":"https://stacks.stanford.edu/image/iiif/jr903ng8662%252FT0000086","@context":"http://iiif.io/api/image/2/context.json","profile":"http://iiif.io/api/image/2/level1.json"}},"on":"http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/canvas/canvas-86"}]}]}]},"id":"585367ec87d83b61a527be71"};
+	function abc(){
+	
+		$.post("http://dev.annotation.taieol.tw/manifest/save",abcd,
+		function(data, status){
+			console.log(data);
+		});
+	}
+</script
+</html>

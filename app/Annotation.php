@@ -416,6 +416,7 @@ class Annotation extends Model {
     {
         $creator = User::get($row->creator_id);
         // Refact object
+	
         return [
             'id' => $row->id,
             'text' => '不使用',
