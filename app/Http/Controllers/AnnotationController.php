@@ -242,6 +242,7 @@ class AnnotationController extends Controller
         $domain = Request::input('domain');
         $token = Request::input('anno_token');
         $domain = urldecode($domain);
+		$specific_url = Request::input('specific_url');
 
         // limit 沒設定的話目前預設暫定 999 個標記
         $limit = Request::input('limit') == '' ? -1 :
@@ -258,6 +259,7 @@ class AnnotationController extends Controller
             'uri' => $uri,
             'quote' => $searchText,
             'text' => $searchText,
+			'specific_url' => $specific_url,
             'public' => [
                 'is_public' => true,
                 'creator_id' => $user_id
@@ -352,6 +354,13 @@ class AnnotationController extends Controller
         {
             $anno_ids = Target::getannobyuri($conditions['uri']);
             $temp = $anno_ids;
+			
+        }
+		/*if has specific_img's url then it will work*/
+		if(isset($conditions['specific_url']) && $conditions['specific_url'] != '')
+        {
+            $anno_ids = Target::getspecific_img($conditions['specific_url']);
+			$temp = array_intersect($temp, $anno_ids); 
         }
         if(isset($conditions['text']) && $conditions['text'] != '')
         {
@@ -373,31 +382,65 @@ class AnnotationController extends Controller
 
     }
 	public static function modified_for_sophy(Request $request){
+		echo $_SERVER['QUERY_STRING'] ; 
 		$url = Request::input('json');
 		if($url != '')  Session::put('img_url',$url);
 		else  $url = Session::get('img_url');
 		return view('test3',['url' => $url]);
 
 	}
-	public static function digital_island(){
-		$url = 'http://dev.annotation.taieol.tw/test.json';
-		$handle = fopen($url,"rb");
+	public static function digital_island_old(){
+		$url = 'http://dev.annotation.taieol.tw/cyber.json';
+		/*$handle = fopen($url,"rb");
 		$content = "";
         while (!feof($handle)) {
+			     
                 $content .= fread($handle, 10000);
 			
         }
-        fclose($handle);
-		$json = json_decode( preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $content), true );
-		foreach($json['record'] as $key => $img){
-		    $img_url = $img['url'];
-			$img_count = Target::count_annotation($img_url);
+        fclose($handle);*/
+		$content=file_get_contents($url);
+		$content = iconv("big5","UTF-8",$content);
 
-			$json['record'][$key]['count'] =  (string)$img_count;
+		$json = json_decode($content, true );
+		foreach($json['records'] as $key => $img){
+		    //$img_url = $img['url'];
+			//$img_count = Target::count_annotation($img_url);
+			$img['p_title'] = str_replace('"', '', $img['p_title']);
+			$img['p_title'] = str_replace("'", '',$img['p_title']);
+			$img['a_title'] = str_replace('"', '', $img['a_title']);
+			$img['a_title'] = str_replace("'", '',$img['a_title']);
+			$string =  'INSERT INTO digital(d_index, p_id, p_title, a_title, uname, url) VALUES (null,"'.$img['p_id'].'","'.$img['p_title'].'","'.$img['a_title'].'","'.$img['uname'].'","'.$img['url'].'");';
+			
+			echo $string ;
+			echo '<br>';
+			//$json['records'][$key]['count'] =  (string)$img_count;
 		}
-		return $json['record'];
+	
+		//return $json['records'];
 
 		
-		
+	}
+	public static function digital_island(){
+		$search_value = Request::input('search')['value'];
+		$start =Request::input('start');
+		$length = Request::input('length');
+		$order_col = Request::input('order')[0]['column'];
+		$order_dir  = Request::input('order')[0]['dir'];
+		$draw = Request::input('draw');
+		$result = Target::digital_island($search_value,$order_col,$order_dir,$start,$length);
+		$arr =  [];
+		foreach($result['result'] as $data){
+			$img_source = "<img src=". $data->url ." class ='annotation_img' height =200px />";
+			$record = array($data->p_title,$data->a_title,$data->uname,$img_source,$data->count);
+			array_push($arr,$record);
+		}
+		return [
+		  "draw" => $draw,
+		  "recordsTotal"=> $result['count'],
+		  "data"=> $arr,
+		  "recordsFiltered"=> $result['count'],
+
+		];
 	}
 }

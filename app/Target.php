@@ -89,7 +89,14 @@ class Target extends Model{
 
 	    return $array;
 	}
-
+	public static function getspecific_img($img_url){
+		$target = self::where('source',$img_url)->lists('anno_id')->all();
+		$ids =[];
+		foreach ($target as $id ) {
+			array_push($ids,$id);
+		}
+		return $ids;
+	}
 	public static function geturi($anno_id)
 	{
 		$uri = self::where('anno_id',$anno_id)->pluck('uri');
@@ -118,6 +125,33 @@ class Target extends Model{
 	{
 		$number = self::where('source',$img_url)->count();
 		return $number;
+	}
+	public static function digital_island($search ,$col,$sort,$start,$length)
+	{
+		/*$result =DB::select('select digital.* , ifNULL(img_count.img_count,0) as count 
+		from digital LEFT join ( SELECT target.source,count(digital.url) img_count FROM digital join target on digital.url = target.source GROUP by digital.url) img_count 
+		on digital.url = img_count.source ORDER BY count DESC limit ?,?',
+		[$start,$length]);*/
+		if ($col == 0) {
+			$col = 'p_title';
+		} elseif ($col == 1) {
+			$col = 'a_title';
+		} elseif ($col == 2) {
+			$col = 'uname';
+		} elseif ($col == 3) {
+			$col = 'url';
+		}else if ($col == 4) {
+		    $col ='count' ;	
+		}
+		$str = 'select digital.* , ifNULL(img_count.img_count,0) as count 
+		from digital LEFT join ( SELECT target.source,count(digital.url) img_count FROM digital join target on digital.url = target.source GROUP by digital.url) img_count 
+		on digital.url = img_count.source';
+		$where = ' where p_title LIKE "%'.$search.'%" OR a_title LIKE "%'.$search.'%" OR uname LIKE "%'.$search.'%"';
+		$orderBy = ' ORDER BY '.$col.' '.$sort. ' ' ;
+		$limit = 'limit '.$start.','.$length.'';
+		$result_total = DB::select($str.$where.$orderBy);
+		$result = DB::select($str.$where.$orderBy.$limit);
+		return ['result' =>$result,'count'=>count($result_total)];
 	}
 }
 ?>

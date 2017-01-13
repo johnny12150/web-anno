@@ -235,7 +235,7 @@ var annotation = function(e) {
         // set user's permission options(delete,edit)
         var permissionsOptions = {};
         permissionsOptions['showEditPermissionsCheckbox'] =  false ;
-        
+
         this.annotator
             .annotator('addPlugin', 'Store', {
                 prefix: '',
@@ -257,8 +257,8 @@ var annotation = function(e) {
                     uri: location.href.split('#')[0],
                     domain : _annotation.host, 
                     anno_token : anno_token,
-                    user :  user_id
-
+                    user :  user_id,
+					specific_url : setting.specific_url //for digital island
                 }
             })
             .annotator('addPlugin','RichText',optionsRichText)

@@ -9,6 +9,12 @@
 		<meta name="description" content="">
 		<meta name="author" content="">
         <title>digital_island Manage Page</title>
+		<style>
+			tr:hover td {
+				cursor : pointer;
+				background-color: #d5f5d5;
+			}
+		</style>
 		<script
 		  src="https://code.jquery.com/jquery-3.1.1.js"
 		  integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
@@ -45,12 +51,31 @@
 			   <input id='input1' type="test" name="json" hidden='true'>
 			</form>
 			<table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
+				<thead>
+					<tr>
+						<th>作品名稱</th>
+						<th>相簿名稱</th>
+						<th>作者</th>
+						<th>圖片位置</th>
+						<th>註記數量</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<th>作品名稱</th>
+						<th>相簿名稱</th>
+						<th>作者</th>
+						<th>圖片位置</th>
+						<th>註記數量</th>
+					</tr>
+				</tfoot>
+			</table>
 		</div>
     </body>
 	<script>
 		
         var dataSet;
-		$(document).ready(function() {
+		/*$(document).ready(function() {
 		
 			$.ajax({
 			  type: "POST",
@@ -60,6 +85,7 @@
 
 					$('#example').DataTable( {
 					data: dataSet,
+					deferRender: true
 					columns: [
 						
 						{ data: 'url' , title : 'IMG' ,
@@ -67,8 +93,10 @@
 							 return '<img class ="annotation_img"src="'+data+'" width="250px" height="200px"/>';
 						 }
 						},
-						{ data: 'name',title : 'NAME' },
-						{ data: 'count',title : 'count' },
+						{ data: 'p_title',title : '相片名稱' },
+						{ data: 'a_title',title : '相簿名稱' },
+						{ data: 'uname',title : '作者' },
+
 					],
 					
 				});
@@ -83,8 +111,28 @@
 				console.log(data);
 			  }
 			});
-		});
+		});*/
+		$(document).ready(function() {
+			$('#example').DataTable( {
 
+				"processing": true,
+				"serverSide": true,
+				"ajax": "http://dev.annotation.taieol.tw/digital/digital_island_api",
+				"rowCallback": function( row, data ) {
+					$(row).data('data',data);
+				}
+				
+			});
+			$('#example tbody').on('click','tr',function(e) {
+				var src="";
+				if($(e.target).attr('src') == null )
+					src = $($(e.target.parentElement).data('data')[3]).attr('src');
+				 else
+					src = $(e.target).attr('src');
+				 $('#input1').val(src);
+				 $('#target').submit();
+			});
+		} );
 	
 
 	</script>

@@ -64,9 +64,10 @@
 
      $(window).load(function(){
         
-
+		var img = "<?php echo $url  ?>";
         var anno = annotation('body');
         anno.init({
+			specific_url : img ,
             uri :  location.href.split('#')[0],
             imageAnnotation : true,
 			
