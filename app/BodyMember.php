@@ -31,6 +31,7 @@ class BodyMember extends Model{
 		
 		$tags = DB::table('body_member')->select('text')->where('purpose','tagging')->where('bg_id',$bg_id)->get();
 		$texts = DB::table('body_member')->where('purpose','describing')->where('bg_id',$bg_id)->get();
+		$metas = DB::table('body_member')->where('purpose','like','meta:%')->where('bg_id',$bg_id)->get();
 		$tagarray = [];
 		$textarray =[];
 		$text ;
@@ -51,6 +52,7 @@ class BodyMember extends Model{
 		$body = ['bid'=> isset($bg_id) ? $bg_id : "",
 					   'text' => isset($textarray) ? $textarray :"",
 					   'tags' => isset($tagarray) ? $tagarray :"",
+					   'metas' => isset($metas) ? $metas:"",
 					   'creator' => isset($user->name) ? $user->name: "",
 					   'created_time' => isset($created_time) ?$created_time : "",
 					   'is_public' =>  isset($is_public) ? $is_public : "",
@@ -58,6 +60,8 @@ class BodyMember extends Model{
 			];
 		return $body;
 	}
+
+
 	public static function getupdate($data){
 		$body_member_id = Body::get_body_id($data['anno_id']);
 		foreach ($body_member_id as $id) {

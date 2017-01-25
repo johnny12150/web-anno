@@ -123,6 +123,21 @@ class Annotation extends Model {
                 ]);
                 //$new_anno->tags = $data['tags'];
             }
+			$metas=json_decode($data['metas']);
+			if (gettype($metas) == 'string')
+				$metas=json_decode($metas);
+			foreach((array)$metas as $key=>$value) {
+				if ($value != ""){
+					$Bodymember = Bodymember::add([
+						'creator_id' => $data['creator_id'],
+						'text' => $value,
+						'purpose' => 'meta:'.$key,
+						'bg_id' => $bg_id,
+						'public' => $data['is_public'],
+						'type' =>'TextualBody'
+					]);
+				}
+            }
             Bodymember::add([
                 'creator_id' => $data['creator_id'],
                 'text' => $data['text'],

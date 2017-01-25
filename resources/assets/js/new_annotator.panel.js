@@ -1,32 +1,47 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head>
-  <meta charset="utf-8">
-  <title>Lightbox Example</title>
-  <link rel="stylesheet" href="./lightbox2-master/dist/css/lightbox.min.css">
-    <link rel="stylesheet" href="{{ asset('css/annotator.min.css') }}"/>
-    <link rel="stylesheet" href="{{ asset('css/richText-annotator.min.css')}}">
-    <link rel="stylesheet" href="{{ asset('css/annotation.css') }}"/>
-    <link rel="gettext" type="application/x-po" href="{{ asset('locale/annotator.po') }}">
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-  
- 
-</head>
-<body>
-  
-</body>
-<script src="{{ asset('js/tinymce/tinymce.min.js')}}"></script>
-<script src="{{ asset('js/annotation.full.js')}}"></script>
-<script type="text/javascript">
-	this.annotation_show = true ;
-	var is_authed = false;
-	this.uri = location.href.split('#')[0];
-	this.domain = location.href.split('#')[0];
-	this.server = 'dev.annotation.taieol.tw' ; 
-	var showUI = true;
-	this.callback_url = location.href.split('#')[0];
-	this.loginUrl = 'http://' + this.server + '/auth/login?callback_url=' + encodeURIComponent(this.callback_url) + '&uri=' + this.uri + '&domain=' + this.domain;
-	function panel_init() {
+/**
+ * 顯示Annotation的插件
+ */
+Annotator.Plugin.ViewPanel = function(element, settings) {
+	var _this = this;
+    this.settings = settings;
+    this.annotator = $(element).annotator().data('annotator');
+    this.element = element;
+    this.uri = settings.uri;
+    this.keywords = settings.keywords;
+    this.hide_keywords = "";
+    this.anno_token = settings.anno_token;
+    this.target_anno = settings.target_anno; //當後台蒐尋特定anno的id
+    this.server = settings.server;
+    this.condition = ""; //過濾條件
+    this.domain = settings.domain;
+    this.callback_url = location.href.split('#')[0];
+    this.allTags = [];
+    this.data = [];// Storing entire data;
+    this.showing = []; // Storing data that only showed;`
+    this.autocompleteData = [];
+    this.is_authed = false;
+    this.conditionData = [];
+    // Panel Object
+    this.ui = null;
+    // API URLS
+    this.postlikeUrl = settings.urls.postlikeUrl ;
+    this.authCheckurl = settings.urls.authCheckurl;
+    this.loginUrl = 'http://' + this.server + '/auth/login?callback_url=' + encodeURIComponent(this.callback_url) + '&uri=' + this.uri + '&domain=' + this.domain;
+    this.logoutUrl =  settings.urls.logoutUrl;
+    this.postreplyurl =  settings.urls.postreplyurl;
+    this.postdeleteurl =  settings.urls.postdeleteurl;
+    this.postupdateurl =  settings.urls.postupdateurl;
+    this.collecturl =  settings.urls.collecturl;
+    this.delete_anno_url = settings.urls.delete_anno_url;
+    this.edit_target_url = settings.urls.edit_target_url;
+    this.showUI = true;
+    this.annotation_show = true;
+    this.user = null;
+    this.maptoid = {};
+	
+	
+	/*繪畫底層的panel*/
+	function panel_Init() {
 		/*Panel details Layer1*/
 		var panel = $('<div class="navbar-default sidebar anno-panel" role="navigation"></div>');
 			/*Layer2 tool container*/
@@ -44,10 +59,7 @@
 		var div = $('<div class="sidebar-nav navbar-collapse panel1" ></div>');
 		var filter = $('<ul class="nav in side-menu" id = "panel_filter"></ul>');
 				/*Layer3 */
-		var search = $('<li class="anno-search" ><p><strong>增加搜尋條件</strong></p>'+
-		'<input id="anno-search-input" type="text" />' +
-		'<button id="anno-search-submit" type="submit"></button>'+
-		'</li>');
+		var search = $('<li class="anno-search" ><p><strong>增加搜尋條件</strong></p></li>');
 		var search_list = $('<li class="anno-con">' +
 						'<a><i class="fa fa-check-square" aria-hidden="true"></i>條件列表<span class="fa arrow"></span></a> ' +
 						'<ul class="nav nav-second-level collapse"> ' +
@@ -74,14 +86,15 @@
 		var less_visible = $('<div class="btn-show" style="color:brown"><i class="fa fa-eye" aria-hidden="true"></i></div> ');
 		var less_count = $('<div class="btn-appear-count"><p id="anno-numer">0</p></div>');
 		
+		/*產生panel HTML*/
 		$('body').append(panel,panel_less);
 		$('.anno-panel').append(toolbar,login,div);
 		$('.panel1').append(filter,anno_lists,anno_bodys);
-		$('#panel_filter').append(search,search_list,users)
+		$('#panel_filter').append(search,search_list,keywords,users)
 		$('.anno_panel_less').append(appear,less_visible,less_count);
 		$('.selection').append(panel_anno,function_list,panel_list,panel_count,panel_show);
 		
-		this.ui = $('.anno-panel');
+		/*Panel的event's binding*/
 		$('.panel-main').click(function(e) {
 			$(e.target).css({ 'color': "blue" })
             $('.panel-message').css({ 'color': 'black' });
@@ -139,6 +152,21 @@
             }
         });
 	}
+	
+	/*Find text highlight by click info 的動畫事件 binding*/
+	function find_highlight(annotation){
+
+		var scrollTop = $(annotation.highlights).offset().top;
+
+		$('#anno-info-id' + annotation.id).click(function() {
+			 $('html,body').animate({ scrollTop: scrollTop - 100 }, 800);
+			  console.log('annoinfo');
+			  
+		});
+		
+	}
+	
+	/*將註記資訊 顯示在panel list上的function*/
 	function annoinfos(annotation) {
 
 		$("#anno-lists").append('<li id="anno-info-id' + annotation.id + '" class="anno-infos-item" style="z-index:50">' +
@@ -160,35 +188,30 @@
 			'<div class="anno-body-text">' + annotation.otherbodys[0].text[0] + '</div>' +
 			tags+metas);
 		
-		
-	   
 		$('#anno-lists #anno-info-id' + annotation.id).append('<div ><a style="text-align:right">readmore</a></div>');
-		if(annotation.type == 'text')
-			var scrollTop = $(annotation.highlights).offset().top;
-
 		$('#anno-info-id' + annotation.id).click(function() {
-			 $('html,body').animate({ scrollTop: scrollTop - 100 }, 800);
-			  console.log('annoinfo');
-			  showAnnoOnpanel(new Array(annotation)); 
+			showAnnoOnpanel(new Array(annotation)); 
 		});
-		console.log('finish');
-	};
-	function panel_login(showUI, async) {
 
-		if (!is_authed) {
+	};
+	
+	/*檢查登入狀態*/
+	function checkLoginState(showUI, async) {
+
+		if (!_this.is_authed) {
 
 			$.ajax({
 				crossDomain: true,
 				async: async === true,
 				dataType: 'json',
-				url: 'http://dev.annotation.taieol.tw/api/check',
+				url: _this.authCheckurl,
 				data: {
-					'anno_token': 'f897c6190f2939209b843907d6fd967232d4694a',
-					'domain': 'dev.annotation.taieol.tw'
+					'anno_token': _this.anno_token,
+					'domain': _this.domain
 				},
 				success: function(data) {
-					//$(_this.element).data('annotator-user', data.user);
-					//_this.user = data.user;
+					$(_this.element).data('annotator-user', data.user);
+					_this.user = data.user;
 
 
 					$('.anno-login span').html(
@@ -201,7 +224,7 @@
 						'<a href="#" id="btn-anno-logout">登出</a>' +
 						'</span>' +
 						'<span>' +
-						'<a target="_blank" href="http://' + server + '">管理標記</a>' +
+						'<a target="_blank" href="http://' + _this.server + '">管理標記</a>' +
 						'</span>' +
 						'</div>');
 				},
@@ -210,7 +233,7 @@
 						_this.is_authed = true;
 					},
 					401: function() {
-						$('.anno-login').html('<div><span><a href="' + loginUrl + '"><i class="fa fa-user" aria-hidden="true"></i> 登入</a></span></div>');
+						$('.anno-login').html('<div><span><a href="' + _this.loginUrl + '"><i class="fa fa-user" aria-hidden="true"></i> 登入</a></span></div>');
 						if (showUI != false)
 							$('#openAuthUI').addClass('show');
 					}
@@ -218,7 +241,9 @@
 			});
 		}
 	}
-	function addReference(annotation) {
+	
+	/*Filter過濾功能之一，對使用者過濾*/
+	function addReference (annotation) {
 
         var user_id;
         var gravatar_url = '#';
@@ -245,22 +270,124 @@
         if(annotation.id == undefined) annotation.id = '-1';
 
         // check user is added to userlist
-        if (this.ui.find('#anno-user-' + user_id).length == 0 && annotation.id.toString().indexOf('keyword') == -1) {
+        if (_this.ui.find('#anno-user-' + user_id).length == 0 && annotation.id.toString().indexOf('keyword') == -1) {
 
             //add user list item and bind to user list
-            $('.anno-users ul')
+            this.ui.find('.anno-users ul')
                 .append('<li id="anno-user-' + user_id + '">' +
                     '<a><input type="checkbox" checked data-search="user-' + user_id + '" name = "c"/>' +
                     '<img class="gravatar" src="' + gravatar_url + '" alt=""/>' +
                     '<span>' + user.name + '</span></a>' +
                     '</li>');
-            /*$('#anno-user-' + user_id)
+            $('#anno-user-' + user_id)
                 .find('input[type=checkbox]')
-                .click(_this.refreshHighLights);*/
+                .click(_this.refreshHighLights);
         }
 
     };
-	function search_submit(){
+	
+	/*show annotations的body在Panel上*/
+	function showAnnoOnpanel(annotations) {
+        var id = [];
+        var collect_text = "收藏";
+        $('.anno-body').html('');
+
+        if (annotations != null)
+            $('.panel-message').click();
+        else
+            $('.panel-annolist').click();
+        for (var i in annotations) {
+            var annotation = annotations[i];
+
+            
+            
+            $('.anno-body').append('<li id="anno-info-id' + annotation.id + '" class="anno-infos-item" style="z-index:50">' +
+                '<p><b>註記建立者:' + annotation.user.name + '</b></p>');
+            $('.anno-body #anno-info-id' + annotation.id).data('annotation',annotation);
+			
+            for (var j = 0; j < annotation.otherbodys.length; j++) {
+
+                var tags = "";
+
+                for (var i = 0; i <= annotation.otherbodys[j].tags.length - 1; i++) {
+                    tags += '<span class="anno-body-tag">' + annotation.otherbodys[j].tags[i] + ' </span>';
+                }
+				var metas = "";
+				for (var i = 0; i <= annotation.otherbodys[j].metas.length - 1; i++) {
+                    metas += '<br/><span class="anno-body-meta">' + annotation.otherbodys[j].metas[i].purpose.split(':')[1] + ':' + annotation.otherbodys[j].metas[i].text + ' </span>';
+                }
+                if(annotation.otherbodys[j].text[0] =='') annotation.otherbodys[j].text[0] = 'No Comment';
+                id.push(annotation.otherbodys[j].bid);
+                $('.anno-body #anno-info-id' + annotation.id).append('<div id ="anno-body' + annotation.otherbodys[j].bid + '" class = "anno-body-item">' +
+                    '<a href=manage/profile/' + annotation.otherbodys[j].creator + ' class="anno-user-name">' + annotation.otherbodys[j].creator + '</a>' +
+                    '<span class="anno-body-time">' + annotation.otherbodys[j].created_time + '</span>' +
+                    '<div class="anno-body-text">' + annotation.otherbodys[j].text[0] + '</div>' +
+                    tags +
+					metas +
+					'<p><b><strong>評分:</strong>' +
+                    '<span class="annotator-likes">' +
+                    '<span class="annotator-likes-total">' + annotation.otherbodys[j].like + '</span>' +
+                    '<a href="#" id="anno-like-' + annotation.otherbodys[j].bid + '"data-bid="' + annotation.otherbodys[j].bid + '" data-id="' + annotation.id + '" class="anno-like fa fa-thumbs-up"></a>' +
+                    '<a href="#" id="anno-dislike-' + annotation.otherbodys[j].bid + '"data-bid="' + annotation.otherbodys[j].bid + '"data-id="' + annotation.id + '" class="anno-dislike fa fa-thumbs-down" ></a>' +
+                    '</span></b></p>'
+                );
+                if ($(_this.element).data('annotator-user') != undefined)
+                    if ($(_this.element).data('annotator-user').name == annotation.otherbodys[j].creator) {
+						var edit = $('<a class="anno-body-edit fa fa-pencil-square-o" style="background-position: 0 -60px;"data-id=' + annotation.otherbodys[j].bid + '></a>').data('anno_data',annotation.otherbodys[j]);
+                        var del = $('<a class="anno-body-delete fa fa-times" style="background-position: 0 -75px;" data-id=' + annotation.otherbodys[j].bid + '></a>');
+						var span = $('<span class="annotator-controls">').append(edit,del);
+						$('.anno-body  #anno-body' + annotation.otherbodys[j].bid).append(span);
+                    }
+            }
+            
+
+            if ($(_this.element).data('annotator-user') != undefined) {
+                var likes = $(_this.element).data('annotator-user').like
+                for (var i in likes) {
+                    if (id.indexOf(likes[i].bg_id) != -1) {
+                        if (likes[i].like == "-1") {
+                            $("#anno-dislike-" + likes[i].bg_id).css({ 'color': "red" });
+                            $("#anno-dislike-" + likes[i].bg_id).addClass('click');
+                        } else if (likes[i].like == "1") {
+                            $("#anno-like-" + likes[i].bg_id).css({ 'color': "blue" });
+                            $("#anno-like-" + likes[i].bg_id).addClass('click');
+                        }
+                    }
+                }
+                $.post('api/checkcollect',{anno_id : annotation.id, anno_token :settings.anno_token ,domain: settings.domain })
+                .success(function(data){
+                    if(data == "true"){
+                       $('#anno-collect-'+ annotation.id).addClass('collecting');
+                       $('#anno-collect-'+ annotation.id).html('取消收藏');
+                    }
+                    else  {
+                        $('#anno-collect-'+ annotation.id).html('收藏');
+                        $('#anno-collect-'+ annotation.id).removeClass('collecting');
+                     }
+                }); 
+            }
+            $('.anno-body #anno-info-id' + annotation.id).append(
+                '<a class="anno-collect fa fa-diamond" id ="anno-collect-'+annotation.id + '" data-id="' + annotation.id + '" style="padding-left:5px;">收藏</a>' +
+                '<a class="anno-reply fa fa-comment" data-id="' + annotation.id + '" style="padding-left:5px;">增加本文</a>'
+            );
+            if($(_this.element).data('annotator-user') != undefined)
+                if ($(_this.element).data('annotator-user').id == annotation.user.id)
+                    $('.anno-body #anno-info-id' + annotation.id).append(
+                       '<a class="anno-delete fa fa-trash-o" data-id="' + annotation.id + '" style="padding-left:5px;">刪除</a>');
+        }
+
+        /*詢問使用者改善註記的部份*/
+        if(annotation.fix != undefined && annotation.user.id == getCookie('user_id')){
+            var a = confirm('是否要保存該註記');
+            if(a ==true){
+                edit_target(annotation);
+            }else{
+                $('.anno-delete').click();
+            }
+        }
+    }
+	
+ 	function search_submit(){
 		$('#anno-search-submit').click(function(e) {
             e.preventDefault(); //prevent from getting empty input 
             //從Store插件找到搜尋的網址
@@ -294,30 +421,23 @@
             });
         });	
 	}
-
-
-	var data = {
-		'limit' : 0 ,
-		'uri' : 'http://dev.annotation.taieol.tw/testing',
-		'domain' : 'dev.annotation.taieol.tw',
-		'anno_token' : '8c5348205ac186d370692434ce25c570f018d608',
-		'user' : 2 
+	return {
+        pluginInit: function() {
+			panel_Init();
+			checkLoginState(false);
+			search_submit();
+			this.annotator.
+				subscribe("annotationsLoaded", function(annotations) {
+					 annotations.forEach(function(annotation, index, annotations) {
+						 checkLoginState();
+						 if(annotation.type == 'text'){
+							annoinfos(annotation);
+							find_highlight(annotation);
+							addReference(annotation);
+						 }
+					  });
+				});
+		}
 	}
-	$.ajax({
-	  url: 'http://dev.annotation.taieol.tw/api/search/',
-	  data: data,
-	  success: function(data){
-		  var annotations = data.rows;
-		  panel_init();
-		  panel_login();
-		  search_submit();
-		  $('.side-menu').metisMenu();
-		  annotations.forEach(function(annotation, index, annotations) {
-			 $('.panel-main').click();
-			 annoinfos(annotation);
-			 addReference(annotation);
-		  });
-	  }
-	});
-</script>
-</html>
+	
+};

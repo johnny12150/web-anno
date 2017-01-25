@@ -48,7 +48,7 @@
 		</nav>
 		<div style='padding:20px'>
 			<form id ='target' action="modified_annotation" method="post">
-			   <input id='input1' type="test" name="json" hidden='true'>
+			   <!--<input id='input1' type="test" name="json" hidden='true'>-->
 			</form>
 			<table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
 				<thead>
@@ -56,7 +56,7 @@
 						<th>作品名稱</th>
 						<th>相簿名稱</th>
 						<th>作者</th>
-						<th>圖片位置</th>
+						<th>圖片</th>
 						<th>註記數量</th>
 					</tr>
 				</thead>
@@ -65,7 +65,7 @@
 						<th>作品名稱</th>
 						<th>相簿名稱</th>
 						<th>作者</th>
-						<th>圖片位置</th>
+						<th>圖片</th>
 						<th>註記數量</th>
 					</tr>
 				</tfoot>
@@ -120,17 +120,18 @@
 				"ajax": "http://dev.annotation.taieol.tw/digital/digital_island_api",
 				"rowCallback": function( row, data ) {
 					$(row).data('data',data);
-				}
+				},
+				"aoColumnDefs": [
+				  { 'bSortable': false, 'aTargets': [ 3 ] }
+			   ]
 				
 			});
 			$('#example tbody').on('click','tr',function(e) {
-				var src="";
-				if($(e.target).attr('src') == null )
-					src = $($(e.target.parentElement).data('data')[3]).attr('src');
-				 else
-					src = $(e.target).attr('src');
-				 $('#input1').val(src);
-				 $('#target').submit();
+				var tmp=$(e.target.parentElement).data('data');
+				if (tmp==undefined)
+					tmp=$(e.target.parentElement.parentElement).data('data');
+				$('#target').attr('action','modified_annotation/'+tmp[5]);			
+				$('#target').submit();
 			});
 		} );
 	

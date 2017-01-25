@@ -53,9 +53,14 @@
 			</div>
 		</div>
 	</nav>
-	
-		<img src ='{{ $url }}'>
-	
+	<div style="float:left;max-width:70%;margin:0 10px">
+		<img src ='{{ $url }}' style='width:100%'>
+	</div>
+	<div style="display: inline;width:100px;font-size:20px">
+		<div style="margin:10px"><b>相片名稱</b><br/>{{$p_title}}</div>
+		<div style="margin:10px"><b>相簿名稱</b><br/>{{$a_title}}</div>
+		<div style="margin:10px"><b>作者</b><br/>{{$uname}}</div>
+	</div>
 </body>
 <script src="{{ asset('js/tinymce/tinymce.min.js')}}"></script>
 <script src="{{ asset('js/annotation.full.js')}}"></script>
@@ -64,10 +69,10 @@
 
      $(window).load(function(){
         
-		var img = "<?php echo $url  ?>";
+
         var anno = annotation('body');
         anno.init({
-			specific_url : img ,
+
             uri :  location.href.split('#')[0],
             imageAnnotation : true,
 			

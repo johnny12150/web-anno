@@ -144,8 +144,8 @@ class Target extends Model{
 		    $col ='count' ;	
 		}
 		$str = 'select digital.* , ifNULL(img_count.img_count,0) as count 
-		from digital LEFT join ( SELECT target.source,count(digital.url) img_count FROM digital join target on digital.url = target.source GROUP by digital.url) img_count 
-		on digital.url = img_count.source';
+		from digital LEFT join ( select SUBSTRING_INDEX(uri, "/", -1) d_index,count(uri) img_count from target GROUP by uri) img_count 
+		on digital.d_index = img_count.d_index';
 		$where = ' where p_title LIKE "%'.$search.'%" OR a_title LIKE "%'.$search.'%" OR uname LIKE "%'.$search.'%"';
 		$orderBy = ' ORDER BY '.$col.' '.$sort. ' ' ;
 		$limit = 'limit '.$start.','.$length.'';

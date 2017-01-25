@@ -19,6 +19,9 @@ Route::get('testing', function() {
     return view('testing');
 });
 
+Route::get('test2', function() {
+    return view('test2');
+});
 
 
 Route::get('mongodb',function(){
@@ -101,7 +104,7 @@ Route::group(['prefix' => '/digital'],function(){
 		return view('0105_1');
 	});
 	Route::any('digital_island_api','AnnotationController@digital_island');
-	Route::any('modified_annotation','AnnotationController@modified_for_sophy');
+	Route::any('modified_annotation/{id}','AnnotationController@modified_for_sophy');
 });
 
 Route::get('list/{p1}',"ManifestController@IIIFformat");

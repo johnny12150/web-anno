@@ -46,24 +46,22 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
     }
 
     this.addHook = function() {
-     
-    $('.annotator-wrapper')
-            .on('mousemove', function(e) {
-
-                if(scope.getSelectionText() == '') {
-                    var curX = e.pageX;
-                    var curY = e.pageY;
-                    var target = $(scope.target);
-                    if (scope.target != null && !(scope.target != null && (curX >= target.offset().left && curX <= target.offset().left + target.width() && curY >= target.offset().top && curY <= target.offset().top + target.height()))) {
-                        scope.initimgsetting();
-                    }
-                }
-    });
-    /*取得節點相對應的XPath
+		$('.annotator-wrapper')
+			.on('mousemove', function(e) {
+				if(scope.getSelectionText() == '') {
+					var curX = e.pageX;
+					var curY = e.pageY;
+					var target = $(scope.target);
+					if (scope.target != null && !(scope.target != null && (curX >= target.offset().left && curX <= target.offset().left + target.width() && curY >= target.offset().top && curY <= target.offset().top + target.height()))) {
+						scope.initimgsetting();
+					}
+				}
+			});
+	}
+	/*取得節點相對應的XPath
     *@elem   html element
     *@root   搜尋的根元素  
     */
-
     function getxpath(elem,relativeRoot) {
         var idx, path, tagName;
         path = '';
@@ -76,6 +74,9 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         }
         return path;
     };   
+	function mousemove_annotation(annotation){
+		//get_anno_bodys(annotation);
+	};
     /*圖片hook,將網頁要使用註記範圍時，對圖片作控制，產生兩個canvas以及一些控制的事件*/
     $(window).resize(function(e){
          var canvas = $(_element).find('canvas');        
@@ -85,15 +86,19 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
             canvas[i].height = canvas[i].parentElement.children[0].height;
         }
     });
-    var a = $(_element).find('a');
+	
+	function hyperlink_prevent(){
+		var a = $(_element).find('a');
    
-    $(a).bind('click',function(event){
-         if(event.target.nodeName =="CANVAS")
-         event.preventDefault();  
-    });
+		$(a).bind('click',function(event){
+			 if(event.target.nodeName =="CANVAS")
+			 event.preventDefault();  
+		});
+	}
+  
     
-    var img = $(_element).find('img');
-
+	function CanvasInit(){
+		var img = $(_element).find('img');
         var state = false //紀錄範圍有沒有使用
         for (var i = 0; i < img.length; i++) {
             $(img[i]).wrap("<div class='annotationlayer' style='position:relative;'></div>");
@@ -226,7 +231,9 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                             strokeStyle = "blue";
                             if ($.inArray(annotation[i], scope.show) == -1)
                                 scope.show.push(annotation[i]);
+								
                         }
+						//if (strokeStyle == 'blue') mousemove_annotation(annotation[i]);
                         show(this.parentElement.children[0], annotation[i].position, strokeStyle);
                     }
                 }
@@ -309,12 +316,18 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                     tags += '<span class="anno-body-tag">' + annotation.otherbodys[j].tags[i] + ' </span>';
                 }
 
+				var metas = "";
+				for (var i = 0; i <= annotation.otherbodys[j].metas.length - 1; i++) {
+                    metas += '<br/><span class="anno-body-meta">' + annotation.otherbodys[j].metas[i].purpose.split(':')[1] + ':' + annotation.otherbodys[j].metas[i].text + ' </span>';
+                }
+                
+
                 id.push(annotation.otherbodys[j].bid);
                 $('.anno-body #anno-info-id' + annotation.id).append('<div id ="anno-body' + annotation.otherbodys[j].bid + '" class = "anno-body-item">' +
                     '<a href=manage/profile/' + annotation.otherbodys[j].creator + ' class="anno-user-name">' + annotation.otherbodys[j].creator + '</a>' +
                     '<span class="anno-body-time">' + annotation.otherbodys[j].created_time + '</span>' +
                     '<div class="anno-body-text">' + annotation.otherbodys[j].text[0] + '</div>' +
-                    tags +
+                    tags + metas +
                     '<p><b><strong>評分:</strong>' +
                     '<span class="annotator-likes">' +
                     '<span class="annotator-likes-total">' + annotation.otherbodys[j].like + '</span>' +
@@ -324,9 +337,10 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                 );
                 if ($(_element).data('annotator-user') != undefined)
                     if ($(_element).data('annotator-user').name == annotation.otherbodys[j].creator) {
-                        $('.anno-body  #anno-body' + annotation.otherbodys[j].bid).append('<span class="annotator-controls">' +
-                            '<a class="anno-body-edit fa fa-pencil-square-o" style="background-position: 0 -60px;"data-id=' + annotation.otherbodys[j].bid + '></a>' +
-                            '<a class="anno-body-delete fa fa-times" style="background-position: 0 -75px;" data-id=' + annotation.otherbodys[j].bid + '></a></span></div>');
+						var edit = $('<a class="anno-body-edit fa fa-pencil-square-o" style="background-position: 0 -60px;"data-id=' + annotation.otherbodys[j].bid + '></a>').data('anno_data',annotation.otherbodys[j]);
+                        var del = $('<a class="anno-body-delete fa fa-times" style="background-position: 0 -75px;" data-id=' + annotation.otherbodys[j].bid + '></a>');
+						var span = $('<span class="annotator-controls">').append(edit,del);
+						$('.anno-body  #anno-body' + annotation.otherbodys[j].bid).append(span);
                     }
             }
 
@@ -441,12 +455,15 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
 					for (var i = 0; i <= annotation.otherbodys[0].tags.length - 1; i++) {
 						tags += '<span class="anno-body-tag">' + annotation.otherbodys[0].tags[i] + ' </span>';
 					}
-
+					var metas = "";
+					for (var i = 0; i <= annotation.otherbodys[0].metas.length - 1; i++) {
+						metas += '<br/><span class="anno-body-meta">' + annotation.otherbodys[0].metas[i].purpose.split(':')[1] + ':' + annotation.otherbodys[0].metas[i].text + ' </span>';
+					}
 					$('.anno-lists #anno-info-id' + annotation.id).append('<div id ="anno-body' + annotation.otherbodys[0].bid + '" class = "anno-body-item">' +
 						'<a href=manage/profile/' + annotation.otherbodys[0].creator + ' class="anno-user-name">' + annotation.otherbodys[0].creator + '</a>' +
 						'<span class="anno-body-time">' + annotation.otherbodys[0].created_time + '</span>' +
 						'<div class="anno-body-text">' + annotation.otherbodys[0].text[0] + '</div>' +
-						tags);
+						tags+metas);
 				}
 				else{
 					 $('.anno-lists #anno-info-id' + annotation.id).append('<div class = "anno-body-item">' +
@@ -477,7 +494,8 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
 			}
 		}
     };
-    /* let x1 < x2 and y1 <y2
+    
+	/* let x1 < x2 and y1 <y2
     *@param x1,y1,x2,y2   startx,starty,endx,endy 
     *@return  xa,ya,xb,yb                
     */
@@ -562,8 +580,9 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
     var now; //追蹤目前annotation最高的ID
     return {
         pluginInit: function() {
-
+			CanvasInit();
             scope.addHook();
+			hyperlink_prevent();
             this.annotator
                 .subscribe("annotationCreated", function(annotation) {
                     if (scope.target != null) {

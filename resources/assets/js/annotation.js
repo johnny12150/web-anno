@@ -263,6 +263,7 @@ var annotation = function(e) {
             })
             .annotator('addPlugin','RichText',optionsRichText)
             .annotator('addPlugin', 'Tags')
+			.annotator('addPlugin', 'Meta_field',['contributor','temporalCoverage','mainEntity','contentLocation','keyword'])
             .annotator('addPlugin', 'ViewPanel', {
                 target_anno : target_anno,
                 anno_token : anno_token,

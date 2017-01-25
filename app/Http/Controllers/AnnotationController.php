@@ -10,6 +10,7 @@ use App\User;
 use App\BodyMember;
 use App\Target;
 use App\manifest;
+use App\digital;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use OAuth\Common\Exception\Exception;
@@ -44,7 +45,7 @@ class AnnotationController extends Controller
         $image_src = Request::input('src');
         $type = Request::input('type');
         $tags = Request::input('tags') ;
-
+		
         $ranges_start = '';
         $ranges_end = '';
         $ranges_startOffset = '';
@@ -59,7 +60,13 @@ class AnnotationController extends Controller
         if(isset(Request::input('ranges')[0]['endOffset']))
             $ranges_endOffset = Request::input('ranges')[0]['endOffset'];
         
-        $prefix = Request::input('prefix','');        
+        /*$metas = array();
+		$cyberisland_key=['contributor','temporalCoverage','mainEntity','contentLocation','keyword'];
+
+		foreach ($cyberisland_key as $index => $key) {
+			$metas[$key]=Request::input($key);
+		}*/
+		$prefix = Request::input('prefix','');        
         $suffix = Request::input('suffix','');
         $x = ($isImage && isset(Request::input('position')['x'])) ?  Request::input('position')['x'] : 0;
         $y = ($isImage && isset(Request::input('position')['y'])) ?  Request::input('position')['y'] : 0;
@@ -67,6 +74,7 @@ class AnnotationController extends Controller
         $height = ($isImage && isset(Request::input('position')['height'])) ?  Request::input('position')['height'] : 0;
         $Xpath = Request::input('Xpath');
         $permissions = Request::input('permissions');
+		$metas = Request::input('metas');
         $is_public = count($permissions['read']) == 0;
         $user = Session::get('user');
         /* 新增標記 */
@@ -91,7 +99,8 @@ class AnnotationController extends Controller
             'prefix' => $prefix,
             'suffix' => $suffix,
             'is_public' => $is_public,
-            'tags' => $tags
+            'tags' => $tags,
+			'metas' => json_encode($metas),
         ]);
          
         //回傳該標記
@@ -137,20 +146,36 @@ class AnnotationController extends Controller
         $uri = Request::input('uri');
         $user_id = Session::get('user')->id;
         $tags = explode(" ",Request::input('tags'));
+		$metas = Request::input('metas');
         $public = Request::input('public');
         if($public =='true') $public = 1;
         else $public = 0;
-        $bg_id = bodygroup::add($id);
-        foreach ($tags as $tag) {
-            Bodymember::add([
-            'creator_id' => $user_id,
-            'text' => $tag,
-            'public' => $public,
-            'purpose' => "tagging",
-            'bg_id' => $bg_id,
-            'type' =>'TextualBody'
-        ]);
+		$bg_id = bodygroup::add($id);
+		foreach ($tags as $tag) {
+			Bodymember::add([
+				'creator_id' => $user_id,
+				'text' => $tag,
+				'public' => $public,
+				'purpose' => "tagging",
+				'bg_id' => $bg_id,
+				'type' =>'TextualBody'
+			]);
         }
+		$metas=json_decode($metas);
+		if (gettype($metas) == 'string')
+			$metas=json_decode($metas);
+		foreach((array)$metas as $key=>$value) {
+			if ($value != ""){
+				$Bodymember = Bodymember::add([
+					'creator_id' => $user_id,
+					'text' => $value,
+					'purpose' => 'meta:'.$key,
+					'public' => $public,
+					'bg_id' => $bg_id,
+					'type' =>'TextualBody'
+				]);
+			}
+		}
         Bodymember::add([
             'creator_id' => $user_id,
             'text' => $text,
@@ -174,6 +199,7 @@ class AnnotationController extends Controller
         $id = Request::input('id');
         $user_id = Session::get('user')->id;
         $tags = explode(" ",Request::input('tags'));
+		$metas = Request::input('metas');
         $uri = Request::input('uri');
         Bodymember::deleteBody($id);
         $public = Request::input('public');
@@ -181,14 +207,29 @@ class AnnotationController extends Controller
         else $public = 0;
         foreach ($tags as $tag) {
             Bodymember::add([
-            'creator_id' => $user_id,
-            'text' => $tag,
-            'purpose' => "tagging",
-             'public' => $public,
-            'bg_id' => $id,
-            'type' =>'TextualBody'
-        ]);
+				'creator_id' => $user_id,
+				'text' => $tag,
+				'purpose' => "tagging",
+				 'public' => $public,
+				'bg_id' => $id,
+				'type' =>'TextualBody'
+			]);
         }
+		$metas=json_decode($metas);
+		if (gettype($metas) == 'string')
+			$metas=json_decode($metas);
+		foreach((array)$metas as $key=>$value) {
+			if ($value != ""){
+				$Bodymember = Bodymember::add([
+					'creator_id' => $user_id,
+					'text' => $value,
+					'purpose' => 'meta:'.$key,
+					'public' => $public,
+					'bg_id' => $id,
+					'type' =>'TextualBody'
+				]);
+			}
+		}
         Bodymember::add([
             'creator_id' => $user_id,
             'text' => $text,
@@ -252,22 +293,22 @@ class AnnotationController extends Controller
         // 搜尋的 user id
         $user_id = intval(Request::input('user'));
         // 搜尋的標記內容
+		
         $searchText = Request::input('search');
-        
-        $offset = intval(Request::input('offset'));
-        $annotations = self::search_front([
-            'uri' => $uri,
-            'quote' => $searchText,
-            'text' => $searchText,
-			'specific_url' => $specific_url,
-            'public' => [
-                'is_public' => true,
-                'creator_id' => $user_id
-            ]
-        ], $limit, $offset);
-
-      
-
+        if(!AuthTable::check($domain,$token)){
+			$user_id = 0 ;
+		}
+		$offset = intval(Request::input('offset'));
+			$annotations = self::search_front([
+				'uri' => $uri,
+				'quote' => $searchText,
+				'text' => $searchText,
+				'specific_url' => $specific_url,
+				'public' => [
+					'is_public' => true,
+					'creator_id' => $user_id
+				]
+			], $limit, $offset);
         $result = [
             'total' => count($annotations),
             'rows' => $annotations
@@ -373,6 +414,7 @@ class AnnotationController extends Controller
         }        
         if(isset($conditions['public']) && $conditions['public'] != '')
         {
+			
             $anno_ids = Annotation::getAnnos($conditions['public']['creator_id']);
             $temp = array_intersect($temp, $anno_ids);
         }
@@ -381,46 +423,22 @@ class AnnotationController extends Controller
         return  $annos;
 
     }
-	public static function modified_for_sophy(Request $request){
-		echo $_SERVER['QUERY_STRING'] ; 
+	public static function modified_for_sophy($id){
+		/*echo $_SERVER['QUERY_STRING']; 
 		$url = Request::input('json');
 		if($url != '')  Session::put('img_url',$url);
-		else  $url = Session::get('img_url');
-		return view('test3',['url' => $url]);
+		else  $url = Session::get('img_url');*/
+		$data = digital::get($id);
 
-	}
-	public static function digital_island_old(){
-		$url = 'http://dev.annotation.taieol.tw/cyber.json';
-		/*$handle = fopen($url,"rb");
-		$content = "";
-        while (!feof($handle)) {
-			     
-                $content .= fread($handle, 10000);
-			
-        }
-        fclose($handle);*/
-		$content=file_get_contents($url);
-		$content = iconv("big5","UTF-8",$content);
-
-		$json = json_decode($content, true );
-		foreach($json['records'] as $key => $img){
-		    //$img_url = $img['url'];
-			//$img_count = Target::count_annotation($img_url);
-			$img['p_title'] = str_replace('"', '', $img['p_title']);
-			$img['p_title'] = str_replace("'", '',$img['p_title']);
-			$img['a_title'] = str_replace('"', '', $img['a_title']);
-			$img['a_title'] = str_replace("'", '',$img['a_title']);
-			$string =  'INSERT INTO digital(d_index, p_id, p_title, a_title, uname, url) VALUES (null,"'.$img['p_id'].'","'.$img['p_title'].'","'.$img['a_title'].'","'.$img['uname'].'","'.$img['url'].'");';
-			
-			echo $string ;
-			echo '<br>';
-			//$json['records'][$key]['count'] =  (string)$img_count;
-		}
-	
-		//return $json['records'];
-
+		return view('test3',[
+			'p_title'=> $data->p_title,
+			'url' => $data->url,
+			'a_title' => $data->a_title,
+			'uname' => $data->uname
+		]);
 		
 	}
+
 	public static function digital_island(){
 		$search_value = Request::input('search')['value'];
 		$start =Request::input('start');
@@ -432,7 +450,7 @@ class AnnotationController extends Controller
 		$arr =  [];
 		foreach($result['result'] as $data){
 			$img_source = "<img src=". $data->url ." class ='annotation_img' height =200px />";
-			$record = array($data->p_title,$data->a_title,$data->uname,$img_source,$data->count);
+			$record = array($data->p_title,$data->a_title,$data->uname,$img_source,$data->count,$data->d_index);
 			array_push($arr,$record);
 		}
 		return [
@@ -440,7 +458,6 @@ class AnnotationController extends Controller
 		  "recordsTotal"=> $result['count'],
 		  "data"=> $arr,
 		  "recordsFiltered"=> $result['count'],
-
 		];
 	}
 }
