@@ -1149,7 +1149,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 				metasarray.push(metasobject);
 			}
 	   }
-		
+		var time = MygetTime();
 		var object = {
 			body_member_id : '-1',
 			bg_id : '-1',
@@ -1157,13 +1157,24 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 			is_public : '1',
 			like : 0 ,
 			metas : metasarray,
-			created_time : '',
+			created_time : time,
 			tags :annotation.tags,
 			text: new Array(annotation.text)
 		}
 		annotation.otherbodys = [];
 		annotation.otherbodys.push(object);
 		return annotation;
+	}
+	function MygetTime(){
+		var myDate = new Date();
+		var year = myDate.getFullYear();
+		var month = myDate.getMonth() + 1
+		var date = myDate.getDate();
+		var hour = myDate.getHours();
+		var min = myDate.getMinutes();
+		var second = myDate.getSeconds();
+		var string = year + '-' + month  + '-' + date + ' ' +hour +':' + min +":"+second;
+		return string ;
 	}
     return {
         pluginInit: function() {
