@@ -16,7 +16,7 @@ class CrossDomainMiddleWare {
 	{
         header('Access-Control-Allow-Origin: *');
         header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE');
-        header('Access-Control-Allow-Headers: X-CSRF-TOKEN,  Content-Type');
+        header('Access-Control-Allow-Headers: X-CSRF-TOKEN,  Content-Type,  Origin');
         return $next($request);
 
 	}
