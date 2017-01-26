@@ -753,6 +753,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         for (var i in annotations) {
             var annotation = annotations[i];
 
+		
             
             
             $('.anno-body').append('<li id="anno-info-id' + annotation.id + '" class="anno-infos-item" style="z-index:50">' +
@@ -1137,7 +1138,33 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         $(".btn-appear").html('<i class="fa fa-chevron-right " aria-hidden="true"></i>');
         _this.showUI = true;
     }
-
+	function addotherbody(annotation){
+		var metas=JSON.parse(annotation.metas);
+		var metasarray=[];
+		for (var key in metas) {
+			if (metas[key]!=''){
+				var metasobject= {
+					text: metas[key],
+					purpose: "meta:"+key};
+				metasarray.push(metasobject);
+			}
+	   }
+		
+		var object = {
+			body_member_id : '-1',
+			bg_id : '-1',
+			creator : $(element).data('annotator-user').name,
+			is_public : '1',
+			like : 0 ,
+			metas : metasarray,
+			created_time : '',
+			tags :annotation.tags,
+			text: new Array(annotation.text)
+		}
+		annotation.otherbodys = [];
+		annotation.otherbodys.push(object);
+		return annotation;
+	}
     return {
         pluginInit: function() {
 
@@ -1185,11 +1212,13 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 _this.autocompleteData = unique1(_this.allTags);
                 _this.autocomplete();
             }).subscribe("annotationCreated", function(annotation) {
-                _this.data.push(annotation);
+                annotation = addotherbody(annotation);
+				_this.data.push(annotation);
                 _this.addReference(annotation);
                 $("#anno-numer").html(_this.data.length);
 				console.log('created');
 				showAnnoOnpanel(_this.data);
+				_this.annoinfos(annotation);
 				$('.panel-annolist-count').html(_this.data.length);
 				
             }).subscribe("annotationUpdated", function(annotation) {
