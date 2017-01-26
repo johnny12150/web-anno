@@ -117,7 +117,7 @@
 
 				"processing": true,
 				"serverSide": true,
-				"ajax": "http://dev.annotation.taieol.tw/digital/digital_island_api",
+				"ajax": "./digital_island_api",
 				"rowCallback": function( row, data ) {
 					$(row).data('data',data);
 				},
