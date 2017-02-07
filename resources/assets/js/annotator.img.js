@@ -5,6 +5,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
 
     var scope = this;
     var _element = element;
+	this.posturl =  'http://' + settings.server + '/api/checkcollect';
     this.template = '';
     this.target = null;
     this.x = 0;
@@ -337,7 +338,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                 );
                 if ($(_element).data('annotator-user') != undefined)
                     if ($(_element).data('annotator-user').name == annotation.otherbodys[j].creator) {
-						var edit = $('<a class="anno-body-edit fa fa-pencil-square-o" style="background-position: 0 -60px;"data-id=' + annotation.otherbodys[j].bid + '></a>').data('anno_data',annotation.otherbodys[j]);
+						var edit = $('<a class="anno-body-edit fa fa-pencil-square-o" style="background-position: 0 -60px;"data-id=' + annotation.otherbodys[j].bid + '></a>').data('annobody_data',annotation.otherbodys[j]).data('anno_id',annotation.id);
                         var del = $('<a class="anno-body-delete fa fa-times" style="background-position: 0 -75px;" data-id=' + annotation.otherbodys[j].bid + '></a>');
 						var span = $('<span class="annotator-controls">').append(edit,del);
 						$('.anno-body  #anno-body' + annotation.otherbodys[j].bid).append(span);
@@ -358,7 +359,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                         }
                     }
                 }
-                $.post('api/checkcollect',{anno_id : annotation.id, anno_token :settings.anno_token ,domain: settings.domain })
+                $.post(scope.posturl,{anno_id : annotation.id, anno_token :settings.anno_token ,domain: settings.domain })
                 .success(function(data){
                     if(data == "true"){
                        $('#anno-collect-'+ annotation.id).addClass('collecting');
@@ -474,7 +475,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
 				$('.anno-lists #anno-info-id' + annotation.id).append('<div><a style="text-align:right">readmore</a></div>');
 				var scrollTop;
 				var img1 =  $(_element).find('img');
-				var img
+				var img;
 				for (var i = 0 ;i< img1.length ; i++){
 					var range = document.createRange();
 					range.selectNodeContents(img1[i]);

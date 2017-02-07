@@ -280,7 +280,8 @@ var annotation = function(e) {
                   postupdateurl : 'http://' + _annotation.server_host + '/api/updatebody',
                   collecturl : 'http://' + _annotation.server_host + '/api/collect',
                   delete_anno_url : 'http://' + _annotation.server_host + '/api/delete_anno',
-                  edit_target_url : 'http://' + _annotation.server_host + '/api/edit_target'
+                  edit_target_url : 'http://' + _annotation.server_host + '/api/edit_target',
+				  checkcollect_url :  'http://' + _annotation.server_host + '/api/checkcollect'
                 }
             });
 
