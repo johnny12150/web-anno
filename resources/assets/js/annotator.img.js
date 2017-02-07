@@ -318,9 +318,9 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                 }
 
 				var metas = "";
-				for (var i = 0; i <= annotation.otherbodys[j].metas.length - 1; i++) {
+				/*for (var i = 0; i <= annotation.otherbodys[j].metas.length - 1; i++) {
                     metas += '<br/><span class="anno-body-meta">' + annotation.otherbodys[j].metas[i].purpose.split(':')[1] + ':' + annotation.otherbodys[j].metas[i].text + ' </span>';
-                }
+                }*/
                 
 
                 id.push(annotation.otherbodys[j].bid);

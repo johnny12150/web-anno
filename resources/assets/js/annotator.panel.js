@@ -40,7 +40,17 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
     this.annotation_show = true;
     this.user = null;
     this.maptoid = {};
-    this.loadAnnotations = function(data) {
+    
+	/*ViewPanel.prototype.pluginInit = function() {
+          if (!Annotator.supported()) {
+              return;
+          }
+          return this;
+    };
+	function ViewPanel() {
+          return ViewPanel.__super__.constructor.apply(this, arguments);
+    }*/
+	this.loadAnnotations = function(data) {
          $('.anno-lists').empty();
         _this.annotator.loadAnnotations(data);
     }
@@ -742,7 +752,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
      *@param annotations  註記物件的array
      *return null
     */
-    function showAnnoOnpanel(annotations) {
+    this.showAnnoOnpanel = function(annotations) {
         var id = [];
         var collect_text = "收藏";
         $('.anno-body').html('');
@@ -769,9 +779,9 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                     tags += '<span class="anno-body-tag">' + annotation.otherbodys[j].tags[i] + ' </span>';
                 }
 				var metas = "";
-				for (var i = 0; i <= annotation.otherbodys[j].metas.length - 1; i++) {
+				/*for (var i = 0; i <= annotation.otherbodys[j].metas.length - 1; i++) {
                     metas += '<br/><span class="anno-body-meta">' + annotation.otherbodys[j].metas[i].purpose.split(':')[1] + ':' + annotation.otherbodys[j].metas[i].text + ' </span>';
-                }
+                }*/
                
                 id.push(annotation.otherbodys[j].bid);
                 $('.anno-body #anno-info-id' + annotation.id).append('<div id ="anno-body' + annotation.otherbodys[j].bid + '" class = "anno-body-item">' +
@@ -1097,9 +1107,9 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
             tags += '<span class="anno-body-tag">' + annotation.otherbodys[0].tags[i] + ' </span>';
         }
 		var metas = "";
-		for (var i = 0; i <= annotation.otherbodys[0].metas.length - 1; i++) {
+		/*for (var i = 0; i <= annotation.otherbodys[0].metas.length - 1; i++) {
             metas += '<br/><span class="anno-body-metas">'+  annotation.otherbodys[0].metas[i].purpose.split(':')[1] + ':' + annotation.otherbodys[0].metas[i].text + ' </span>';
-        }
+        }*/
 		$('.anno-lists #anno-info-id' + annotation.id).append('<div id ="anno-body' + annotation.otherbodys[0].bid + '" class = "anno-body-item">' +
             '<a href=manage/profile/' + annotation.otherbodys[0].creator + ' class="anno-user-name">' + annotation.otherbodys[0].creator + '</a>' +
             '<span class="anno-body-time">' + annotation.otherbodys[0].created_time + '</span>' +
@@ -1151,7 +1161,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         _this.showUI = true;
     }
 	function addotherbody(annotation){
-		var metas=JSON.parse(annotation.metas);
+		/*var metas=JSON.parse(annotation.metas);
 		var metasarray=[];
 		for (var key in metas) {
 			if (metas[key]!=''){
@@ -1160,7 +1170,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 					purpose: "meta:"+key};
 				metasarray.push(metasobject);
 			}
-	   }
+	   }*/
 		var time = MygetTime();
 		var object = {
 			body_member_id : '-1',
@@ -1168,7 +1178,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 			creator : $(element).data('annotator-user').name,
 			is_public : '1',
 			like : 0 ,
-			metas : metasarray,
+			//metas : metasarray,
 			created_time : time,
 			tags :annotation.tags,
 			text: new Array(annotation.text)
@@ -1195,8 +1205,10 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 		$('#anno-search-submit').click();
 		clearTimeout(created_search_timeout);
 	}
+	
     return {
-        pluginInit: function() {
+
+	   pluginInit: function() {
 
             _this.insertPanelUI();
             _this.insertKeywordUI();
@@ -1242,7 +1254,8 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 _this.autocompleteData = unique1(_this.allTags);
                 _this.autocomplete();
             }).subscribe("annotationCreated", function(annotation) {
-                annotation = addotherbody(annotation);
+               
+			   annotation = addotherbody(annotation); 
 				_this.data.push(annotation);
                 _this.addReference(annotation);
                 $("#anno-numer").html(_this.data.length);
