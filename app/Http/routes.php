@@ -22,6 +22,9 @@ Route::get('testing', function() {
 Route::get('test2', function() {
     return view('test2');
 });
+Route::get('demo',function(){
+     return view('demo1');
+});
 
 
 Route::get('mongodb',function(){
