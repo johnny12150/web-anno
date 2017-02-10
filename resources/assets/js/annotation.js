@@ -170,7 +170,6 @@ var annotation = function(e) {
             console.error('[Annotation Init Error]', 'uri undefined');
             return ;
         }
-        _annotation.uri = setting.uri
 
         // get Token from hash
         var anno_token = getHashParam('anno_token');
@@ -262,8 +261,9 @@ var annotation = function(e) {
                 }
             })
             .annotator('addPlugin','RichText',optionsRichText)
+			.annotator('addPlugin','myPlugin')
             .annotator('addPlugin', 'Tags')
-			.annotator('addPlugin', 'Meta_field',['contributor','temporalCoverage','mainEntity','contentLocation','keyword'])
+			//.annotator('addPlugin', 'Meta_field',['contributor','temporalCoverage','mainEntity','contentLocation','keyword'])
             .annotator('addPlugin', 'ViewPanel', {
                 target_anno : target_anno,
                 anno_token : anno_token,
