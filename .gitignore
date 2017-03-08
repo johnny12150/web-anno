@@ -11,3 +11,4 @@ public/css/app.css.map
 resources/assets/js/setting.js
 storage/logs/
 bootstrap/cache/
+vendor/

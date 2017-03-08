@@ -43,9 +43,9 @@ class AnnotationController extends Controller
         $uri = Request::input('uri');
         $isImage = Request::input('type') == 'image';
         $image_src = Request::input('src');
-        $type = Request::input('type');
+        $type = $isImage ? Request::input('type') : 'text';
         $tags = Request::input('tags') ;
-		
+
         $ranges_start = '';
         $ranges_end = '';
         $ranges_startOffset = '';
@@ -77,27 +77,64 @@ class AnnotationController extends Controller
 		$metas = Request::input('metas');
         $is_public = count($permissions['read']) == 0;
         $user = Session::get('user');
-        /* 新增標記 */
+        
+		if($type == "text"){
+            $tempArray = [array(
+                'type' =>"RangeSelector",
+                'startSelector' =>array(
+                    'type' => "XPathSelector",
+                    'value'=> $ranges_start,
+                    'refinedBy' => array(
+                        'type' =>"TextPositionSelector",
+                        'start'=> $ranges_startOffset,
+                        'end' => 'null'
+                    )
+                ),
+                'endSelector' =>array(
+                    'type' => "XPathSelector",
+                    'value'=> $ranges_end,
+                    'refinedBy' => array(
+                        'type' =>"TextPositionSelector",
+                        'start' =>'null',
+                        'end'=> $ranges_endOffset
+                    )
+                ),
+              
+            ),array(
+                'type' =>'TextQuoteSelector',
+                'prefix' => $prefix,
+                'exact' => $quote,
+                'suffix' => $suffix
+            )];
+		    $selector =  json_encode($tempArray);
+        }
+        else if ($type == "image")
+        {
+            $x = sprintf("%f",$x);
+            $y = sprintf("%f",$y);
+            $w = sprintf("%f",$width);
+            $h = sprintf("%f",$height);
+            $tempArray =[array(
+                'type' =>"FragmentSelector",
+                'conformsTo' =>"http://www.w3.org/TR/media-frags/",
+                'value'=>  $x.','.$y.','.$w.','.$h
+            ),array(
+                'type' =>"XPathSelector",
+                'value' => $Xpath
+            )];
+		    $selector =  json_encode($tempArray);
+        }
+      
+		
+		/* 新增標記 */
         $anno = Annotation::add([
             'creator_id' => $user->id,
             'text' => $text,
             'quote' => $quote,
             'uri' => $uri,
-            'ranges_start' =>  $ranges_start,
-            'ranges_end' => $ranges_end,
             'type' => $isImage ? $type : 'text',
             'src' => $isImage ? $image_src : $uri,
-            'position' => $isImage ? [
-                'x' => $x,
-                'y' => $y,
-                'width'=>$width,
-                'height'=>$height
-            ] : null,
-            'Xpath' => $Xpath, // image Xpath
-            'ranges_startOffset' => $ranges_startOffset,
-            'ranges_endOffset' => $ranges_endOffset,
-            'prefix' => $prefix,
-            'suffix' => $suffix,
+			'selector' => $selector,
             'is_public' => $is_public,
             'tags' => $tags,
 			'metas' => json_encode($metas),
@@ -109,6 +146,55 @@ class AnnotationController extends Controller
         else
             abort(303);
 
+    }
+	public static function CreatSelectorArray($range,$position,$xpath,$type,$prefix,$suffix,$quote)
+    {	
+	
+        if($type== "text"){
+            $tempArray = [array(
+                'type' =>"RangeSelector",
+                'startSelector' =>array(
+                    'type' => "XPathSelector",
+                    'value'=> $range['ranges_start'],
+                    'refinedBy' => array(
+                        'type' =>"TextPositionSelector",
+                        'start'=> $range['ranges_startOffset'],
+                        'end' => 'null'
+                    )
+                ),
+                'endSelector' =>array(
+                    'type' => "XPathSelector",
+                    'value'=> $range['ranges_end'],
+                    'refinedBy' => array(
+                        'type' =>"TextPositionSelector",
+                        'start' =>'null',
+                        'end'=> $range['ranges_endOffset']
+                    )
+                ),
+              
+            ),array(
+                'type' =>'TextQuoteSelector',
+                'prefix' => $prefix,
+                'exact' => $quote,
+                'suffix' => $suffix
+            )];
+        }
+        else if ($type =="image")
+        {
+            $x = sprintf("%f",$position['x']);
+            $y = sprintf("%f",$position['y']);
+            $w = sprintf("%f",$position['width']);
+            $h = sprintf("%f",$position['height']);
+            $tempArray =[array(
+                'type' =>"FragmentSelector",
+                'conformsTo' =>"http://www.w3.org/TR/media-frags/",
+                'value'=>  $x.','.$y.','.$w.','.$h
+            ),array(
+                'type' =>"XPathSelector",
+                'value' => $xpath
+            )];
+        }
+        return json_encode($tempArray);
     }
     /*Update the annotator*/
    
@@ -460,4 +546,5 @@ class AnnotationController extends Controller
 		  "recordsFiltered"=> $result['count'],
 		];
 	}
+
 }

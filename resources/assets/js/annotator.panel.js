@@ -211,7 +211,8 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                  $('.panel-anno-show').css('color','blue');
             }
         });
-        /*搜尋過濾功能介面*/
+        
+		/*註記列表(複數筆)*/
         panel_list.click(function(e) {
 			$(e.target).css({ 'color': "blue" });
             function_list.css({ 'color': 'black' });
@@ -220,7 +221,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 			anno_bodys.hide();
 			filter.hide();
 		});
-        /*註記列表*/
+        /*搜尋過濾功能介面*/
         function_list.click(function(e) {
 			$(e.target).css({ 'color': "blue" })
             panel_anno.css({ 'color': 'black' });
@@ -229,7 +230,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
 			anno_bodys.hide();
 			filter.show();
 		});
-        /*註記內容的顯示*/
+        /*註記內容的顯示(單筆*/
         panel_anno.click(function(e) {
 
 			anno_lists.hide();
@@ -447,7 +448,7 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
         $(document).on('click', '#btn-anno-logout', function(e) {
             e.preventDefault();
            
-             $.post(_this.logoutUrl, {
+             $.post(_this.settings.urls.logoutUrl, {
                 anno_token: _this.anno_token,
                 domain: _this.domain,
             })

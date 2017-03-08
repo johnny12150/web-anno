@@ -3,8 +3,6 @@
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link type="text/css" rel="stylesheet" href="./LTA_Annotation_DEMO_files/css"><style type="text/css">.gm-style .gm-style-cc span,.gm-style .gm-style-cc a,.gm-style .gm-style-mtc div{font-size:10px}</style><style type="text/css">@media print {  .gm-style .gmnoprint, .gmnoprint {    display:none  }}@media screen {  .gm-style .gmnoscreen, .gmnoscreen {    display:none  }}</style><style type="text/css">.gm-style{font-family:Roboto,Arial,sans-serif;font-size:11px;font-weight:400;text-decoration:none}.gm-style img{max-width:none}</style>
     <title>Link Taiwan Artists</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="{{ asset('css/annotator.min.css') }}"/>
-    <link rel="stylesheet" href="{{ asset('css/richText-annotator.min.css')}}">
     <link rel="stylesheet" href="{{ asset('css/annotation.css') }}"/>
     <link rel="gettext" type="application/x-po" href="{{ asset('locale/annotator.po') }}">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
@@ -52,7 +50,7 @@
 <div class="field-section">  
 
   <span class="field-label">Also known as</span>
-  <span class="field-value field-scroll-value">asdasdffff新加入的內容xxxxxxxxxxxxx</span>
+  <span class="field-value field-scroll-value">asdasdffff新增新加入的內容xxxxxxxxxxxxx</span>
 </div>
 
 <div class="field-section">

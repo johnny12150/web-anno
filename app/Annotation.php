@@ -91,13 +91,13 @@ class Annotation extends Model {
             $new_anno->save();
 
             //2.target
-            $json = self::CreatSelectorArray($data);//WA selector
+            //$json = self::CreatSelectorArray($data);//WA selector
             Target::add([
                 'source' => $data['src'],
                 'type' => $data['type'],
                 'anno_id' => $new_anno->id,
                 'uri' => $data['uri'],
-                'json' => $json,
+                'json' => $data['selector'],
                 'creator' => $data['creator_id']
             ]);
 
@@ -402,14 +402,39 @@ class Annotation extends Model {
         $targets = Target::getTarget($anno_id);
 
 
- 
+		$on_string = '';
         $selector = json_decode($targets[0]->selector);
-        $img = explode(",", $selector[0]->value);
-        $x = $img[0]*$canvas->width/100;
-        $y = $img[1]*$canvas->height/100;
-        $width = $img[2]*$canvas->width/100;
-        $height = $img[3]*$canvas->height/100;
-         return ([
+        
+        if($selector[0]->type == 'FragmentSelector'){
+			$img = explode(",", $selector[0]->value);
+			$x = $img[0]*$canvas->width/100;
+			$y = $img[1]*$canvas->height/100;
+			$width = $img[2]*$canvas->width/100;
+			$height = $img[3]*$canvas->height/100;
+			$on_string = $canvas->canvas."#xywh=".$x.",".$y.",".$width.",".$height;
+		}
+		else if($selector[0]->type == 'SvgSelector') {
+			$points_string = explode('points="', $selector[0]->value);  
+			$point_array = explode('" /',$points_string[1]);  
+
+			$on_object =  array(
+				'@type' => "oa:SpecificResource",
+				'full'=> $canvas->canvas,
+				'selector' => array(
+						'@type' => 'oa:Choice',
+						'default' => array(
+							'@type' => 'oa:FragmentSelector',
+							"value" => "xywh=1078,301,705,777",
+						),
+						'item' => array(
+							'@type' => 'oa:FragmentSelector',
+							'value' => $selector[0]->value,
+						),
+					),
+			);
+			return $on_object;
+		}
+        return ([
             '@id' => $anno_id,
             '@type' => "oa:Annotation",
             'motivation' => "sc:painting",
@@ -418,7 +443,7 @@ class Annotation extends Model {
                  'format'=>'text/plan',
                  'chars' =>  $others['text'][0]
                 ],
-            'on' => $canvas->canvas."#xywh=".$x.",".$y.",".$width.",".$height
+            'on' => $on_string
         ]);
     }
 

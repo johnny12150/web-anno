@@ -152,7 +152,7 @@ function getNodeName(node) {
 
 var annotation = function(e) {
 
-    
+    console.log('test');
     this.server_host = server_host;//參數 server_host來自 setting.js
 
     this.element = e;
