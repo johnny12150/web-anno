@@ -404,7 +404,8 @@ class Annotation extends Model {
 
 		$on_string = '';
         $selector = json_decode($targets[0]->selector);
-        
+        /**將DB四邊形形狀的格式會出成IIIF的格式
+		*/
         if($selector[0]->type == 'FragmentSelector'){
 			$img = explode(",", $selector[0]->value);
 			$x = $img[0]*$canvas->width/100;
@@ -414,25 +415,60 @@ class Annotation extends Model {
 			$on_string = $canvas->canvas."#xywh=".$x.",".$y.",".$width.",".$height;
 		}
 		else if($selector[0]->type == 'SvgSelector') {
-			$points_string = explode('points="', $selector[0]->value);  
-			$point_array = explode('" /',$points_string[1]);  
-
-			$on_object =  array(
-				'@type' => "oa:SpecificResource",
-				'full'=> $canvas->canvas,
-				'selector' => array(
-						'@type' => 'oa:Choice',
-						'default' => array(
-							'@type' => 'oa:FragmentSelector',
-							"value" => "xywh=1078,301,705,777",
+			/**非四邊形就用SvgSelector，目前有兩種形狀circle,polygon
+			*/
+			$string = $selector[0]->value;
+			
+			$xml = simplexml_load_string($string);
+			$xml->registerXPathNamespace('svg', 'http://www.w3.org/2000/svg');
+			$svg = '';
+			/*將DB polygon形狀的格式會出成IIIF的格式 IIIF on的部份*/
+			if($xml->xpath('/svg:svg/svg:polygon') !== []){
+				$value = $xml->xpath('/svg:svg/svg:polygon')[0]->attributes();
+				$points = (string)$value->points[0];
+				$explode_points = explode(',',$points);
+				$origin_points = '';
+				
+				foreach($explode_points as $count => $point){
+					if($count % 2 == 1){
+					   $point = $point * $canvas->height/100;
+					   
+					}else{
+					   $point = $point * $canvas->width/100;
+					}
+					if($point == 0 ) break;
+					
+					if($count == 0)
+						$origin_points = $point;
+					else
+						$origin_points = $origin_points.','.$point;
+				}
+				$svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"><polygon points="'.$origin_points.'" /></svg>' ;
+		    } else if($xml->xpath('/svg:svg/svg:circle') !== []){
+				$value = $xml->xpath('/svg:svg/svg:circle')[0]->attributes();
+				$cx = (string)$value->cx[0] * $canvas->width/100;
+				$cy = (string)$value->cy[0] * $canvas->height/100;
+				$r = (string)$value->r[0];
+				$svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"><circle cx="'.$cx.'" cy="'.$cy.'" r="'.$r.'" /></svg>' ;
+			}
+			
+				$on_object =  array(
+					'@type' => "oa:SpecificResource",
+					'full'=> $canvas->canvas,
+					'selector' => array(
+							'@type' => 'oa:Choice',
+							'default' => array(
+								'@type' => 'oa:FragmentSelector',
+								"value" => '要改',
+							),
+							'item' => array(
+								'@type' => 'oa:SvgSelector',
+								'value' => $svg,
+							),
 						),
-						'item' => array(
-							'@type' => 'oa:FragmentSelector',
-							'value' => $selector[0]->value,
-						),
-					),
-			);
-			return $on_object;
+				);
+				$on_string = $on_object;
+			
 		}
         return ([
             '@id' => $anno_id,

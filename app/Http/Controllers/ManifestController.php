@@ -18,16 +18,23 @@ class ManifestController extends Controller
 {
     public function output_manifest($id){
 		$result = manifest::get_manifest($id)['manifest'];
-		
 		return  $result;
-		
 	}
+	/**
+	*接收IIIF editor傳來的新增註記，，並將這批資料交給Manifest Model存入DB
+	*@return String $res['id'] 該筆Manifest的ID
+	*/
 	public function save(){
 		$id = Request::input('id');
 		$manifest = Request::input('manifest');
 		$annotations_str = Request::input('annotation');
 		$annotations = json_decode($annotations_str);
 		$user = Request::input('user');
+		$deletArray = json_decode(Request::input('deletArray'));
+		foreach($deletArray as $ele){
+			 Annotation::del($user,$ele);
+		}
+		
 		foreach($annotations as $annotation){
 		
 			
@@ -47,17 +54,11 @@ class ManifestController extends Controller
 		}
 		$res = manifest::update_manifest($id,$manifest);
 		return $res['_id'];
-		/*$arr= [];
-		foreach($data as $key =>$value){
-			array_push($arr,$key);
-			array_push($arr,$value);
-		}
-		return $arr;*/
 	}
-	/*把selector儲存成json  並回傳該 json
-    *@param $data
-    *return json_encode($tempArray)
-    *
+	/**
+    *主要負責處理四邊形，多邊形，圓形的SVG XML檔產生
+	*@param Object $annotation 繪畫的形狀與點
+    *@return String json_encode($tempArray) svg字串
     */
     public static function CreatSelectorArray($annotation)
     {
@@ -76,8 +77,7 @@ class ManifestController extends Controller
                 'type' =>"XPathSelector",
                 'value' => ''
             )];
-        }
-		else if( $annotation->shape == "polygon"){
+        } else if( $annotation->shape == "polygon"){
 			$tempArray =[];
 			$points = 'points="'; 
 			$position = json_decode($annotation->point);
@@ -86,6 +86,16 @@ class ManifestController extends Controller
 			}
 			$points = $points.'"/>';
 			$svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"><polygon '.$points.'</svg>';
+			$tempArray =[array(
+                'type' => "SvgSelector",
+                'value'=> $svg
+            )];
+		} else if($annotation->shape == "circle"){
+			$position = json_decode($annotation->point);
+			$cx = $position[0]->x;
+			$cy = $position[0]->y;
+			$r = $position[1];
+			$svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"><circle cx="'.$cx.'" cy="'.$cy.'" r="'.$r.'" /></svg>';
 			$tempArray =[array(
                 'type' => "SvgSelector",
                 'value'=> $svg
@@ -115,17 +125,16 @@ class ManifestController extends Controller
 				);
 				$canvas->otherContent[0] = $temp;
 			}
-           
         }
 		$new_id = manifest::add($content);
 		$new_url = 'http://edit.annotation.taieol.tw/#/myprocess?manifest='.$new_id.'&uid='.$user->id ;
-		
-		//return 'http://edit.annotation.taieol.tw/#/myprocess?manifest='.$new_id;
-		//return json_encode($content);
 		return redirect($new_url);
-      
     }
-	
+	/**
+	*產生IIIF annotationList
+	*@param string $id mongodb上 manifest的id
+	*@return array annotation list的Array
+	*/
     public function IIIFformat($id){
         $canvas = canvas::get_canvas_by_annolistid($id);
 
@@ -138,7 +147,7 @@ class ManifestController extends Controller
         }
 
         return [
-            '@id' => "http://".$_SERVER['HTTP_HOST']."list/".$id,
+            '@id' => "http://".$_SERVER['HTTP_HOST']."/list/".$id,
             'context' => "http://www.shared-canvas.org/ns/context.json",
             '@type' =>'AnnotationList',
             'resources' => $resources
