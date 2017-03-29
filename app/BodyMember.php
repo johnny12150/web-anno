@@ -3,7 +3,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Collection;
 use App\Annotation;
-use App\Body;
+//use App\Body;
 use App\User;
 use Illuminate\Support\Facades\DB;
 class BodyMember extends Model{
@@ -61,7 +61,7 @@ class BodyMember extends Model{
 		return $body;
 	}
 
-
+	/*
 	public static function getupdate($data){
 		$body_member_id = Body::get_body_id($data['anno_id']);
 		foreach ($body_member_id as $id) {
@@ -77,7 +77,7 @@ class BodyMember extends Model{
 			
 		}
 		return true;
-	}
+	}*/
 	public static function deleteBody($id)
 	{
 		DB::table('body_member')->where('bg_id',$id)->delete();

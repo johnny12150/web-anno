@@ -46,7 +46,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
 
         $(".annotator-adder").css('left',0).css('top',0).hide();
     }
-
+	
     this.addHook = function() {
 		$('.annotator-wrapper')
 			.on('mousemove', function(e) {
@@ -76,9 +76,6 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         }
         return path;
     };   
-	function mousemove_annotation(annotation){
-		//get_anno_bodys(annotation);
-	};
     /*圖片hook,將網頁要使用註記範圍時，對圖片作控制，產生兩個canvas以及一些控制的事件*/
     $(window).resize(function(e){
          var canvas = $(_element).find('canvas');        
@@ -139,7 +136,7 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                     var range = document.createRange();
                     range.selectNodeContents(this);
                     scope.Xpath = getxpath(range.startContainer.parentElement,document.getElementsByClassName("annotator-wrapper")[0]);
-              
+    
                 }
                 
             });
@@ -169,7 +166,8 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
          
                    
                 if(scope.show.length != 0 )
-                    scope.annotator.plugins.ViewPanel.showAnnoOnpanel(scope.show,e.target);
+                    //scope.annotator.plugins.ViewPanel.showAnnoOnpanel(scope.show,e.target);
+					scope.annotator.plugins.ViewPanel.showAnnoOnpanel(scope.show);
                 else 
                     $('.panel-annolist').click();
                 
@@ -235,7 +233,6 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                                 scope.show.push(annotation[i]);
 								
                         }
-						//if (strokeStyle == 'blue') mousemove_annotation(annotation[i]);
                         show(this.parentElement.children[0], annotation[i].position, strokeStyle);
                     }
                 }
@@ -303,9 +300,9 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
         ctx.clearRect(0, 0, c1.width, c1.height);
     };
     /*註記層 顯示註記在該圖上
-    *@param element img element
-    *@position      selection part 
-    *@strokeStyle   line color
+    *@param element 圖片元素
+    *@param position      selection part 
+    *@param strokeStyle   line color
     */
     function show(element, position, strokeStyle) {
         var c = element.parentElement.children[1];
@@ -350,7 +347,8 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
 				 annotation = find_img_by_Xpath(annotation);  
 			   }
                show(annotation.img,annotation.position,'white');
-               $(annotation.img.parentElement.children[1]).attr("class", "annoitem-unfocus draw");}
+               $(annotation.img.parentElement.children[1]).attr("class", "annoitem-unfocus draw");
+			}
 
     });
     /*當 binding annotationlist事件 找到該註記的位置 
@@ -360,7 +358,8 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
 		var img =  $(_element).find('img');
         var annotation = anno_info_object.data('annotation');
 	    anno_info_object.click(function() {
-			show(img, annotation.position, "blue");
+			 show(annotation.img, annotation.position, "blue");
+			 var scrollTop = $(annotation.img).offset().top;
 			 $('html,body').animate({ scrollTop: scrollTop - 100 }, 800);
 			scope.annotator.plugins.ViewPanel.showAnnoOnpanel(new Array(annotation));
 		});
@@ -494,9 +493,10 @@ Annotator.Plugin.ImageAnnotation = function(element, settings) {
                     }
                 }).subscribe("annotationDeleted", function(annotation) {
                     if (annotation.type == 'image') {
-                        $('#img-anno-' + annotation.id).remove();
+                        //$('#img-anno-' + annotation.id).remove();
+						scope.deleteAnnotation(annotation);
                     }
-                    scope.deleteAnnotation(annotation);
+                   
                 })
                 .subscribe("annotationsLoaded", function(annotations) {
                     

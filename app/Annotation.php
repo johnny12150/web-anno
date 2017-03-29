@@ -156,7 +156,15 @@ class Annotation extends Model {
         }
        
     }
-
+	/**
+     * @param $id  Annotation id 
+     * @param $selector selector' json type
+     * @return bool  
+     */
+	public static function updateSelector($id,$selector){
+		$result = Target::updateSelector($id,$selector);
+		return $result;
+	}
     /**
      * @param $uid
      * @param $id
@@ -254,6 +262,19 @@ class Annotation extends Model {
         }
         return json_encode($tempArray);
     }
+	public static function updateBody($TextArray,$user){
+		$bg_id  = bodygroup::getbodygroup($TextArray->aid);
+		Bodymember::deleteBody($bg_id->bg_id);
+		Bodymember::add([
+			'creator_id' => $user,
+			'text' => $TextArray->text,
+			'purpose' => "describing",
+			 'public' => '1',
+			'bg_id' => $bg_id->bg_id,
+			'type' =>'TextualBody'
+		]);
+		
+	}
     public static function updateaction($id,$uid,$text,$tags)
     {
             $bodys = BodyMember::getbody($id);
@@ -450,8 +471,8 @@ class Annotation extends Model {
 				$cy = (string)$value->cy[0] * $canvas->height/100;
 				$r = (string)$value->r[0];
 				$svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"><circle cx="'.$cx.'" cy="'.$cy.'" r="'.$r.'" /></svg>' ;
+				$xywh = 'xywh='.($cx-100).','.($cy-100).',200,200';			
 			}
-			
 				$on_object =  array(
 					'@type' => "oa:SpecificResource",
 					'full'=> $canvas->canvas,
@@ -459,7 +480,7 @@ class Annotation extends Model {
 							'@type' => 'oa:Choice',
 							'default' => array(
 								'@type' => 'oa:FragmentSelector',
-								"value" => '要改',
+								"value" => $xywh,
 							),
 							'item' => array(
 								'@type' => 'oa:SvgSelector',

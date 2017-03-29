@@ -1291,6 +1291,8 @@ Annotator.Plugin.ViewPanel = function(element, settings) {
                 }
             }).subscribe("annotationEditorSubmit",function(editor,annotation){
 				annotation = addotherbody(annotation); 
+			}).subscribe("annotationEditorShown",function(editor,annotation){
+				$('#editorDiv').hide();
 			});
 
             /*原先AnnotatorJs浮動顯示

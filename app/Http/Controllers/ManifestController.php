@@ -31,6 +31,15 @@ class ManifestController extends Controller
 		$annotations = json_decode($annotations_str);
 		$user = Request::input('user');
 		$deletArray = json_decode(Request::input('deletArray'));
+		$updateArray = json_decode(Request::input('updateArray'));
+		$TextArray = json_decode(Request::input('getUpdateText'));
+		foreach($updateArray as $ele){
+			 $selector_json = self::CreatSelectorArray($ele);
+			 Annotation::updateSelector($ele->aid,$selector_json);
+		}
+		foreach($TextArray as $ele){
+			 Annotation::updateBody($ele,$user);
+		}
 		foreach($deletArray as $ele){
 			 Annotation::del($user,$ele);
 		}

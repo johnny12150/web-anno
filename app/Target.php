@@ -126,6 +126,9 @@ class Target extends Model{
 		$number = self::where('source',$img_url)->count();
 		return $number;
 	}
+	public static function updateSelector($id,$selector){
+		return self::where('anno_id',$id)->update(array('selector' =>$selector));
+	}
 	public static function digital_island($search ,$col,$sort,$start,$length)
 	{
 		/*$result =DB::select('select digital.* , ifNULL(img_count.img_count,0) as count 
