@@ -95,13 +95,20 @@ Route::group(['prefix' => '/manage', 'middleware' => 'auth'], function() {
     Route::post('/follow','UserController@follow');
     Route::post('/delfollow','UserController@delfollow');
     Route::post('/cancel' , 'collecteController@destroy');
-
+	Route::get('/manifest','ManifestController@index');
+	Route::post('/myprocess','ManifestController@Manifest');
+	Route::post('/manifest/delete','ManifestController@delete');
+	
 });
+/*
 Route::get('manifest', function(){
 			$user = Auth::user();
 			print($user->name);
 			return view('manifest');
 })->middleware('auth');
+*/
+Route::post('manage/manifest/import','ManifestController@import');
+
 Route::group(['prefix' => '/digital'],function(){
 	Route::get('digital_island', function() {
 		return view('0105_1');
@@ -113,7 +120,7 @@ Route::group(['prefix' => '/digital'],function(){
 Route::get('list/{p1}',"ManifestController@IIIFformat");
 Route::post('manifest/save', 'ManifestController@save');
 Route::get('manifest/{id}.json', 'ManifestController@output_manifest');
-Route::post('myprocess','ManifestController@Manifest');
+
 
 
 Route::get('gethint','AnnotationController@gethint');

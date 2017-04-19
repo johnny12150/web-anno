@@ -43,7 +43,7 @@
                     ],
                     "otherContent": [
                       {
-                        "@id": "http://annotation.ipicbox.tw/list/40", 
+                        "@id": "http://dev.annotation.taieol.tw/list/3", 
                         "@type": "sc:AnnotationList"
                         }
                     ]

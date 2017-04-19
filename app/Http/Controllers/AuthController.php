@@ -129,6 +129,7 @@ class AuthController extends Controller
                 'email'     => Input::get('email'),
                 'password'  => Input::get('password')
             );
+
             if (Auth::attempt($userdata))
             {
                 if( $hasCallback ) {

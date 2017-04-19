@@ -41,7 +41,7 @@
 					<li id="index"><a href="{{ url('/manage/index') }}">首頁</a></li>
 					<li id="manage"><a href="{{ url('/manage') }}">個人頁面管理</a></li>
 					<li id="collect"><a href="{{ url('/manage/collect') }}">收藏</a></li>
-					<li id="manifest"><a href="{{ url('/manifest') }}">IIIF_editor</a></li>
+					<li id="manifest"><a href="{{ url('/manage/manifest') }}">IIIF_editor</a></li>
 					<li id="digital"><a href="{{ url('/digital/digital_island') }}">數位島嶼</a></li>
                     @endif
 				</ul>

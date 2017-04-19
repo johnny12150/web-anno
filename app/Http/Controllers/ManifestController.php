@@ -18,7 +18,22 @@ class ManifestController extends Controller
 {
     public function output_manifest($id){
 		$result = manifest::get_manifest($id)['manifest'];
-		return  $result;
+		$var = '@id';
+		foreach ($result['sequences'][0]['canvases'] as $key => $canvas ){
+            $img_url = $canvas['images'][0]['resource'][$var]; 
+
+			if(target::checkimg($img_url)){
+				$canvas_id = canvas::add($img_url,$canvas[$var],$canvas['height'],$canvas['width']);
+				$temp = array(
+					'@id'=> "http://".$_SERVER['HTTP_HOST']."/list/".$canvas_id,
+					'@type' =>'sc:AnnotationList',
+				);
+				$result['sequences'][0]['canvases'][$key]['otherContent'] =[];
+				array_push($result['sequences'][0]['canvases'][$key]['otherContent'],$temp);
+			}
+        }
+		
+		return $result;
 	}
 	/**
 	*接收IIIF editor傳來的新增註記，，並將這批資料交給Manifest Model存入DB
@@ -113,30 +128,13 @@ class ManifestController extends Controller
         return json_encode($tempArray);
     }
 	public function Manifest(){
-        $Manifest = Request::input('json');
-        $handle = fopen($Manifest,"rb");
+        
 		$user = Auth::user();
-		print($user);
-        $content = "";
-        while (!feof($handle)) {
-                $content .= fread($handle, 10000);
-        }
-        fclose($handle);
-        $content = json_decode($content);
-        $var = '@id';
-        foreach ($content->sequences[0]->canvases as $canvas ){
-            $img_url = $canvas->images[0]->resource->$var; 
-			if(target::checkimg($img_url)){
-				$canvas_id = canvas::add($img_url,$canvas->$var,$canvas->height,$canvas->width);
-				$temp = array(
-					'@id'=> "http://".$_SERVER['HTTP_HOST']."/list/".$canvas_id,
-					'@type' =>'sc:AnnotationList',
-				);
-				$canvas->otherContent[0] = $temp;
-			}
-        }
-		$new_id = manifest::add($content);
-		$new_url = 'http://edit.annotation.taieol.tw/#/myprocess?manifest='.$new_id.'&uid='.$user->id ;
+		$manifestId = Request::input('id');
+		$result = manifest::get_manifest($manifestId)['manifest'];
+		
+		
+		$new_url = 'http://edit.annotation.taieol.tw/#/myprocess?manifest='.$manifestId.'&uid='.$user->id ;
 		return redirect($new_url);
     }
 	/**
@@ -162,5 +160,42 @@ class ManifestController extends Controller
             'resources' => $resources
             ];
     }
-   
+	public function import(){
+		$Manifest = Request::input('id');
+        $handle = fopen($Manifest,"rb");
+		$user = Auth::user();
+		print($user);
+        $content = "";
+        while (!feof($handle)) {
+                $content .= fread($handle, 10000);
+        }
+        fclose($handle);
+        $content = json_decode($content);
+        $var = '@id';
+        foreach ($content->sequences[0]->canvases as $canvas ){
+            $img_url = $canvas->images[0]->resource->$var; 
+			if(target::checkimg($img_url)){
+				$canvas_id = canvas::add($img_url,$canvas->$var,$canvas->height,$canvas->width);
+				$temp = array(
+					'@id'=> "http://".$_SERVER['HTTP_HOST']."/list/".$canvas_id,
+					'@type' =>'sc:AnnotationList',
+				);
+				$canvas->otherContent[0] = $temp;
+			}
+        }
+		$new_id = manifest::add($content,$Manifest);
+		return $new_id;
+	}
+	public function index(){
+		$user = Auth::user();
+		$manifestData = manifest::get_manifest();
+
+		return view('manage.manifest',[
+			'manifestData' => $manifestData
+		]);
+	}
+   public function delete(){
+	   $id = Request::input('id');
+	   return manifest::deleteManifest($id);
+   }
 }
