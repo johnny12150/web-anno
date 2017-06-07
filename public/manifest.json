@@ -1,17 +1,17 @@
 {
     "@context": "http://www.shared-canvas.org/ns/context.json", 
-    "@id": "http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/manifest.json", 
+    "@id": "https://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/manifest.json", 
     "@type": "sc:Manifest", 
     "label": "Biblioth\u00e8que nationale de France, NAF 6221", 
     "description": "displayLabelSummarycontentM\u00e9langes. II Recueil de 154 lais, ballades, rondeaux et serventois, dont 71 au moins sont d'Eustache DESCHAMPS", 
     "attribution": "Provided by the Stanford University Libraries", 
     "seeAlso": {
-        "@id": "http://purl.stanford.edu/jr903ng8662.mods", 
+        "@id": "https://purl.stanford.edu/jr903ng8662.mods", 
         "dcterms:format": "application/mods+xml"
     }, 
     "sequences": [
         {
-            "@id": "http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/normal", 
+            "@id": "https://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/normal", 
             "@type": "sc:Sequence", 
             "label": "Current page order", 
             "canvases": [
@@ -23,11 +23,11 @@
                     "width": "3760", 
                     "images": [
                         {
-                            "@id": "http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/imageanno/anno-7", 
+                            "@id": "https://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/imageanno/anno-7", 
                             "@type": "oa:Annotation", 
                             "motivation": "sc:painting", 
                             "resource": {
-                                "@id": "http://stacks.stanford.edu/image/jr903ng8662/T0000007", 
+                                "@id": "https://stacks.stanford.edu/image/jr903ng8662/T0000007", 
                                 "@type": "dctypes:Image", 
                                 "format": "image/jpeg", 
                                 "height": "4785", 
@@ -38,13 +38,7 @@
 "profile": "http://iiif.io/api/image/2/level1.json"
                                 }
                             }, 
-                            "on": "http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/canvas/canvas-7"
-                        }
-                    ],
-                    "otherContent": [
-                      {
-                        "@id": "http://dev.annotation.taieol.tw/list/3", 
-                        "@type": "sc:AnnotationList"
+                            "on": "https://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/canvas/canvas-7"
                         }
                     ]
                 },

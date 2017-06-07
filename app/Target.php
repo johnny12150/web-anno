@@ -32,15 +32,15 @@ class Target extends Model{
 	 * @param $anno_id    annotation's id 
      * @return target
 	*/
-	public static function get_by_src($src){
-		return self::where('source',$src)->lists('anno_id')->all();
+	public static function get_by_src($src,$canvas){
+		return self::where('source',$src)->where('uri',$canvas)->lists('anno_id')->all();
 	}
 	public static function getTarget($anno_id)
 	{
 		 $targets = self::where('anno_id',$anno_id)->get();
 		 return $targets;
 	}
-
+ 
 	public static function deleteTarget($anno_id)
 	{
 		DB::table('target')->where('anno_id',$anno_id)->delete();

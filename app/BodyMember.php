@@ -54,6 +54,7 @@ class BodyMember extends Model{
 					   'tags' => isset($tagarray) ? $tagarray :"",
 					   'metas' => isset($metas) ? $metas:"",
 					   'creator' => isset($user->name) ? $user->name: "",
+   					   'creator_id' =>isset($creator) ? $creator:"",
 					   'created_time' => isset($created_time) ?$created_time : "",
 					   'is_public' =>  isset($is_public) ? $is_public : "",
 					   'like' => isset($like) ? $like : '0'

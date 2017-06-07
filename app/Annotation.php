@@ -391,7 +391,7 @@ class Annotation extends Model {
                     $front_anno_object->width =$img [2];
                     $front_anno_object->height =$img [3];
                     $front_anno_object->type = $target->type;
-                    $front_anno_object->Xpath = $selector[1]->value;
+                    $front_anno_object->Xpath = '';
                     $front_anno_object->selector =  $selector[0]->value;
                 }
                 else if ($target->type =="text")
@@ -414,7 +414,132 @@ class Annotation extends Model {
         }
         return $front_array;
     }
-    public static function annotation_IIIF($anno_id,$canvas)
+    public static function annotation_IIIF_mirador($anno_id,$canvas)
+    {
+        $otherbodys_id = bodygroup::getohtergroup($anno_id, "false");
+        //print(count($otherbodys_id) === 0 );
+		if(count($otherbodys_id) === 0 )  return 'null';
+		$others = BodyMember::getothers($otherbodys_id[0]);
+        $targets = Target::getTarget($anno_id);
+
+
+		$on_string = '';
+        $selector = json_decode($targets[0]->selector);
+        /**將DB四邊形形狀的格式會出成IIIF的格式
+		*/
+        if($selector[0]->type == 'FragmentSelector'){
+			$img = explode(",", $selector[0]->value);
+			$x = $img[0]*$canvas->width/100;
+			$y = $img[1]*$canvas->height/100;
+			$width = $img[2]*$canvas->width/100;
+			$height = $img[3]*$canvas->height/100;
+			if($width == 0 && $height ==0){
+				$svg = '<svg xmlns="http://www.w3.org/2000/svg"><path xmlns="http://www.w3.org/2000/svg" d="M'.$x.','.$y.'c0,-10.22864 5.11432,-20.45728 15.34296,-30.68592c0,-8.47368 -6.86928,-15.34296 -15.34296,-15.34296c-8.47368,0 -15.34296,6.86928 -15.34296,15.34296c10.22864,10.22864 15.34296,20.45728 15.34296,30.68592z" data-paper-data="{&quot;strokeWidth&quot;:1,&quot;fixedSize&quot;:true,&quot;editable&quot;:true,&quot;deleteIcon&quot;:null,&quot;annotation&quot;:null}" id="pin_0ca06f7a-bbf1-4f5d-9f33-9423a90e79d4" fill-opacity="0" fill="#00bfff" fill-rule="nonzero" stroke="#00bfff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"/></svg>';			
+				$on_object =  array(
+						'@type' => "oa:SpecificResource",
+						'full'=> $canvas->canvas,
+						'selector' => array(
+								'@type' => 'oa:Choice',
+								'default' => array(
+									'@type' => 'oa:FragmentSelector',
+									"value" => "xywh=".$x.",".$y.",".$width.",".$height
+								),
+								'item' => array(
+									'@type' => 'oa:SvgSelector',
+									'value' => $svg,
+								),
+							),
+					);
+				$on_string = array($on_object);
+			
+			}else{
+				$on_string = $canvas->canvas."xywh=".$x.",".$y.",".$width.",".$height;
+			}
+			
+		}
+		else if($selector[0]->type == 'SvgSelector') {
+			/**非四邊形就用SvgSelector，目前有兩種形狀circle,polygon
+			*/
+			$string = $selector[0]->value;
+			$xywh = 'xywh=1119.9999984,3223.999977,1328.0000024,791.9999934';
+			$xml = simplexml_load_string($string);
+			$xml->registerXPathNamespace('svg', 'http://www.w3.org/2000/svg');
+			$svg = '';
+			/*將DB polygon形狀的格式會出成IIIF的格式 IIIF on的部份*/
+			if($xml->xpath('/svg:svg/svg:polygon') !== []){
+				$value = $xml->xpath('/svg:svg/svg:polygon')[0]->attributes();
+				$points = (string)$value->points[0];
+				$explode_points = explode(',',$points);
+				$origin_points = '';
+				
+				foreach($explode_points as $count => $point){
+					if($count % 2 == 1){
+					   $point = $point * $canvas->height/100;
+					   
+					}else{
+					   $point = $point * $canvas->width/100;
+					}
+					if($point == 0 ) break;
+					
+					if($count == 0)
+						$origin_points = 'M';
+					if ($count % 2 == 1)
+							$origin_points = $origin_points.$point.'L';
+						else if ($count % 2 == 0)
+							$origin_points = $origin_points.$point.',';
+					
+				}
+				$origin_points =  substr($origin_points,0,-1);
+				$origin_points = $origin_points.'z';
+				$svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"><path d="'.$origin_points.'" data-paper-data="{&quot;strokeWidth&quot;:1,&quot;editable&quot;:true,&quot;deleteIcon&quot;:null,&quot;annotation&quot;:null}" id="rough_path_57a9539e-b429-4e76-9f30-4175813e2db8" fill-opacity="0.00001" fill="#00bfff" fill-rule="nonzero" stroke="#00bfff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"/></svg>' ;
+				
+		    } else if($xml->xpath('/svg:svg/svg:circle') !== []){
+				$value = $xml->xpath('/svg:svg/svg:circle')[0]->attributes();
+				$cx = (string)$value->cx[0] * $canvas->width/100;
+				$cy = (string)$value->cy[0] * $canvas->height/100;
+				$r = (string)$value->r[0];
+				$svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"><circle cx="'.$cx.'" cy="'.$cy.'" r="'.$r.'" /></svg>' ;
+				$xywh = 'xywh='.($cx-100).','.($cy-100).',200,200';			
+			} else {
+				$svg =  $string;
+				
+				
+				
+			}
+				$on_object =  array(
+					'@type' => "oa:SpecificResource",
+					'full'=> $canvas->canvas,
+					'selector' => array(
+							'@type' => 'oa:Choice',
+							'default' => array(
+								'@type' => 'oa:FragmentSelector',
+								"value" => $xywh,
+							),
+							'item' => array(
+								'@type' => 'oa:SvgSelector',
+								'value' => $svg,
+							),
+						),
+				);
+				$on_string = array($on_object);
+			
+		}
+        return ([
+            '@id' => $anno_id,
+            '@type' => "oa:Annotation",
+            'motivation' => "sc:painting",
+			'creator'=> 'http://dev.annotation.taieol.tw/user/'.$others['creator_id'].'/'.$others['creator'],
+            'resource'=>[
+                 'type' => 'cnt:ContentAsText',
+                 'format'=>'text/plan',
+                 'chars' =>  $others['text'][0]
+                ],
+            'on' => $on_string
+        ]);
+    }
+
+	
+	 public static function annotation_IIIF($anno_id,$canvas)
     {
         $otherbodys_id = bodygroup::getohtergroup($anno_id, "false");
         //print(count($otherbodys_id) === 0 );
@@ -439,7 +564,7 @@ class Annotation extends Model {
 			/**非四邊形就用SvgSelector，目前有兩種形狀circle,polygon
 			*/
 			$string = $selector[0]->value;
-			
+			$xywh = 'xywh=1119.9999984,3223.999977,1328.0000024,791.9999934';
 			$xml = simplexml_load_string($string);
 			$xml->registerXPathNamespace('svg', 'http://www.w3.org/2000/svg');
 			$svg = '';
@@ -465,6 +590,7 @@ class Annotation extends Model {
 						$origin_points = $origin_points.','.$point;
 				}
 				$svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"><polygon points="'.$origin_points.'" /></svg>' ;
+				
 		    } else if($xml->xpath('/svg:svg/svg:circle') !== []){
 				$value = $xml->xpath('/svg:svg/svg:circle')[0]->attributes();
 				$cx = (string)$value->cx[0] * $canvas->width/100;
@@ -472,6 +598,11 @@ class Annotation extends Model {
 				$r = (string)$value->r[0];
 				$svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"><circle cx="'.$cx.'" cy="'.$cy.'" r="'.$r.'" /></svg>' ;
 				$xywh = 'xywh='.($cx-100).','.($cy-100).',200,200';			
+			} else {
+				$svg =  $string;
+				
+				
+				
 			}
 				$on_object =  array(
 					'@type' => "oa:SpecificResource",
@@ -488,13 +619,14 @@ class Annotation extends Model {
 							),
 						),
 				);
-				$on_string = $on_object;
+				$on_string = array($on_object);
 			
 		}
         return ([
             '@id' => $anno_id,
             '@type' => "oa:Annotation",
             'motivation' => "sc:painting",
+			'creator'=> 'http://dev.annotation.taieol.tw/user/'.$others['creator_id'].'/'.$others['creator'],
             'resource'=>[
                  'type' => 'cnt:ContentAsText',
                  'format'=>'text/plan',
@@ -503,7 +635,6 @@ class Annotation extends Model {
             'on' => $on_string
         ]);
     }
-
     /*將後台資訊轉為前端所要求的格式
     *@param $row annotation object
     *return annotation object

@@ -26,8 +26,13 @@ cursor: pointer;
 
 	@foreach($manifestData as $manifest)
 		<div class='col-lg-3'>
-			
-			<img class ='manifestImg'  height='250px' src= {{$manifest['manifest']['sequences'][0]['canvases'][0]['images'][0]['resource']['@id']}}
+			<?php 
+				$src=$manifest['manifest']['sequences'][0]['canvases'][0]['images'][0]['resource']['@id'];
+				if (strpos($src,'full/full/0/default.jpg')==false)
+					$src.='/full/full/0/default.jpg'; 
+				$src=str_replace('full/0',',250/0',$src);
+			?>
+			<img class ='manifestImg'  height='250px' src= '{{$src}}'
 			data-id = {{$manifest['_id']}} alt= {{ $manifest['manifest']['label'] }}>
 			<p>{{ substr($manifest['manifest']['label'],0,30)}}...<i class="fa fa-trash fa-1x trash" aria-hidden="true" data ={{$manifest['_id']}}></i></p>
 			

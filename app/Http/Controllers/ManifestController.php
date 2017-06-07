@@ -12,8 +12,12 @@ use App\manifest;
 use App\canvas;
 use	App\Target;
 use App\Annotation;
+use App\AuthTable;
+use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Input;
+
 class ManifestController extends Controller
 {
     public function output_manifest($id){
@@ -35,12 +39,31 @@ class ManifestController extends Controller
 		
 		return $result;
 	}
+	    public function output_manifest_mirador($id){
+		$result = manifest::get_manifest($id)['manifest'];
+		$var = '@id';
+		foreach ($result['sequences'][0]['canvases'] as $key => $canvas ){
+            $img_url = $canvas['images'][0]['resource'][$var]; 
+
+			if(target::checkimg($img_url)){
+				$canvas_id = canvas::add($img_url,$canvas[$var],$canvas['height'],$canvas['width']);
+				$temp = array(
+					'@id'=> "http://".$_SERVER['HTTP_HOST']."/mirador/list/".$canvas_id,
+					'@type' =>'sc:AnnotationList',
+				);
+				$result['sequences'][0]['canvases'][$key]['otherContent'] =[];
+				array_push($result['sequences'][0]['canvases'][$key]['otherContent'],$temp);
+			}
+        }
+		
+		return $result;
+	}
 	/**
 	*接收IIIF editor傳來的新增註記，，並將這批資料交給Manifest Model存入DB
 	*@return String $res['id'] 該筆Manifest的ID
 	*/
 	public function save(){
-		$id = Request::input('id');
+		$id = Request::input('id','');
 		$manifest = Request::input('manifest');
 		$annotations_str = Request::input('annotation');
 		$annotations = json_decode($annotations_str);
@@ -48,17 +71,23 @@ class ManifestController extends Controller
 		$deletArray = json_decode(Request::input('deletArray'));
 		$updateArray = json_decode(Request::input('updateArray'));
 		$TextArray = json_decode(Request::input('getUpdateText'));
-		foreach($updateArray as $ele){
-			 $selector_json = self::CreatSelectorArray($ele);
-			 Annotation::updateSelector($ele->aid,$selector_json);
-		}
+		
+		if($updateArray != null)
+			foreach($updateArray as $ele){
+				 $selector_json = self::CreatSelectorArray($ele);
+				 Annotation::updateSelector($ele->aid,$selector_json);
+			}
+		if($TextArray != null)
 		foreach($TextArray as $ele){
 			 Annotation::updateBody($ele,$user);
 		}
-		foreach($deletArray as $ele){
-			 Annotation::del($user,$ele);
-		}
+		if($deletArray != null){
+			foreach($deletArray as $ele){
+				 Annotation::del($user,$ele);
+			}
 		
+		}
+		if($annotations_str != null)
 		foreach($annotations as $annotation){
 		
 			
@@ -67,7 +96,7 @@ class ManifestController extends Controller
 			$anno = Annotation::add([
 				'creator_id' => $user,
 				'text' => $annotation->text ? $annotation->text : '',
-				'uri' => 'http://edit.annotation.taieol.tw',
+				'uri' => $annotation->canvas_id,
 				'type' => 'image',
 				'src' => $annotation->image ? $annotation->image : '',
 				'selector' => $selector_json,
@@ -76,8 +105,34 @@ class ManifestController extends Controller
 				'metas' => '' ,
 			]);
 		}
-		$res = manifest::update_manifest($id,$manifest);
-		return $res['_id'];
+		if($id != ''){
+			$res = manifest::update_manifest($id,$manifest);
+			return $res['_id'];
+		}
+	}
+	
+	
+	public function subsave(){
+		$annotations_str = Request::input('annotation');
+		$annotations = json_decode($annotations_str);
+			$user = Request::input('user');
+		if($annotations_str != null)
+		foreach($annotations as $annotation){
+			$selector_json ='';
+			$selector_json = self::CreatSelectorArray($annotation);
+			$anno = Annotation::add([
+				'creator_id' => $user,
+				'text' => $annotation->text ? $annotation->text : '',
+				'uri' => $annotation->canvas_id,
+				'type' => 'image',
+				'src' => $annotation->image ? $annotation->image : '',
+				'selector' => $selector_json,
+				'is_public' => '1',
+				'tags' => '',
+				'metas' => '' ,
+			]);
+			return $anno;
+		}
 	}
 	/**
     *主要負責處理四邊形，多邊形，圓形的SVG XML檔產生
@@ -124,6 +179,21 @@ class ManifestController extends Controller
                 'type' => "SvgSelector",
                 'value'=> $svg
             )];
+		} else if($annotation->shape = "marker"){
+			$position = json_decode($annotation->point);
+			$x =  $position[0]->x;
+			$y =  $position[0]->y;
+			$w =   $position[0]->w;
+			$h =   $position[0]->h;
+			$tempArray =[array(
+                'type' =>"FragmentSelector",
+                'conformsTo' =>"http://www.w3.org/TR/media-frags/",
+                'value'=>  $x.','.$y.','.$w.','.$h
+            ),array(
+                'type' =>"XPathSelector",
+                'value' => ''
+            )];
+			
 		}
         return json_encode($tempArray);
     }
@@ -144,8 +214,7 @@ class ManifestController extends Controller
 	*/
     public function IIIFformat($id){
         $canvas = canvas::get_canvas_by_annolistid($id);
-
-        $anno_ids = Target::get_by_src($canvas->img_src);
+        $anno_ids = Target::get_by_src($canvas->img_src,$canvas->canvas);
         $resources =[];
         foreach ($anno_ids as $anno_id)
         {
@@ -158,8 +227,36 @@ class ManifestController extends Controller
             'context' => "http://www.shared-canvas.org/ns/context.json",
             '@type' =>'AnnotationList',
             'resources' => $resources
-            ];
+        ];
     }
+	
+	
+	
+	public function IIIFformat_mirador($id){
+        $canvas = canvas::get_canvas_by_annolistid($id);
+        $anno_ids = Target::get_by_src($canvas->img_src,$canvas->canvas);
+        $resources =[];
+        foreach ($anno_ids as $anno_id)
+        {
+            $resource = Annotation::annotation_IIIF_mirador($anno_id,$canvas);
+            array_push($resources,$resource);
+        }
+
+        return [
+            '@id' => "http://".$_SERVER['HTTP_HOST']."/mirador/list/".$id,
+            'context' => "http://www.shared-canvas.org/ns/context.json",
+            '@type' =>'AnnotationList',
+            'resources' => $resources
+        ];
+    }
+	
+	
+	public function getAnnoList(){
+		$canvas = Request::input('canvas');
+		$img_url = $canvas['images'][0]['resource']['@id'];
+		$canvas_id = canvas::add($img_url,$canvas['@id'],$canvas['height'],$canvas['width']);
+		return "http://dev.annotation.taieol.tw/list/".$canvas_id;
+	}
 	public function import(){
 		$Manifest = Request::input('id');
         $handle = fopen($Manifest,"rb");
@@ -198,4 +295,32 @@ class ManifestController extends Controller
 	   $id = Request::input('id');
 	   return manifest::deleteManifest($id);
    }
+   
+   public function leaflet_Login(){
+	
+	 if (Auth::attempt(['email' => Input::get('email'), 'password' => Input::get('password')])) {
+			$domain = 'leaflet';
+			$user = Auth::user();
+			// generate a auth token for this external site
+			$auth = AuthTable::add($domain, $user->id);
+			return  array(
+				'id' => $user->id,
+                'name'     => $user->name,
+                'token'  => $auth->auth_token
+            );
+	 }
+   }
+   
+   public function leaflet_logout() {
+        $domain = 'leaflet';
+        $token = Input::get('token');
+		$state = 'failed';
+        if (AuthTable::check($domain,$token)){
+			$state = AuthTable::remove($domain, $token);
+        }
+		return [
+            'response' => $state
+        ];
+		
+    }
 }

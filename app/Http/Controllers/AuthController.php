@@ -305,7 +305,9 @@ class AuthController extends Controller
             return redirect((string)$url);
         }*/
     }
+	
 
+   
 
     function getLogout() {
         Auth::logout();

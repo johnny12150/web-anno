@@ -18,7 +18,9 @@ Route::get('/', function() { return redirect('/manage');});
 Route::get('testing', function() {
     return view('testing');
 });
-
+Route::get('leaflet', function() {
+    return view('leaflet');
+});
 Route::get('test2', function() {
     return view('test2');
 });
@@ -99,6 +101,7 @@ Route::group(['prefix' => '/manage', 'middleware' => 'auth'], function() {
 	Route::post('/myprocess','ManifestController@Manifest');
 	Route::post('/manifest/delete','ManifestController@delete');
 	
+	
 });
 /*
 Route::get('manifest', function(){
@@ -118,9 +121,14 @@ Route::group(['prefix' => '/digital'],function(){
 });
 
 Route::get('list/{p1}',"ManifestController@IIIFformat");
+Route::get('mirador/list/{p1}',"ManifestController@IIIFformat_mirador");
 Route::post('manifest/save', 'ManifestController@save');
+Route::post('manifest/subsave', 'ManifestController@subsave');
 Route::get('manifest/{id}.json', 'ManifestController@output_manifest');
-
+Route::get('mirador/manifest/{id}.json', 'ManifestController@output_manifest_mirador');
+Route::post('/manifest/searchAnnoByCanvas', 'ManifestController@getAnnoList');
+Route::post('login','ManifestController@leaflet_Login');
+Route::post('logout','ManifestController@leaflet_Logout');
 
 
 Route::get('gethint','AnnotationController@gethint');
