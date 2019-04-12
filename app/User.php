@@ -38,10 +38,12 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      * @param $fbid - facebook id
      * @return User|null
      */
-   
     public static function get($uid)
     {
-        return self::where('id', $uid)->first();
+        //echo '<pre>', print_r($uid), '</pre>';
+		//die();
+		return self::where('id', $uid)->first();
+		
     }
     public static function getbyname($name)
     {

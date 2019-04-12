@@ -260,11 +260,9 @@ var annotation = function(e) {
 					specific_url : setting.specific_url //for digital island
                 }
             })
-            .annotator('addPlugin','RichText',optionsRichText)
-			.annotator('addPlugin','myPlugin')
+            .annotator('addPlugin','RichText',optionsRichText)			
             .annotator('addPlugin', 'Tags')
-			//.annotator('addPlugin', 'Meta_field',['contributor','temporalCoverage','mainEntity','contentLocation','keyword'])
-            .annotator('addPlugin', 'ViewPanel', {
+			.annotator('addPlugin', 'ViewPanel', {
                 target_anno : target_anno,
                 anno_token : anno_token,
                 uri: location.href.split('#')[0] ,
@@ -287,11 +285,36 @@ var annotation = function(e) {
 
         //		this.annotator.loadannotation
         var user = this.annotator.data('annotator-user');
+		var userdata = annotation.user;
 
 
         this.annotator.annotator('addPlugin', 'Permissions', {
                 showEditPermissionsCheckbox: false,
-                user: user != null ? parseInt(user.id) : 0
+				showViewPermissionsCheckbox: false,
+				//user: user != null ? parseInt(user.id) : 0
+                user: {
+					id : user != null ? parseInt(user.id) : 0,
+					name : user != null ? (user.name) : 0,
+					level : user != null ? (user.level) : 0
+				},
+				userId: function (user) {
+					if (user && user.id) {
+					  return user.id;
+					}
+					return user;
+				},
+				userString: function (user) {
+					if (user && user.name) {
+					  return user.name;
+					}
+					return user;
+				},
+				permissions: {
+					'read':   [],
+					'update': [],
+					'delete': [],
+					'admin':  ['super','normal']
+				}
             });
     };
    

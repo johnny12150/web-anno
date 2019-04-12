@@ -20,12 +20,17 @@ use Illuminate\Support\Facades\Input;
 
 class ManifestController extends Controller
 {
-    public function output_manifest($id){
+    
+	public function output_manifest($id){
 		$result = manifest::get_manifest($id)['manifest'];
+		$result['sequences'][0]['canvases'][0]['height']=(int)$result['sequences'][0]['canvases'][0]['height'];
+		$result['sequences'][0]['canvases'][0]['width']=(int)$result['sequences'][0]['canvases'][0]['width'];
+		$result['sequences'][0]['canvases'][0]['images'][0]['resource']['height']=(int)$result['sequences'][0]['canvases'][0]['images'][0]['resource']['height'];
+		$result['sequences'][0]['canvases'][0]['images'][0]['resource']['width']=(int)$result['sequences'][0]['canvases'][0]['images'][0]['resource']['width'];
+		
 		$var = '@id';
 		foreach ($result['sequences'][0]['canvases'] as $key => $canvas ){
             $img_url = $canvas['images'][0]['resource'][$var]; 
-
 			if(target::checkimg($img_url)){
 				$canvas_id = canvas::add($img_url,$canvas[$var],$canvas['height'],$canvas['width']);
 				$temp = array(
@@ -36,10 +41,9 @@ class ManifestController extends Controller
 				array_push($result['sequences'][0]['canvases'][$key]['otherContent'],$temp);
 			}
         }
-		
 		return $result;
 	}
-	    public function output_manifest_mirador($id){
+	public function output_manifest_mirador($id){
 		$result = manifest::get_manifest($id)['manifest'];
 		$var = '@id';
 		foreach ($result['sequences'][0]['canvases'] as $key => $canvas ){
@@ -55,13 +59,9 @@ class ManifestController extends Controller
 				array_push($result['sequences'][0]['canvases'][$key]['otherContent'],$temp);
 			}
         }
-		
 		return $result;
 	}
-	/**
-	*接收IIIF editor傳來的新增註記，，並將這批資料交給Manifest Model存入DB
-	*@return String $res['id'] 該筆Manifest的ID
-	*/
+	
 	public function save(){
 		$id = Request::input('id','');
 		$manifest = Request::input('manifest');
@@ -72,39 +72,51 @@ class ManifestController extends Controller
 		$updateArray = json_decode(Request::input('updateArray'));
 		$TextArray = json_decode(Request::input('getUpdateText'));
 		
-		if($updateArray != null)
+		if($updateArray != null){
+			
+		echo '<pre>'.print_r($updateArray).'</pre>';		
 			foreach($updateArray as $ele){
 				 $selector_json = self::CreatSelectorArray($ele);
 				 Annotation::updateSelector($ele->aid,$selector_json);
 			}
+		}	
+
 		if($TextArray != null)
-		foreach($TextArray as $ele){
+		{
+			foreach($TextArray as $ele){
 			 Annotation::updateBody($ele,$user);
+			}
 		}
+		
 		if($deletArray != null){
 			foreach($deletArray as $ele){
 				 Annotation::del($user,$ele);
 			}
 		
 		}
-		if($annotations_str != null)
-		foreach($annotations as $annotation){
 		
+		if($annotations_str != null){
 			
-			$selector_json ='';
-			$selector_json = self::CreatSelectorArray($annotation);
-			$anno = Annotation::add([
-				'creator_id' => $user,
-				'text' => $annotation->text ? $annotation->text : '',
-				'uri' => $annotation->canvas_id,
-				'type' => 'image',
-				'src' => $annotation->image ? $annotation->image : '',
-				'selector' => $selector_json,
-				'is_public' => '1',
-				'tags' => '',
-				'metas' => '' ,
-			]);
+			
+			foreach($annotations as $annotation){			
+				$selector_json ='';
+				$selector_json = self::CreatSelectorArray($annotation);
+				
+				$anno = Annotation::add([
+					'creator_id' => $user,
+					'text' => $annotation->text ? $annotation->text : '',
+					'uri' => $annotation->canvas_id,
+					'type' => 'image',
+					'src' => $annotation->image ? $annotation->image : '',
+					'selector' => $selector_json,
+					'is_public' => '1',
+					'tags' => '',
+					'metas' => '' ,
+				]);
+			}
 		}
+		
+		
 		if($id != ''){
 			$res = manifest::update_manifest($id,$manifest);
 			return $res['_id'];
@@ -134,11 +146,7 @@ class ManifestController extends Controller
 			return $anno;
 		}
 	}
-	/**
-    *主要負責處理四邊形，多邊形，圓形的SVG XML檔產生
-	*@param Object $annotation 繪畫的形狀與點
-    *@return String json_encode($tempArray) svg字串
-    */
+	
     public static function CreatSelectorArray($annotation)
     {
 		$position = json_decode($annotation->point);
@@ -154,7 +162,7 @@ class ManifestController extends Controller
                 'value'=>  $x.','.$y.','.$w.','.$h
             ),array(
                 'type' =>"XPathSelector",
-                'value' => ''
+                'value' => 'iiif'
             )];
         } else if( $annotation->shape == "polygon"){
 			$tempArray =[];
@@ -191,27 +199,22 @@ class ManifestController extends Controller
                 'value'=>  $x.','.$y.','.$w.','.$h
             ),array(
                 'type' =>"XPathSelector",
-                'value' => ''
+                'value' => 'iiif'
             )];
 			
 		}
         return json_encode($tempArray);
     }
-	public function Manifest(){
+	public function Manifest(){// /manage/manifest->iiif_editor所傳的data 使狀態維持登入
         
 		$user = Auth::user();
-		$manifestId = Request::input('id');
-		$result = manifest::get_manifest($manifestId)['manifest'];
-		
-		
-		$new_url = 'http://edit.annotation.taieol.tw/#/myprocess?manifest='.$manifestId.'&uid='.$user->id ;
+		$manifestId = Request::input('id');		
+		$new_url = 'http://edit.annotation.taieol.tw/#/myprocess?manifest='.$manifestId.'&uid='.$user->id.'&name='.$user->name.'&token='.session('auth')->auth_token ;
 		return redirect($new_url);
     }
-	/**
-	*產生IIIF annotationList
-	*@param string $id mongodb上 manifest的id
-	*@return array annotation list的Array
-	*/
+	
+	
+	/*產生IIIF annotationList*/
     public function IIIFformat($id){
         $canvas = canvas::get_canvas_by_annolistid($id);
         $anno_ids = Target::get_by_src($canvas->img_src,$canvas->canvas);
@@ -221,16 +224,13 @@ class ManifestController extends Controller
             $resource = Annotation::annotation_IIIF($anno_id,$canvas);
             array_push($resources,$resource);
         }
-
         return [
             '@id' => "http://".$_SERVER['HTTP_HOST']."/list/".$id,
-            'context' => "http://www.shared-canvas.org/ns/context.json",
+            '@context' => "http://iiif.io/api/presentation/2/context.json",//"http://www.shared-canvas.org/ns/context.json",
             '@type' =>'AnnotationList',
             'resources' => $resources
         ];
     }
-	
-	
 	
 	public function IIIFformat_mirador($id){
         $canvas = canvas::get_canvas_by_annolistid($id);
@@ -255,21 +255,53 @@ class ManifestController extends Controller
 		$canvas = Request::input('canvas');
 		$img_url = $canvas['images'][0]['resource']['@id'];
 		$canvas_id = canvas::add($img_url,$canvas['@id'],$canvas['height'],$canvas['width']);
+		
+		//manifest.currenCanvas.otherContent[0]['@id']
+		/*
+		if($canvas['otherContent'][0]['@id']){
+			return $canvas['otherContent'][0]['@id'];
+		}*/
+		
 		return "http://dev.annotation.taieol.tw/list/".$canvas_id;
 	}
+	//匯入manifest
+	public function importManifest(){
+		$Manifest = Request::input('Manifest'); 
+		$url = Request::input('url');
+        $creator = Request::input('creator');
+		$Manifest = (object) $Manifest;
+		$new_id = manifest::add($Manifest,$url,$creator);
+		return $new_id;
+	}
+	//更新URL
+	public function updateManifestID(){
+		$id = Request::input('id');
+		$url = Request::input('url');
+		
+		$new_id = manifest::update_manifest($id,$url);
+		return $new_id;
+	}
+	
+	//匯入manifesturl
 	public function import(){
 		$Manifest = Request::input('id');
+		$user = Request::input('uid');
         $handle = fopen($Manifest,"rb");
-		$user = Auth::user();
-		print($user);
         $content = "";
-        while (!feof($handle)) {
-                $content .= fread($handle, 10000);
+		
+        while (!feof($handle)) {//預防fopen失敗
+                $content .= fread($handle, 10000);//fread(來源,大小)
         }
         fclose($handle);
+		
+		//$Bcontent = $content;
         $content = json_decode($content);
+		
         $var = '@id';
+		//print_r($content);
+		//die();
         foreach ($content->sequences[0]->canvases as $canvas ){
+			
             $img_url = $canvas->images[0]->resource->$var; 
 			if(target::checkimg($img_url)){
 				$canvas_id = canvas::add($img_url,$canvas->$var,$canvas->height,$canvas->width);
@@ -280,16 +312,32 @@ class ManifestController extends Controller
 				$canvas->otherContent[0] = $temp;
 			}
         }
-		$new_id = manifest::add($content,$Manifest);
+		
+		$new_id = manifest::add($content,$Manifest,$user);
+		
 		return $new_id;
 	}
+	public function getManifestID(){
+		$json = Request::input('json');
+		
+		$manifest = manifest::getManifestID($json);
+		return $manifest;
+	}
+	
 	public function index(){
 		$user = Auth::user();
 		$manifestData = manifest::get_manifest();
 
 		return view('manage.manifest',[
-			'manifestData' => $manifestData
+			'manifestData' => $manifestData,
+			'user' => $user
 		]);
+	}
+	
+	public function getManifest(){
+		$uid = Request::input('uid');
+		$manifestData = manifest::get_manifestByuser($uid); 
+		return $manifestData;
 	}
    public function delete(){
 	   $id = Request::input('id');
@@ -297,9 +345,9 @@ class ManifestController extends Controller
    }
    
    public function leaflet_Login(){
-	
+	 // return Auth::attempt(['email' => Input::get('email'), 'password' => Input::get('password')]);
 	 if (Auth::attempt(['email' => Input::get('email'), 'password' => Input::get('password')])) {
-			$domain = 'leaflet';
+			$domain = 'dev.annotation.taieol.tw';
 			$user = Auth::user();
 			// generate a auth token for this external site
 			$auth = AuthTable::add($domain, $user->id);
@@ -308,18 +356,25 @@ class ManifestController extends Controller
                 'name'     => $user->name,
                 'token'  => $auth->auth_token
             );
+	 }else{
+		 return array(
+				'id'   => -1,
+                'name' => 'null',
+				'token'=> 'null'
+            );
 	 }
+	 
    }
    
    public function leaflet_logout() {
-        $domain = 'leaflet';
+        $domain = 'dev.annotation.taieol.tw';
         $token = Input::get('token');
 		$state = 'failed';
         if (AuthTable::check($domain,$token)){
 			$state = AuthTable::remove($domain, $token);
         }
 		return [
-            'response' => $state
+            'response' => $domain.' '.$token.' '.$state
         ];
 		
     }

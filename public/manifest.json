@@ -1,75 +1,84 @@
 {
-    "@context": "http://www.shared-canvas.org/ns/context.json", 
-    "@id": "https://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/manifest.json", 
-    "@type": "sc:Manifest", 
-    "label": "Biblioth\u00e8que nationale de France, NAF 6221", 
-    "description": "displayLabelSummarycontentM\u00e9langes. II Recueil de 154 lais, ballades, rondeaux et serventois, dont 71 au moins sont d'Eustache DESCHAMPS", 
-    "attribution": "Provided by the Stanford University Libraries", 
-    "seeAlso": {
-        "@id": "https://purl.stanford.edu/jr903ng8662.mods", 
-        "dcterms:format": "application/mods+xml"
-    }, 
-    "sequences": [
-        {
-            "@id": "https://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/normal", 
-            "@type": "sc:Sequence", 
-            "label": "Current page order", 
-            "canvases": [
-                {
-                    "@id": "http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/canvas/canvas-7", 
-                    "@type": "sc:Canvas", 
-                    "label": "Ar", 
-                    "height": "4785", 
-                    "width": "3760", 
-                    "images": [
-                        {
-                            "@id": "https://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/imageanno/anno-7", 
-                            "@type": "oa:Annotation", 
-                            "motivation": "sc:painting", 
-                            "resource": {
-                                "@id": "https://stacks.stanford.edu/image/jr903ng8662/T0000007", 
-                                "@type": "dctypes:Image", 
-                                "format": "image/jpeg", 
-                                "height": "4785", 
-                                "width": "3760", 
-                                "service": {
-                                    "@id": "https://stacks.stanford.edu/image/iiif/jr903ng8662%252FT0000007", 
-                                    "@context": "http://iiif.io/api/image/2/context.json",
+"@context": "http://iiif.io/api/presentation/2/context.json",
+"@id": "test",
+"@type": "sc:Manifest",
+"label": "Toggle Navigation",
+"metadata": [
+{
+"label": "Toggle Navigation",
+"value": "數位人文工具"
+},
+{
+"label": "相片名稱",
+"value": "001.愛情發生了"
+},
+{
+"label": "相簿名稱",
+"value": "校園"
+},
+{
+"label": "作者",
+"value": "陳威宏"
+}
+],
+"thumbnail": {
+"@type": "dctypes:Image",
+"format": "image/jpeg",
+"service": {
+"@context": "http://iiif.io/api/image/2/context.json",
 "profile": "http://iiif.io/api/image/2/level1.json"
-                                }
-                            }, 
-                            "on": "https://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/canvas/canvas-7"
-                        }
-                    ]
-                },
-                {
-                    "@id": "http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/canvas/canvas-86", 
-                    "@type": "sc:Canvas", 
-                    "label": "tranche inf\u00e9rieure", 
-                    "height": "3912", 
-                    "width": "480", 
-                    "images": [
-                        {
-                            "@id": "http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/imageanno/anno-86", 
-                            "@type": "oa:Annotation", 
-                            "motivation": "sc:painting", 
-                            "resource": {
-                                "@id": "http://stacks.stanford.edu/image/jr903ng8662/T0000086", 
-                                "@type": "dctypes:Image", 
-                                "format": "image/jpeg", 
-                                "height": "3912", 
-                                "width": "480", 
-                                "service": {
-                                    "@id": "https://stacks.stanford.edu/image/iiif/jr903ng8662%252FT0000086", 
-                                    "@context": "http://iiif.io/api/image/2/context.json",
+}
+},
+"attribution": "Toggle Navigation",
+"logo": {
+"@id": "http://cyberisland.teldap.tw/image/logo.png",
+"service": {
+"@context": "http://iiif.io/api/image/2/context.json",
 "profile": "http://iiif.io/api/image/2/level1.json"
-                                }
-                            }, 
-                            "on": "http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/canvas/canvas-86"
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
+}
+},
+"seeAlso": {
+"@id": "test",
+"format": "application/mods+xml"
+},
+"sequences": [
+{
+"@type": "sc:Sequence",
+"label": "test",
+"canvases": [
+{
+"@id": "http://dev.annotation.taieol.tw/digital/modified_annotation/600",
+"@type": "sc:Canvas",
+"label": "test",
+"height": 864,
+"width": 1080,
+"images": [
+{
+"@type": "oa:Annotation",
+"motivation": "sc:painting",
+"resource": {
+"@id": "http://cyberisland.teldap.tw/S/JpkBlXLIEYImlEySsltwmTSlLY/full/full/0/default.jpg",
+"@type": "dctypes:Image",
+"format": "image/jpeg",
+"height": 864,
+"width": 1080,
+"service": {
+"@context": "http://iiif.io/api/presentation/2/context.json",
+"@id": "http://cyberisland.teldap.tw/S/JpkBlXLIEYImlEySsltwmTSlLY",
+"profile": "http://iiif.io/api/image/2/level1.json"
+}
+},
+"on": "http://dev.annotation.taieol.tw/digital/modified_annotation/600"
+}
+],
+"otherContent": [
+{
+"@id": "http://dev.annotation.taieol.tw/list/37",
+"@type": "sc:AnnotationList"
+}
+]
+}
+]
+}
+]
 }

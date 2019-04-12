@@ -6,7 +6,7 @@ use App\Http\Requests;
 use App\Like;
 use App\bodygroup;
 use App\Tag;
-use App\User;
+use App\User; 
 use App\BodyMember;
 use App\Target;
 use App\manifest;
@@ -124,8 +124,6 @@ class AnnotationController extends Controller
             )];
 		    $selector =  json_encode($tempArray);
         }
-      
-		
 		/* 新增標記 */
         $anno = Annotation::add([
             'creator_id' => $user->id,
@@ -139,7 +137,6 @@ class AnnotationController extends Controller
             'tags' => $tags,
 			'metas' => json_encode($metas),
         ]);
-         
         //回傳該標記
         if($anno != false)
             return self::get($anno);
@@ -415,29 +412,48 @@ class AnnotationController extends Controller
         Like::setLike($user_id, $id, $like);
         return like::count($id);  
     }
-
+	//annotator.data('annotator-user')裡的資料
     public function check()
     {
         $user = Session::get('user');
-      
+		
         return [
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'gravatar' => Gravatar::src($user->email),
-                'like' =>  Like::getlikebyuser($user->id)
+                'like' =>  Like::getlikebyuser($user->id),
+				'level' => $user->level
             ]
         ];
     }
-
+	
+	public function getIIIFformat() {
+        
+    }
+	public function example() {
+		$result;
+		$result = [
+			'user' => [
+                'id' => 2,
+                'name' => "test1",
+                'email' => "test1@gmail.com",
+                'gravatar' => "https://secure.gravatar.com/avatar/245cf079454dc9a3374a7c076de247cc?s=80&r=g&d=identicon",
+                'like' =>  [],
+				'level' =>  null
+            ]
+		];
+		
+        
+        return $result;
+    }
 
     public function logout() {
         $domain = Request::input('domain');
-        $token = Request::input('anno_token');
-
+        $token = Request::input('anno_token');		
         Auth::logout();
-        $state = AuthTable::remove($domain, $token);
+        $state = AuthTable::remove($domain,$token);
         return [
             'response' => $state
         ];

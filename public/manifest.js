@@ -20,7 +20,7 @@ var manifest = function(manifestUrl,element){
 			manifest.checkOtherContent(manifest.currenCanvas);
 			manifest.leaflet = leafletMap(manifest.currenCanvas);
 			manifest.add_chose_button();
-			//manifest.editDeleteButton();
+		
 
 		});
 	};
@@ -45,51 +45,9 @@ var manifest = function(manifestUrl,element){
 			manifest.checkOtherContent(manifest.currenCanvas);
 			manifest.leaflet = leafletMap(manifest.currenCanvas);
 			manifest.add_chose_button();
-			//manifest.editDeleteButton();
+			
 	}
-	/*簡化edit與Delete事件*/
-	manifest.editDeleteButton = function(mymap) {
-
-		//$('.leaflet-draw-edit-edit').hide();
-		//$('.leaflet-draw-edit-remove').hide();
-		/*var toolbar = editButton.parent();
-		if(toolbar.find('#edit').length === 0){
-			var newEdit = '<a class="leaflet-draw-edit-edit" id = "edit" title="Edit layers."></a>';
-			var deleteEdit = '<a class="leaflet-draw-edit-remove" id = "remove"  title="Edit layers."></a>';
-			toolbar.append(newEdit,deleteEdit);
-			var Estatus = false;
-			$('#edit').click(function(e){
-				e.preventDefault();
-				if(Estatus === false){
-					$(newEdit).css('background-color','gray');
-					$('.leaflet-draw-edit-edit')[0].click();
-					$('.leaflet-draw-actions.leaflet-draw-actions-top').css('display','none');
-					Estatus = true
-				}else{
-					var li = $('.leaflet-draw-actions.leaflet-draw-actions-top').find('li')[0];
-					var a = $(li).find('a')[0];
-					$(newEdit).css('background-color','white');
-					a.click();
-					Estatus = false;
-				}
-			});
-			var Dstatus = false;
-			$('#remove').click(function(e){
-				e.preventDefault();
-				if(Dstatus === false){
-					$('.leaflet-draw-edit-remove')[0].click();
-					$('.leaflet-draw-actions.leaflet-draw-actions-bottom').css('display','none');
-					Dstatus = true;
-				} else{
-					var li = $('.leaflet-draw-actions.leaflet-draw-actions-bottom').find('li')[0];
-					var a = $(li).find('a')[0];
-					a.click();
-					Dstatus = false;
-				}
-			});
-		}*/
-
-	}
+	
 	/*選擇要第幾個canvas*/
 	manifest.add_chose_button = function(){
 		//add css class and separator div and class
@@ -290,7 +248,6 @@ var leafletMap = function(canvas){
 				  var max = mymap.unproject(maxPoint, 3);
 				  if(parseInt(b[2]) <= 1){
 					layer =  L.marker(min);
-					console.log(b[2]);
 			      }else{
 					layer = L.rectangle(L.latLngBounds(min, max));
 			      }

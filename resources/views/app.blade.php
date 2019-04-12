@@ -8,7 +8,6 @@
 	<title>數位人文工具</title>
 
 	<link href="{{ asset('/css/style.css') }}" rel="stylesheet">
-
     @yield('custom_css')
 
 	<!-- Fonts -->

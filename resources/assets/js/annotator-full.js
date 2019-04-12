@@ -2343,6 +2343,8 @@
             if (data.id == null) {
               console.warn(Annotator._t("Warning: No ID returned from server for annotation "), annotation);
             }
+			
+			_this.publish("createdBack",[data]);
             return _this.updateAnnotation(annotation, data);
 
           };

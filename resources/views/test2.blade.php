@@ -13,8 +13,10 @@
  
 </head>
 <body>
-  
+  <div class="wellcomePlayer" data-uri="http://wellcomelibrary.org/package/b1948799x" data-sequenceindex="0" data-assetindex="2" data-zoom="-1.4191,0.0171,3.3239,1.5002" data-rotation="0" data-config="/service/playerconfig" style="width:800px; height:600px; background-color: #000"></div>
+
 </body>
+<script type="text/javascript" id="embedWellcomePlayer" src="http://wellcomelibrary.org/spas/player/build/wellcomeplayer/js/embed.js"></script><script type="text/javascript">/* wordpress fix */</script>
 <script src="{{ asset('js/tinymce/tinymce.min.js')}}"></script>
 <script src="{{ asset('js/annotation.full.js')}}"></script>
 <script type="text/javascript">

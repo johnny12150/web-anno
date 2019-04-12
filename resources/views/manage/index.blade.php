@@ -117,16 +117,16 @@
                                
                                 @if($anno['type'] == 'text')
                                 <div class="anno-quote">
-                                     <a href="{{ $anno['uri'] . '#anno_id=' .$anno['id'] }}"> {{ $anno['quote'] }}</a>
+                                     <a href="{{ $anno['uri'] . '#anno_id=' .$anno['id']. '&token=' .$user['token'] }}"> {{ $anno['quote'] }}</a>
                                 </div>
-                                @else
+                                @else	
                                 <div class="anno-quote">
-                                    <a href="{{ $anno['uri'] . '#anno_id=' .$anno['id'] }}">  <img src="{{ $anno['src'] }}"width="250" height="200" id ="{{ $anno['id'] }}"></a>
+                                    <a href="{{ $anno['uri'] . '#anno_id=' .$anno['id']. '&user_id=' .session('auth')->uid .'&anno_token=' .session('auth')->auth_token }}">  <img src="{{ $anno['src'] }}"width="250" height="200" id ="{{ $anno['id'] }}"></a>
                                 </div>
                                 @endif
 
                                 <div class="anno-content">
-                                 <a style="color: #006621;" href="{{ $anno['uri'] }}">{{ $anno['uri'] }}</a>
+                                 <a href="{{ $anno['uri'] . '#anno_id=' .$anno['id']. '&user_id=' .session('auth')->uid .'&anno_token=' .session('auth')->auth_token }}"> {{ $anno['uri'] }}</a>
                                    <br><span class="body-user">{{ $anno['user']['name']}}</span> 
                                   <span class="body-time">{{  $anno['created_at'] }}</span>
                                
@@ -273,7 +273,6 @@
                 method: "get",
                 success: function (data) {
                     /*easy-complete for tags  by tokenize*/
-                    console.log(data.uri);
                     
                      for(var i in data.tags ){
                         $('#tokenize').append('<option value="' + data.tags[i] + '">'+ data.tags[i]+'</option>');
@@ -283,7 +282,6 @@
                         autocomplete($('#search_uri'),data.uri);
                 },
                 error: function(data) {
-                    console.log("fail");
                 }
             });
             

@@ -30,7 +30,6 @@ class Authenticate
      */
     public function handle($request, Closure $next)
     {
-		
 		if ($this->auth->guest()) {
             if ($request->ajax()) {
                 return response('Unauthorized.', 401);
@@ -42,8 +41,7 @@ class Authenticate
 
         if ($this->auth->check() && $callbackUrl != '' ) {
             return redirect($callbackUrl);
-        }
-		
+        }		
         return $next($request);
     }
 }

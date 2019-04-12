@@ -43,6 +43,7 @@ class BodyMember extends Model{
 			array_push($tagarray, $tag->text);
 		}
 		foreach ($texts as $text ) {
+			
 			array_push($textarray, $text->text);
 			$creator = $text->creator;
 			$created_time = $text->created_time;
@@ -62,23 +63,6 @@ class BodyMember extends Model{
 		return $body;
 	}
 
-	/*
-	public static function getupdate($data){
-		$body_member_id = Body::get_body_id($data['anno_id']);
-		foreach ($body_member_id as $id) {
-			DB::table('body_member')
-				->where('body_member_id',$id)
-				->where('purpose','tagging')
-				->update(array('text' => $data['tags'] ));
-
-			DB::table('body_member')
-				->where('body_member_id',$id)
-				->where('purpose','describing')
-				->update(array('text' => $data['text'] ));
-			
-		}
-		return true;
-	}*/
 	public static function deleteBody($id)
 	{
 		DB::table('body_member')->where('bg_id',$id)->delete();
@@ -112,8 +96,6 @@ class BodyMember extends Model{
             }
             return $body->get();
         }
-		//$tag = DB::table('body_member')->where('purpose','tagging')->where('text', 'like' , '%'.$tags. '%')->get();
-		//return $tag;
 		
 	}
 	public static function backsearchtext($texts){

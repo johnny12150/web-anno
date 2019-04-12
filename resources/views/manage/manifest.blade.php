@@ -23,19 +23,33 @@ cursor: pointer;
             　<input type="submit" value="Import"> 
 		</form>
 	<hr>
+<script>
 
+</script>
 	@foreach($manifestData as $manifest)
 		<div class='col-lg-3'>
 			<?php 
+				
+				/*print_r($manifest['manifest']['sequences'][0]['canvases'][0]['images'][0]['resource']['@id']);
+				die();*/
 				$src=$manifest['manifest']['sequences'][0]['canvases'][0]['images'][0]['resource']['@id'];
-				if (strpos($src,'full/full/0/default.jpg')==false)
-					$src.='/full/full/0/default.jpg'; 
-				$src=str_replace('full/0',',250/0',$src);
+				$src=str_replace('250/0',',250/0',$src);
+				
+				if(isset($manifest['manifest']['label'])==null)
+				{
+					$label='the manifest do not have label';
+				}
+				else
+				{
+					$label=$manifest['manifest']['label'];
+				}
+				
 			?>
-			<img class ='manifestImg'  height='250px' src= '{{$src}}'
-			data-id = {{$manifest['_id']}} alt= {{ $manifest['manifest']['label'] }}>
-			<p>{{ substr($manifest['manifest']['label'],0,30)}}...<i class="fa fa-trash fa-1x trash" aria-hidden="true" data ={{$manifest['_id']}}></i></p>
-			
+			<img class ='manifestImg' style="border:2px green dashed;" height='250px' width='200px' src= '{{$src}}'
+			data-id = {{$manifest['_id']}} alt= {{ $label }} >
+			<p>{{ substr($label,0,30)}}...<i class="fa fa-trash fa-1x trash" aria-hidden="true" data ={{$manifest['_id']}}></i></p>
+			<!--編輯註記按鈕 -->
+			<p><a href=" {{ 'http://dev.annotation.taieol.tw/leaflet?manifest=' . $manifest['manifest']['@id'] }} ">編輯註記</a></p>
 		</div>
 	 @endforeach
 	</div>
@@ -79,11 +93,13 @@ cursor: pointer;
 		});
 		
 	});
+	var user = "<?php echo $user['id']  ?>";
+
 	$(document).on('click','#cManifest',function(e){
 		location.href = 'http://edit.annotation.taieol.tw/#/new';
 	});
 	$(document).on('click','#iManifest',function(e){
-		location.href = 'http://edit.annotation.taieol.tw/#/open';
+		location.href = 'http://edit.annotation.taieol.tw/#/open?uid=' + user ;
 	});
 </script>
 @endsection

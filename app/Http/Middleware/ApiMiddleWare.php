@@ -19,11 +19,14 @@ class ApiMiddleWare {
 	 */
 	public function handle($request, Closure $next)
 	{
-
-        $domain = Request::input('domain');
+	
+		//$uid = Request::input('uid');
         $token = Request::input('anno_token');
-        $uid = Request::input('uid');
+        $domain = Request::input('domain');
+		
         $domain = urldecode($domain);
+		
+		
         if(AuthTable::check($domain, $token)) {
             $user = User::get(AuthTable::getByDomainToken($domain, $token)->uid);
             $request->session()->flash('user', $user);

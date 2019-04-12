@@ -86,11 +86,9 @@ class AuthController extends Controller
 
     function postLogin()
     {
-
-        $callbackUrl = Request::input('callback_url');
+        $callbackUrl = Request::input('callback_url');		
         $uri = Request::input('uri');
         $domain = Request::input('domain');
-
         $hasCallback = ($callbackUrl != ''
             && $uri != ''
             && $domain != '');
@@ -105,8 +103,6 @@ class AuthController extends Controller
             'register_url' =>  $hasCallback  ? $registerCallbackUrl
                 : url('/auth/register')
         ];
-
-
         $rules = array(
             'email' => 'required|email|max:255',
             'password' => 'required|min:6|max:255'
@@ -123,34 +119,38 @@ class AuthController extends Controller
         }
         else
         {
-
             // create our user data for the authentication
             $userdata = array(
                 'email'     => Input::get('email'),
                 'password'  => Input::get('password')
             );
-
             if (Auth::attempt($userdata))
             {
-                if( $hasCallback ) {
+                if( $hasCallback ) {//go to page
 
                     $callback_url = urldecode($callbackUrl);
                     $uri = urldecode($uri);
                     $domain = urldecode($domain);
-
+ 
                     $user = Auth::user();
                     // generate a auth token for this external site
                     $auth = AuthTable::add($domain, $user->id);
-
+ 
                     //check callback query string exist
                     $hasQuery = strstr($callback_url, '?');
 
                     //add token to query string
                     //$callback_url .= '#anno_token='. $auth->auth_token;
                     $callback_url .= '#user_id='. $user->id .'&anno_token='. $auth->auth_token;
-                    //back to this external site
+                    //back to this external site 
                     return redirect($callback_url);
-                } else {
+                } else {//go to manage
+					$domain='dev.annotation.taieol.tw';
+					$user = Auth::user();
+                    // generate a auth token for this external site
+					//get auth_token to session
+                    $auth = AuthTable::add($domain, $user->id);
+					session(['auth' => $auth ]);
                     return redirect('/');
                 }
             }
@@ -166,6 +166,7 @@ class AuthController extends Controller
                     ->withErrors($errors);
             }
         }
+		
     }
 
     function getRegister()
@@ -305,12 +306,14 @@ class AuthController extends Controller
             return redirect((string)$url);
         }*/
     }
-	
 
-   
-
+/*get session auth_token from flash*/
     function getLogout() {
+		$auth = session('auth');		
+        $domain = $auth->domain;		
+        $token = $auth->auth_token;
         Auth::logout();
+		$state = AuthTable::remove($domain, $token);
         return redirect('/');
     }
 

@@ -39,7 +39,8 @@ class AuthTable extends Model{
         return self::where('domain', $domain)->where('auth_token', $token)->first() != null;
     }
 
-    public static function remove($domain, $token) {
+    public static function remove($domain,$token) {
+		
         return self::where('domain', $domain)->where('auth_token', $token)->delete();
     }
 

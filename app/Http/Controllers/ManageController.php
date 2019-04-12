@@ -12,8 +12,10 @@ use App\BodyMember;
 use App\follow;
 use App\bodygroup;
 use App\Target;
+use App\AuthTable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Session;
 
 class ManageController extends Controller {
    
@@ -31,7 +33,7 @@ class ManageController extends Controller {
             $tags =  BodyMember::getTags($user->id);
             $texts =  BodyMember::getTexts($user->id);
             $uri_array =[];
-            $anno_ids = Annotation::getAnnos($user->id,'backend');
+            $anno_ids = Annotation::getAnnos($user->id,'backend'); 
             foreach ($anno_ids as $anno_id) {
                  array_push($uri_array, Target::geturi($anno_id));
             }
@@ -128,9 +130,9 @@ class ManageController extends Controller {
 
         $annoData = [];
 
-        foreach($annos['annos'] as $anno) {
+        foreach($annos['annos'] as $anno) {//把annos傳給anno
 
-            $annoData[$anno['uri']] [] = $anno;
+            $annoData[$anno['uri']] [] = $anno;//anno傳給annodata
             array_push($urilist,$anno['uri']);
         }
 
@@ -171,33 +173,34 @@ class ManageController extends Controller {
         $user = Auth::user();
         $search_all = Input::get('search_all');
         if($search_all != '')
-        {   if($user->authorization == 0){
+        {   
+			if($user->authorization == 0){
 
-                $annos = self::beckendbriefsearch([
-                    'search_all' => $search_all,
-                    'sort' => $searchsort,
-                    'user_first' => $search_user_first,
-                    'public' => $searchPublic == '' ? [] :[
-                        'is_public' => $searchPublic == '1',
-                        //'creator_id' => $user->id,
-                    ],
-                ], 10, ($page-1)*10, 'created_time');
-             
-            }
-            else
-            {
+				$annos = self::beckendbriefsearch([
+					'search_all' => $search_all,
+					'sort' => $searchsort,
+					'user_first' => $search_user_first,
+					'public' => $searchPublic == '' ? [] :[
+						'is_public' => $searchPublic == '1',
+						//'creator_id' => $user->id,
+					],
+				], 10, ($page-1)*10, 'created_time');
+			 
+			}
+			else
+			{
 
-                $annos = self::beckendbriefsearch([
-                    'search_all' => $search_all,
-                    'creator_id' => $user->id,
-                    'sort' => $searchsort,
-                    'user_first' => $search_user_first,
-                    'public' => $searchPublic == '' ? [] :[
-                        'is_public' => $searchPublic == '1',
-                        'creator_id' => $user->id,
-                    ],
-                ], 10, ($page-1)*10, 'created_time');
-            }
+				$annos = self::beckendbriefsearch([
+					'search_all' => $search_all,
+					'creator_id' => $user->id,
+					'sort' => $searchsort,
+					'user_first' => $search_user_first,
+					'public' => $searchPublic == '' ? [] :[
+						'is_public' => $searchPublic == '1',
+						'creator_id' => $user->id,
+					],
+				], 10, ($page-1)*10, 'created_time');
+			}
         }
         else{
             if($user->authorization == 0)
@@ -216,9 +219,11 @@ class ManageController extends Controller {
 
             }else
             {
-                $annos = self::backendsearch([
+                
+				$annos = self::backendsearch([
                 'uri' => $uri,
                 'creator_id' => $user->id,
+				'level' => $user->level,
                 'text' => $searchText,
                 'tag' => $searchTag,
                 'sort' => $searchsort,
@@ -274,18 +279,19 @@ class ManageController extends Controller {
         
         $user = Auth::user();
         $search_all = Input::get('search_all');
-          
+        $user = Session::get('user');  
+		if($user == '') $user = 'session';
 
-            $annos = self::beckendbriefsearch_follow([
-                'search_all' => $search_all,
-                'sort' => $searchsort,
-                'creator_id' => $user->id,
-                'user_first' => $search_user_first,
-                'public' => $searchPublic == '' ? [] :[
-                    'is_public' => $searchPublic == '1',
-                    'creator_id' => $user->id,
-                ],
-            ], 10, ($page-1)*10, 'created_time');
+		$annos = self::backendbriefsearch_follow([
+			'search_all' => $search_all,
+			'sort' => $searchsort,
+			'creator_id' => $user->id?'':'session',
+			'user_first' => $search_user_first,
+			'public' => $searchPublic == '' ? [] :[
+				'is_public' => $searchPublic == '1',
+				'creator_id' => $user->id?'':'session',
+			],
+		], 10, ($page-1)*10, 'created_time');
 
    
         $pagesCount = intval($annos['count'] / 10 + 1);
@@ -299,9 +305,10 @@ class ManageController extends Controller {
             $annoData[$anno['uri']] [] = $anno;
             array_push($urilist,$anno['uri']);
         }
-
+		//if(session('auth') == '') session('auth') = 'session';
         return view('manage.index', [
-            'annoData' => $annoData,
+            'annoData' => $annoData,			
+			'auth' => session('auth')?'':'session',
             'page' => $page,
             'pagesCount' => $pagesCount,
             'urilists' => array_unique($urilist),
@@ -319,7 +326,7 @@ class ManageController extends Controller {
         ]); 
  
     }
-    public function beckendbriefsearch_follow($conditions,$limit, $offset, $orderBy = 'created_time', $sort='desc'){
+    public function backendbriefsearch_follow($conditions,$limit, $offset, $orderBy = 'created_time', $sort='desc'){
         $anno_id_get_from_reply =  Annotation::anno_id_get_from_reply($conditions['creator_id']);
         $anno_id_get_from_like = Annotation::anno_id_get_from_like($conditions['creator_id']);
         $anno_id_get_from_follow_user = Annotation::anno_id_get_from_follow_user($conditions['creator_id']);
@@ -395,6 +402,7 @@ class ManageController extends Controller {
         if($page == '') $page =1;
         $user = Auth::user();
         $buser = User::getbyname($name);
+		
         $search_all = Input::get('search_all');
         if($search_all != '')
         {   if($user->authorization == 0){
@@ -496,15 +504,16 @@ class ManageController extends Controller {
        **/
     public static function beckendbriefsearch($conditions,$limit, $offset, $orderBy = 'created_time', $sort='desc'){
         
-        if( isset($conditions['creator_id']) && $conditions['creator_id'] != ''){
-            $anno_ids = Annotation::getAnnos($conditions['creator_id'],'backend');
-            $temp = $anno_ids;    
-            echo 'normal user';
-         }
-         else{
-            $anno_ids = Annotation::getAnnos('0','backend','true');
-            $temp = $anno_ids;
-         } 
+		if(isset($conditions['creator_id']) && $conditions['creator_id'] != ''){
+			$anno_ids = Annotation::getAnnos($conditions['creator_id'],'backend');
+			$temp = $anno_ids;    
+			echo 'normal user';
+		}
+		else{
+			$anno_ids = Annotation::getAnnos('0','backend','true');
+			$temp = $anno_ids;
+			echo 'super user';
+		} 
 
         if(isset($conditions['search_all']) && $conditions['search_all'])
         {

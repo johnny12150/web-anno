@@ -52,6 +52,7 @@
 		<div style="margin:10px"><b>相簿名稱</b><br/>{{$a_title}}</div>
 		<div style="margin:10px"><b>作者</b><br/>{{$uname}}</div>
 	</div>
+	
 </body>
 <script src="{{ asset('js/tinymce/tinymce.min.js')}}"></script>
 <script src="{{ asset('js/annotation.full.js')}}"></script>

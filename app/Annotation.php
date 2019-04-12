@@ -78,7 +78,8 @@ class Annotation extends Model {
  
     public static function add($data)
     {
-
+	
+		
         $check = self::validator($data);
         if($check == true)
         {
@@ -89,9 +90,8 @@ class Annotation extends Model {
             $new_anno->state = "exist"; //未來可能用於軟刪除  目前還沒用到
             $new_anno->edited_time = Carbon::now();
             $new_anno->save();
-
-            //2.target
-            //$json = self::CreatSelectorArray($data);//WA selector
+			
+			
             Target::add([
                 'source' => $data['src'],
                 'type' => $data['type'],
@@ -350,7 +350,8 @@ class Annotation extends Model {
         
            if($otherbodys_id != null)
             {
-                foreach ( $otherbodys_id as $id) {
+                
+				foreach ( $otherbodys_id as $id) {
                   
                    $others[] = BodyMember::getothers($id);
                 }
@@ -391,7 +392,7 @@ class Annotation extends Model {
                     $front_anno_object->width =$img [2];
                     $front_anno_object->height =$img [3];
                     $front_anno_object->type = $target->type;
-                    $front_anno_object->Xpath = '';
+                    $front_anno_object->Xpath = $selector[1]->value;
                     $front_anno_object->selector =  $selector[0]->value;
                 }
                 else if ($target->type =="text")
@@ -414,6 +415,7 @@ class Annotation extends Model {
         }
         return $front_array;
     }
+	/*
     public static function annotation_IIIF_mirador($anno_id,$canvas)
     {
         $otherbodys_id = bodygroup::getohtergroup($anno_id, "false");
@@ -426,7 +428,7 @@ class Annotation extends Model {
 		$on_string = '';
         $selector = json_decode($targets[0]->selector);
         /**將DB四邊形形狀的格式會出成IIIF的格式
-		*/
+		*//*
         if($selector[0]->type == 'FragmentSelector'){
 			$img = explode(",", $selector[0]->value);
 			$x = $img[0]*$canvas->width/100;
@@ -459,13 +461,13 @@ class Annotation extends Model {
 		}
 		else if($selector[0]->type == 'SvgSelector') {
 			/**非四邊形就用SvgSelector，目前有兩種形狀circle,polygon
-			*/
+			*//*
 			$string = $selector[0]->value;
 			$xywh = 'xywh=1119.9999984,3223.999977,1328.0000024,791.9999934';
 			$xml = simplexml_load_string($string);
 			$xml->registerXPathNamespace('svg', 'http://www.w3.org/2000/svg');
 			$svg = '';
-			/*將DB polygon形狀的格式會出成IIIF的格式 IIIF on的部份*/
+			/*將DB polygon形狀的格式會出成IIIF的格式 IIIF on的部份*//*
 			if($xml->xpath('/svg:svg/svg:polygon') !== []){
 				$value = $xml->xpath('/svg:svg/svg:polygon')[0]->attributes();
 				$points = (string)$value->points[0];
@@ -537,17 +539,13 @@ class Annotation extends Model {
             'on' => $on_string
         ]);
     }
-
-	
+	*/
 	 public static function annotation_IIIF($anno_id,$canvas)
     {
         $otherbodys_id = bodygroup::getohtergroup($anno_id, "false");
-        //print(count($otherbodys_id) === 0 );
-		if(count($otherbodys_id) === 0 )  return 'null';
+        if(count($otherbodys_id) === 0 )  return 'null';
 		$others = BodyMember::getothers($otherbodys_id[0]);
         $targets = Target::getTarget($anno_id);
-
-
 		$on_string = '';
         $selector = json_decode($targets[0]->selector);
         /**將DB四邊形形狀的格式會出成IIIF的格式
@@ -600,9 +598,6 @@ class Annotation extends Model {
 				$xywh = 'xywh='.($cx-100).','.($cy-100).',200,200';			
 			} else {
 				$svg =  $string;
-				
-				
-				
 			}
 				$on_object =  array(
 					'@type' => "oa:SpecificResource",
@@ -620,7 +615,6 @@ class Annotation extends Model {
 						),
 				);
 				$on_string = array($on_object);
-			
 		}
         return ([
             '@id' => $anno_id,
@@ -643,8 +637,6 @@ class Annotation extends Model {
     private static function format($row)
     {
         $creator = User::get($row->creator_id);
-        // Refact object
-		//var_dump($row->id);
         return [
             'id' => $row->id,
             'text' => '不使用',
@@ -665,8 +657,8 @@ class Annotation extends Model {
             'permissions' => [
                 "read" => $row->is_public ? [] :[(int)$row->creator_id],
                 "admin" => [(int)$row->creator_id],
-                "update" => [(int)$row->creator_id],
-                "delete" => [(int)$row->creator_id]
+                "update" => $row->is_public ? [] :[(int)$row->creator_id],
+                "delete" => $row->is_public ? [] :[(int)$row->creator_id]
             ],
             'type' => $row->type,
             'position' => [
@@ -680,6 +672,7 @@ class Annotation extends Model {
             'user' => [
                 'id' => $creator->id ,
                 'name' => $creator->name,
+				'level' => $creator->level,
                 'gravatar' => Gravatar::src($creator->email)
             ],
             'otherbodys' => $row->otherbodys,

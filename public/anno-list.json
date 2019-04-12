@@ -1,29 +1,25 @@
+
 {
-"@id":"http://annotation.ipicbox.tw/list/40",
-"context":"http://www.shared-canvas.org/ns/context.json",
-"@type":"AnnotationList",
-"resources":[
+"@id": "http://dev.annotation.taieol.tw/list/26",
+"context": "http://www.shared-canvas.org/ns/context.json",
+"@type": "AnnotationList",
+"resources": [
+
 {
-"@id":"1059",
-"@type":"oa:Annotation",
-"motivation":"sc:painting",
-"resource":{
-"type":"cnt:ContentAsText",
-"format":"text/plan",
-"chars":"testong"
+"@id": 1734,
+"@type": "oa:Annotation",
+"motivation": "sc:painting",
+"creator": "http://dev.annotation.taieol.tw/user/2/test1",
+"resource": {
+
+"@id":"http://dev.annotation.taieol.tw/digital/modified_annotation/10567",
+"@type": "oa:SpecificResource",
+"full": {
+  "@id":"http://www.unixstickers.com/image/data/stickers/android/android_shaped.sh.png",
+  "@type":"dctypes:Image"
+}
 },
-"on":"http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/canvas/canvas-7#xywh=466.24,2640.77829015,3068.16,180.56604225"
-},
-{
-"@id":"1060",
-"@type":"oa:Annotation",
-"motivation":"sc:painting",
-"resource":{
-"type":"cnt:ContentAsText",
-"format":"text/plan",
-"chars":""
-},
-"on":"http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/canvas/canvas-7#xywh=1007.68,1173.6792507,992.64,782.45281785"
+"on": "http://dev.annotation.taieol.tw/digital/modified_annotation/10567#xywh=184.9999991,90.00000288,124.99999722,206.00000352"
 }
 ]
 }

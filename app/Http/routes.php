@@ -14,9 +14,11 @@
 use Illuminate\Support\Facades\Response;
 use App\manifest;
 Route::get('/', function() { return redirect('/manage');});
-
 Route::get('testing', function() {
     return view('testing');
+});
+Route::get('text_testing_page', function() {
+    return view('text_testing_page');
 });
 Route::get('leaflet', function() {
     return view('leaflet');
@@ -27,19 +29,19 @@ Route::get('test2', function() {
 Route::get('demo',function(){
      return view('demo1');
 });
-
-
 Route::get('mongodb',function(){
     phpinfo();
 	$test = manifest::all();
 	print_r($test);
 });
-
+Route::get('/iiif/test/canvas/{p1}',function(){
+     return view('canvas');
+});
 
 /* Annotation API routing */
 Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
 {
-    /* Route Options */
+	/* Route Options */
     Route::options('search', function () {});
     Route::options('annotations', function () {});
     Route::options('user', function () {});
@@ -48,14 +50,10 @@ Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
     Route::options('likes', function () {});
     Route::options('check', function () {});
     Route::options('annotations', function () {});
-    Route::options('annotations/{id}', function () {});
-   
+    Route::options('annotations/{id}', function () {});   
     Route::get('/', 'AnnotationController@index');
     Route::get('annotations', 'AnnotationController@index');
     Route::get('search', 'AnnotationController@search');
-	
-	
-
     Route::group(['middleware' => ['crossdomain', 'api_auth'] ], function() {
         Route::post('likes/{id}', 'AnnotationController@like');
         Route::post('annotations', 'AnnotationController@add');
@@ -70,20 +68,19 @@ Route::group(['prefix' => '/api', 'middleware' => 'crossdomain'], function()
         Route::get('check', 'AnnotationController@check');
         Route::post('logout', 'AnnotationController@logout');
         Route::post('edit_target','AnnotationController@edit_target');
-        Route::post('checkcollect','collecteController@check');      
-		
-		
+        Route::post('checkcollect','collecteController@check');  
+		Route::get('example','AnnotationController@example'); 
 		
     });
-
+		Route::post('canvas/add', 'CanvasController@addCanvas');   
+		Route::post('annotations/IIIFformat', 'AnnotationController@getIIIFformat');   
     Route::any('{all}', function($uri)
     {
         return [
             'response' => 'error'
         ];
     })->where('all', '.*');
-});
-/**/
+});  
 Route::group(['prefix' => '/manage', 'middleware' => 'auth'], function() {
     Route::post('/', 'ManageController@manage');
     Route::get('/', 'ManageController@manage');
@@ -100,17 +97,12 @@ Route::group(['prefix' => '/manage', 'middleware' => 'auth'], function() {
 	Route::get('/manifest','ManifestController@index');
 	Route::post('/myprocess','ManifestController@Manifest');
 	Route::post('/manifest/delete','ManifestController@delete');
-	
-	
 });
-/*
-Route::get('manifest', function(){
-			$user = Auth::user();
-			print($user->name);
-			return view('manifest');
-})->middleware('auth');
-*/
-Route::post('manage/manifest/import','ManifestController@import');
+
+Route::group(['prefix' => '/api2', 'middleware' => 'api_auth'], function()
+{
+	Route::get('example','AnnotationController@example'); 
+});		
 
 Route::group(['prefix' => '/digital'],function(){
 	Route::get('digital_island', function() {
@@ -120,6 +112,10 @@ Route::group(['prefix' => '/digital'],function(){
 	Route::any('modified_annotation/{id}','AnnotationController@modified_for_sophy');
 });
 
+Route::post('manage/manifest/import','ManifestController@import');
+Route::post('manage/manifest/updateManifestID','ManifestController@updateManifestID');
+Route::post('manage/manifest/importManifest','ManifestController@importManifest');
+Route::post('manifest/getid','ManifestController@getManifestID');
 Route::get('list/{p1}',"ManifestController@IIIFformat");
 Route::get('mirador/list/{p1}',"ManifestController@IIIFformat_mirador");
 Route::post('manifest/save', 'ManifestController@save');
@@ -129,8 +125,7 @@ Route::get('mirador/manifest/{id}.json', 'ManifestController@output_manifest_mir
 Route::post('/manifest/searchAnnoByCanvas', 'ManifestController@getAnnoList');
 Route::post('login','ManifestController@leaflet_Login');
 Route::post('logout','ManifestController@leaflet_Logout');
-
-
+Route::post('manifest/getList','ManifestController@getManifest');
 Route::get('gethint','AnnotationController@gethint');
 Route::get('gravatar/{email}', 'GravatarController@get');
 Route::get('manage/profile/{name}','ManageController@index');
